@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gaming Relax">
+<meta property="og:title" content="Store — Gaming Relax">
+<meta property="og:description" content="Sfoglia tastiere custom, keycaps, switch e accessori per il tuo desk setup.">
+<meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta property="og:url" content="https://gamingrelaxofficials.it/store.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Store — Gaming Relax">
+<meta name="twitter:description" content="Sfoglia tastiere custom, keycaps, switch e accessori per il tuo desk setup.">
+<meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta name="description" content="Sfoglia tastiere custom, keycaps, switch e accessori per il tuo desk setup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="store">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      Gaming Relax
+    </a>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+      <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="store.html" class="active">Store</a>
+        <a href="custom.html">Custom</a>
+        <a href="art.html">Art</a>
+        <a href="novita.html">Novità</a>
+        <a href="team.html">Team</a>
+        <a href="recensioni.html">Recensioni</a>
+        <a href="contatti.html">Contatti</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<section class="store-hero">
+  <div class="container">
+    <span class="eyebrow eyebrow--purple" data-edit="eyebrow">Esplora lo Store</span>
+    <h1 data-edit="title">Hardware &amp; Accessori</h1>
+    <p class="lede" style="margin:18px auto 0;" data-edit="subtitle">Sfoglia tastiere, keycaps, switch e accessori per il tuo desk setup. Ogni prodotto ha un link di pagamento sicuro per l'acquisto immediato, oppure puoi richiedere un preventivo su misura.</p>
+    <div class="trust-bar">
+      <span>🔒 Pagamento sicuro (Stripe)</span>
+      <span>✋ Fatto a mano su richiesta</span>
+      <span>📦 Spedizione tracciata</span>
+      <span>💬 Assistenza su Discord</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+
+    <div class="filter-row">
+      <button class="filter-pill active" data-store-filter="tutti">Tutti</button>
+      <button class="filter-pill" data-store-filter="tastiere">Tastiere Custom</button>
+      <button class="filter-pill" data-store-filter="tastiere_preassemblate">Tastiere Preassemblate</button>
+      <button class="filter-pill" data-store-filter="keycaps">Keycaps</button>
+      <button class="filter-pill" data-store-filter="accessori">Accessori</button>
+      <button class="filter-pill" data-store-filter="servizi">Servizi Tech</button>
+      <button class="filter-pill" data-store-filter="preferiti">♥ Preferiti<span class="count"></span></button>
+    </div>
+
+    <div class="product-grid" id="product-grid">
+      <p style="text-align:center;grid-column:1/-1;color:var(--text-dim);">Caricamento prodotti…</p>
+    </div>
+
+    <p style="text-align:center;margin-top:40px;font-size:14px;">I prodotti sono gestiti dallo staff tramite la Dashboard e aggiornati automaticamente qui.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span> Gaming Relax</div>
+        <p>Custom Keyboards &amp; Digital Craftsmanship.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Link utili</h4>
+        <a href="faq.html">FAQ (Domande Frequenti)</a>
+        <a href="termini.html">Termini e Condizioni</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </div>
+      <div class="footer-col">
+        <h4>Orari di supporto &amp; disponibilità</h4>
+        <p data-general="hoursWeekday">Lun - Ven: 10:00 - 19:00</p>
+        <p data-general="hoursWeekend">Sab - Dom: Su appuntamento</p>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <p>Unisciti al nostro server per news, setup e supporto diretto.</p>
+        <a class="social-link" href="#">Entra su Discord</a>
+        <a class="social-link" href="#" target="_blank" rel="noopener" data-social="youtube">▶️ Seguici su YouTube</a>
+        <a class="social-link" href="#" target="_blank" rel="noopener" data-social="instagram">📸 Seguici su Instagram</a>
+        <a class="social-link" href="#">Seguici su TikTok</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <small>© 2026 Gaming Relax. All rights reserved.</small>
+      <div class="socials">
+        <a href="#" aria-label="YouTube" data-social="youtube">▶️</a>
+        <a href="#" aria-label="Instagram" data-social="instagram">📸</a>
+        <a href="https://www.tiktok.com/@gamingrelaxofficials?_r=1&_t=ZN-99DS7emVF8Y" target="_blank" rel="noopener" aria-label="TikTok" data-social="tiktok">🎵</a>
+        <a href="https://discord.gg/5MxfYT7C5f" target="_blank" rel="noopener" aria-label="Discord" data-social="discord">💬</a>
+        <a href="mailto:gamingrelaxofficials@gmail.com" aria-label="Email" data-social="email">📧</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script type="module" src="js/firebase-init.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/content-dynamic.js"></script>
+<script type="module" src="js/store-dynamic.js"></script>
+</body>
+</html>

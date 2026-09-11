@@ -1,0 +1,111 @@
+// ==========================================================================
+// REGOLE DI SICUREZZA FIRESTORE — Gaming Relax
+// ==========================================================================
+// COSA FARE: vai su Console Firebase → Firestore Database → scheda "Regole",
+// cancella tutto il contenuto e incolla questo blocco al suo posto, poi
+// clicca "Pubblica".
+//
+// PERCHÉ SERVE: senza queste regole, chiunque potrebbe leggere o scrivere
+// nel database. Con queste regole:
+//   - Tutti (anche chi non ha fatto login) possono LEGGERE prodotti, team
+//     e contenuti del sito — necessario perché lo Store deve essere visibile
+//     a ogni visitatore.
+//   - Solo l'account con email "gamingrelaxadmin@gmail.com" può SCRIVERE
+//     (aggiungere, modificare, eliminare) prodotti, team e contenuti.
+//     Questa è la VERA protezione della Dashboard: anche se qualcuno legge
+//     il codice del sito su GitHub e vede l'email admin, non potrà comunque
+//     scrivere nulla senza conoscere anche la password E aver effettuato
+//     il login con quello specifico account.
+// ==========================================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /team/{memberId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /siteContent/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /faq/{faqId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /gallery/{photoId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /news/{postId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Voucher: registro interno, solo l'admin può leggerlo e scriverlo
+    // (nessuna lettura pubblica: non è un dato da mostrare sul sito)
+    match /vouchers/{voucherId} {
+      allow read, write: if request.auth != null
+                          && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Preferiti: ogni utente loggato legge e scrive SOLO il proprio documento
+    // (l'id del documento è il suo uid, quindi non può leggere quelli altrui)
+    match /wishlists/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Richieste dal form Contatti: chiunque (anche senza login) può INVIARE
+    // una richiesta, ma solo l'admin può leggerle, aggiornarne lo stato o
+    // eliminarle. Nessuno può leggere le richieste di altri, nemmeno le proprie.
+    match /richieste/{richiestaId} {
+      allow create: if request.resource.data.keys().hasAll(['alias', 'email', 'servizio', 'progetto', 'status', 'createdAt'])
+                    && request.resource.data.status == 'nuova';
+      allow read, update, delete: if request.auth != null
+                                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Recensioni prodotto: chiunque può scriverne una (parte sempre "pending"),
+    // ma è visibile pubblicamente solo dopo l'approvazione dello staff.
+    match /reviews/{reviewId} {
+      allow create: if request.resource.data.keys().hasAll(['name', 'rating', 'comment', 'status', 'createdAt'])
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.rating >= 1
+                    && request.resource.data.rating <= 5;
+      allow read: if resource.data.status == 'approved'
+                  || (request.auth != null && request.auth.token.email == 'gamingrelaxadmin@gmail.com');
+      allow update, delete: if request.auth != null
+                             && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Avvisi "Torna disponibile": chiunque può iscriversi, ma solo l'admin
+    // può vedere l'elenco (contiene email dei clienti).
+    match /restockRequests/{requestId} {
+      allow create: if request.resource.data.keys().hasAll(['productId', 'productName', 'email', 'notified', 'createdAt']);
+      allow read, update, delete: if request.auth != null
+                                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Qualunque altra collezione: bloccata di default (nessuno legge o scrive).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

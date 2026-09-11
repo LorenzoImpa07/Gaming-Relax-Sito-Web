@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prodotto — Gaming Relax</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      Gaming Relax
+    </a>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+      <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="store.html" class="active">Store</a>
+        <a href="custom.html">Custom</a>
+        <a href="art.html">Art</a>
+        <a href="novita.html">Novità</a>
+        <a href="team.html">Team</a>
+        <a href="recensioni.html">Recensioni</a>
+        <a href="contatti.html">Contatti</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<section style="padding:50px 0;">
+  <div class="container" style="max-width:900px;">
+
+    <a href="store.html" style="display:inline-block;margin-bottom:24px;color:var(--text-dim);font-size:14px;">← Torna allo Store</a>
+
+    <div id="product-detail">
+      <p style="text-align:center;color:var(--text-dim);">Caricamento…</p>
+    </div>
+
+    <div class="cta-banner" style="margin-top:60px;padding:40px 32px;">
+      <h2 style="font-size:22px;margin-bottom:16px;">Vuoi leggere le recensioni o lasciarne una?</h2>
+      <a href="recensioni.html" class="btn btn--lime">Vai alla pagina Recensioni →</a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <small>© 2026 Gaming Relax. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script type="module" src="js/firebase-init.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/product-detail.js"></script>
+</body>
+</html>

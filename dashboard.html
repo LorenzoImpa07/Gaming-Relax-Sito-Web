@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gaming Relax">
+<meta property="og:title" content="Dashboard — Gaming Relax">
+<meta property="og:description" content="Pannello di gestione riservato allo staff di Gaming Relax.">
+<meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta property="og:url" content="https://gamingrelaxofficials.it/dashboard.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dashboard — Gaming Relax">
+<meta name="twitter:description" content="Pannello di gestione riservato allo staff di Gaming Relax.">
+<meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="dashboard">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      Gaming Relax
+    </a>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+    </div>
+  </div>
+</header>
+
+<div class="dashboard-guard" id="dashboard-guard">
+  <p>Verifica accesso in corso…</p>
+</div>
+
+<div id="dashboard-root">
+  <div class="container">
+
+    <div class="dash-header">
+      <div>
+        <h1>Dashboard</h1>
+        <span>Connesso come <strong id="admin-email"></strong></span>
+      </div>
+      <button type="button" id="logout-dash" class="btn btn--outline">Esci</button>
+    </div>
+
+    <div class="dash-stats" id="dash-stats">
+      <div class="dash-stat"><strong id="stat-products">–</strong><span>Prodotti pubblicati</span></div>
+      <div class="dash-stat"><strong id="stat-team">–</strong><span>Membri del team</span></div>
+      <div class="dash-stat"><strong id="stat-richieste">–</strong><span>Richieste nuove</span></div>
+      <div class="dash-stat"><strong id="stat-reviews">–</strong><span>Recensioni da approvare</span></div>
+      <a href="index.html" target="_blank" class="dash-stat dash-stat--link">Vedi il sito online ↗</a>
+    </div>
+
+    <div class="dash-tabs">
+      <button class="dash-tab active" data-panel="panel-products">Prodotti (Store)</button>
+      <button class="dash-tab" data-panel="panel-team">Team</button>
+      <button class="dash-tab" data-panel="panel-gallery">Galleria Art</button>
+      <button class="dash-tab" data-panel="panel-richieste">Richieste</button>
+      <button class="dash-tab" data-panel="panel-faq">FAQ</button>
+      <button class="dash-tab" data-panel="panel-pages">Testi delle pagine</button>
+      <button class="dash-tab" data-panel="panel-design">Aspetto grafico</button>
+      <button class="dash-tab" data-panel="panel-general">Contatti & Social</button>
+      <button class="dash-tab" data-panel="panel-vouchers">Voucher</button>
+      <button class="dash-tab" data-panel="panel-news">Novità</button>
+      <button class="dash-tab" data-panel="panel-reviews">Recensioni</button>
+      <button class="dash-tab" data-panel="panel-restock">Avvisi Restock</button>
+    </div>
+
+    <!-- ==================== PRODOTTI ==================== -->
+    <div class="dash-panel active" id="panel-products">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica prodotto</h3>
+          <form id="product-form">
+            <div class="field">
+              <label for="p-name">Nome prodotto</label>
+              <input type="text" id="p-name" required>
+            </div>
+            <div class="field">
+              <label for="p-category">Categoria</label>
+              <select id="p-category">
+                <option value="tastiere">Tastiere Custom</option>
+                <option value="tastiere_preassemblate">Tastiere Preassemblate</option>
+                <option value="keycaps">Keycaps</option>
+                <option value="accessori">Accessori</option>
+                <option value="servizi">Servizi Tech</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="p-price">Prezzo (es. 149,00 € oppure "Su preventivo")</label>
+              <input type="text" id="p-price" required>
+            </div>
+            <div class="field">
+              <label for="p-payment-link">Link di pagamento Stripe (opzionale)</label>
+              <input type="url" id="p-payment-link" placeholder="https://buy.stripe.com/...">
+            </div>
+            <div class="field">
+              <label for="p-image">URL immagine</label>
+              <input type="url" id="p-image" placeholder="https://...">
+            </div>
+            <div class="field">
+              <label for="p-desc">Descrizione breve</label>
+              <textarea id="p-desc"></textarea>
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="p-instock" checked style="width:auto;">
+              <label for="p-instock" style="margin:0;">Disponibile in Store (togli la spunta per segnarlo "Esaurito")</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi prodotto</button>
+              <button type="button" id="product-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Prodotti pubblicati</h3>
+          <input type="search" id="product-search" class="dash-search" placeholder="Cerca per nome...">
+          <div class="admin-list" id="admin-products-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== TEAM ==================== -->
+    <div class="dash-panel" id="panel-team">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica membro del team</h3>
+          <form id="team-form">
+            <div class="field">
+              <label for="t-name">Nome</label>
+              <input type="text" id="t-name" required>
+            </div>
+            <div class="field">
+              <label for="t-role">Ruolo (es. Founder & Designer)</label>
+              <input type="text" id="t-role" required>
+            </div>
+            <div class="field">
+              <label for="t-category">Area / settore</label>
+              <select id="t-category">
+                <option value="tastiere">Tastiere Custom</option>
+                <option value="bot">Sviluppo Bot</option>
+                <option value="consulenze">Consulenze</option>
+                <option value="grafico">Team Grafico</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="t-photo">URL foto</label>
+              <input type="url" id="t-photo" placeholder="https://...">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi membro</button>
+              <button type="button" id="team-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Team pubblicato</h3>
+          <input type="search" id="team-search" class="dash-search" placeholder="Cerca per nome...">
+          <div class="admin-list" id="admin-team-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== GALLERIA ART ==================== -->
+    <div class="dash-panel" id="panel-gallery">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica foto</h3>
+          <form id="gallery-form">
+            <div class="field">
+              <label for="gal-image">URL immagine</label>
+              <input type="url" id="gal-image" placeholder="https://..." required>
+            </div>
+            <div class="field">
+              <label for="gal-category">Categoria</label>
+              <select id="gal-category">
+                <option value="tastiere">Tastiere Custom</option>
+                <option value="keycaps">Keycaps</option>
+                <option value="setup">Setup & RGB</option>
+                <option value="grafica">Grafica / Identità visiva</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="gal-caption">Didascalia (opzionale)</label>
+              <input type="text" id="gal-caption" placeholder="es. Keycap in resina edizione galassia">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi foto</button>
+              <button type="button" id="gallery-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Foto pubblicate</h3>
+          <div class="admin-list" id="admin-gallery-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== RICHIESTE ==================== -->
+    <div class="dash-panel" id="panel-richieste">
+      <div class="filter-row" style="justify-content:flex-start;margin-bottom:20px;">
+        <button class="filter-pill active" data-richieste-filter="tutte">Tutte</button>
+        <button class="filter-pill" data-richieste-filter="nuova">Nuove</button>
+        <button class="filter-pill" data-richieste-filter="gestita">Gestite</button>
+      </div>
+      <input type="search" id="richieste-search" class="dash-search" placeholder="Cerca per nome o email...">
+      <div class="admin-list" id="admin-richieste-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+    <!-- ==================== FAQ ==================== -->
+    <div class="dash-panel" id="panel-faq">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica domanda</h3>
+          <form id="faq-form">
+            <div class="field">
+              <label for="f-question">Domanda</label>
+              <input type="text" id="f-question" required>
+            </div>
+            <div class="field">
+              <label for="f-answer">Risposta</label>
+              <textarea id="f-answer" required></textarea>
+            </div>
+            <div class="field">
+              <label for="f-order">Ordine (numero, 1 = mostrata per prima)</label>
+              <input type="number" id="f-order" min="1" step="1" value="1">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi domanda</button>
+              <button type="button" id="faq-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">FAQ pubblicate</h3>
+          <div class="admin-list" id="admin-faq-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== TESTI DELLE PAGINE ==================== -->
+    <div class="dash-panel" id="panel-pages">
+      <div class="dash-form-card" style="max-width:640px;">
+        <h3>Seleziona la pagina da modificare</h3>
+        <div class="field">
+          <label for="page-select">Pagina</label>
+          <select id="page-select">
+            <option value="home">Home</option>
+            <option value="store">Store</option>
+            <option value="custom">Custom</option>
+            <option value="art">Art</option>
+            <option value="novita">Novità</option>
+            <option value="team">Team</option>
+            <option value="recensioni">Recensioni</option>
+            <option value="contatti">Contatti</option>
+          </select>
+        </div>
+        <form id="page-content-form">
+          <div id="page-content-fields"></div>
+          <button type="submit" class="btn btn--lime">Salva testi di questa pagina</button>
+          <p class="dash-save-msg" id="page-content-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:20px;">Lascia un campo vuoto per mantenere il testo predefinito del sito. Per andare a capo nel testo, premi Invio dentro il campo.</p>
+    </div>
+
+    <!-- ==================== ASPETTO GRAFICO ==================== -->
+    <div class="dash-panel" id="panel-design">
+      <div class="dash-form-card" style="max-width:520px;">
+        <h3>Colori generali del sito</h3>
+        <div class="color-preview" id="color-preview"></div>
+        <form id="design-form">
+          <div class="field">
+            <label for="d-lime">Colore principale (bottoni, accenti)</label>
+            <input type="color" id="d-lime" value="#c6ff1a" data-var="--lime">
+          </div>
+          <div class="field">
+            <label for="d-purple">Colore secondario (sezione Art, dettagli)</label>
+            <input type="color" id="d-purple" value="#9b3dff" data-var="--purple">
+          </div>
+          <div class="field">
+            <label for="d-bg">Sfondo pagina</label>
+            <input type="color" id="d-bg" value="#0a0d16" data-var="--bg">
+          </div>
+          <div class="field">
+            <label for="d-bg-alt">Sfondo alternativo (footer)</label>
+            <input type="color" id="d-bg-alt" value="#10141f" data-var="--bg-alt">
+          </div>
+          <div class="field">
+            <label for="d-card">Sfondo delle card</label>
+            <input type="color" id="d-card" value="#14182a" data-var="--card">
+          </div>
+          <div class="field">
+            <label for="d-logo">URL logo personalizzato (opzionale)</label>
+            <input type="url" id="d-logo" placeholder="https://... (lascia vuoto per usare il logo predefinito)">
+          </div>
+          <button type="submit" class="btn btn--lime">Salva colori</button>
+          <button type="button" id="design-reset" class="btn btn--outline" style="margin-left:10px;">Ripristina colori predefiniti</button>
+          <p class="dash-save-msg" id="design-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:20px;">I colori e il logo si applicano a tutto il sito, su tutte le pagine, subito dopo il salvataggio.</p>
+    </div>
+
+    <!-- ==================== CONTATTI & SOCIAL ==================== -->
+    <div class="dash-panel" id="panel-general">
+      <div class="dash-form-card" style="max-width:560px;">
+        <h3>Email, orari e link social</h3>
+        <form id="general-form">
+          <div class="field">
+            <label for="g-email">Email di supporto</label>
+            <input type="email" id="g-email" placeholder="gamingrelaxofficials@gmail.com">
+          </div>
+          <div class="field">
+            <label for="g-hours-weekday">Orari Lun - Ven</label>
+            <input type="text" id="g-hours-weekday" placeholder="Lun - Ven: 10:00 - 19:00">
+          </div>
+          <div class="field">
+            <label for="g-hours-weekend">Orari Sab - Dom</label>
+            <input type="text" id="g-hours-weekend" placeholder="Sab - Dom: Su appuntamento">
+          </div>
+          <div class="field">
+            <label for="g-discord">💬 Link Discord</label>
+            <input type="url" id="g-discord" placeholder="https://discord.gg/...">
+          </div>
+          <div class="field">
+            <label for="g-youtube">▶️ Link YouTube</label>
+            <input type="url" id="g-youtube" placeholder="https://youtube.com/@...">
+          </div>
+          <div class="field">
+            <label for="g-instagram">📸 Link Instagram</label>
+            <input type="url" id="g-instagram" placeholder="https://instagram.com/...">
+          </div>
+          <div class="field">
+            <label for="g-tiktok">🎵 Link TikTok</label>
+            <input type="url" id="g-tiktok" placeholder="https://tiktok.com/@...">
+          </div>
+          <button type="submit" class="btn btn--lime">Salva contatti e social</button>
+          <p class="dash-save-msg" id="general-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:20px;">Questi dati si aggiornano su tutto il sito, in ogni pagina, subito dopo il salvataggio — comodo per quando cambi canale o orari senza dover più toccare il codice.</p>
+    </div>
+
+    <!-- ==================== VOUCHER ==================== -->
+    <div class="dash-panel" id="panel-vouchers">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;max-width:760px;">Questo è un registro interno: qui tieni traccia di ogni voucher creato e a chi è stato assegnato. Per far funzionare davvero lo sconto al pagamento, crea lo stesso codice come "Promotion code" su Stripe e attiva "Allow promotion codes" sul relativo Payment Link — i voucher qui sotto NON si applicano da soli al pagamento, sono solo il tuo archivio.</p>
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Crea nuovo voucher</h3>
+          <form id="voucher-form">
+            <div class="field">
+              <label for="v-code">Codice voucher</label>
+              <div style="display:flex;gap:10px;">
+                <input type="text" id="v-code" placeholder="es. MARCO10" style="text-transform:uppercase;" required>
+                <button type="button" id="v-generate" class="btn btn--outline" style="flex-shrink:0;padding:10px 16px;font-size:13px;">Genera</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="v-assigned">Assegnato a (staffer / creator)</label>
+              <input type="text" id="v-assigned" placeholder="es. Marco - Creator TikTok" required>
+            </div>
+            <div class="field">
+              <label for="v-type">Tipo di sconto</label>
+              <select id="v-type">
+                <option value="percentuale">Percentuale (%)</option>
+                <option value="fisso">Importo fisso (€)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="v-value">Valore (numero)</label>
+              <input type="number" id="v-value" min="0" step="0.01" placeholder="es. 10" required>
+            </div>
+            <div class="field">
+              <label for="v-notes">Note (opzionale)</label>
+              <textarea id="v-notes" placeholder="es. Codice per la campagna estate 2026"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva voucher</button>
+              <button type="button" id="voucher-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Voucher creati</h3>
+          <input type="search" id="voucher-search" class="dash-search" placeholder="Cerca per codice o nome...">
+          <div class="admin-list" id="admin-voucher-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== NOVITÀ ==================== -->
+    <div class="dash-panel" id="panel-news">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Pubblica un annuncio</h3>
+          <form id="news-form">
+            <div class="field">
+              <label for="n-title">Titolo</label>
+              <input type="text" id="n-title" placeholder="es. Nuovo drop di keycaps disponibile!" required>
+            </div>
+            <div class="field">
+              <label for="n-category">Categoria</label>
+              <select id="n-category">
+                <option value="aggiornamenti">Aggiornamenti</option>
+                <option value="nuovi-prodotti">Nuovi Prodotti</option>
+                <option value="annunci">Annunci</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="n-image">URL immagine (opzionale)</label>
+              <input type="url" id="n-image" placeholder="https://...">
+            </div>
+            <div class="field">
+              <label for="n-body">Testo dell'annuncio</label>
+              <textarea id="n-body" placeholder="Racconta la novità..." required style="min-height:140px;"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Pubblica</button>
+              <button type="button" id="news-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Annunci pubblicati</h3>
+          <div class="admin-list" id="admin-news-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== RECENSIONI ==================== -->
+    <div class="dash-panel" id="panel-reviews">
+      <div class="filter-row" style="justify-content:flex-start;margin-bottom:20px;">
+        <button class="filter-pill active" data-review-filter="pending">Da approvare</button>
+        <button class="filter-pill" data-review-filter="approved">Approvate</button>
+        <button class="filter-pill" data-review-filter="tutte">Tutte</button>
+      </div>
+      <div class="admin-list" id="admin-reviews-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+    <!-- ==================== AVVISI RESTOCK ==================== -->
+    <div class="dash-panel" id="panel-restock">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;max-width:760px;">Elenco dei clienti che hanno chiesto di essere avvisati quando un prodotto esaurito torna disponibile. Quando rifai il drop, contattali via email e segna "Contattato" — è solo un archivio, l'invio email resta manuale.</p>
+      <input type="search" id="restock-search" class="dash-search" placeholder="Cerca per prodotto o email...">
+      <div class="admin-list" id="admin-restock-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="js/firebase-init.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

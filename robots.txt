@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /login.html
+Disallow: /register.html
+
+Sitemap: https://gamingrelaxofficials.it/sitemap.xml

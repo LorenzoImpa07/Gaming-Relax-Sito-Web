@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accedi — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gaming Relax">
+<meta property="og:title" content="Accedi — Gaming Relax">
+<meta property="og:description" content="Accedi al tuo account Gaming Relax.">
+<meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta property="og:url" content="https://gamingrelaxofficials.it/login.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Accedi — Gaming Relax">
+<meta name="twitter:description" content="Accedi al tuo account Gaming Relax.">
+<meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="login">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      Gaming Relax
+    </a>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+    </div>
+  </div>
+</header>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Bentornato</h1>
+    <p class="lede">Accedi al tuo account Gaming Relax.</p>
+
+    <p class="auth-error" id="login-error"></p>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" name="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn--lime">Accedi</button>
+    </form>
+
+    <p class="auth-switch">Non hai un account? <a href="register.html">Registrati</a></p>
+    <p class="admin-hint">Sei dello staff? Accedi con l'account amministratore per aprire la Dashboard.</p>
+  </div>
+</div>
+
+<script type="module" src="js/firebase-init.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
