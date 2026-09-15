@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recensioni — Gaming Relax</title>
+<meta name="description" content="Le esperienze dei nostri clienti con Gaming Relax. Lascia anche tu la tua recensione.">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gaming Relax">
+<meta property="og:title" content="Recensioni — Gaming Relax">
+<meta property="og:description" content="Le esperienze dei nostri clienti con Gaming Relax. Lascia anche tu la tua recensione.">
+<meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta property="og:url" content="https://gamingrelaxofficials.it/recensioni.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recensioni — Gaming Relax">
+<meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260916j">
+<script>(function(){try{var d=JSON.parse(localStorage.getItem("gr_design")||"{}");var s=document.documentElement.style;if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);}catch(e){}})();</script>
+</head>
+<body data-page="recensioni">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      <span class="brand__name">Gaming Relax</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="store.html">Store</a>
+      <a href="custom.html">Custom</a>
+      <a href="art.html">Art</a>
+      <a href="novita.html">Novità</a>
+      <a href="forum.html">Forum</a>
+      <a href="team.html">Team</a>
+      <a href="recensioni.html" class="active">Recensioni</a>
+      <a href="contatti.html">Contatti</a>
+    </nav>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+      <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <h1 data-edit="title">Cosa dicono di noi</h1>
+    <p class="lede" data-edit="subtitle">Le esperienze vere dei nostri clienti — e se sei già passato da noi, raccontaci la tua.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container" style="max-width:760px;">
+
+    <div id="reviews-summary-general" style="text-align:center;margin-bottom:40px;">
+      <p style="color:var(--text-dim);">Caricamento…</p>
+    </div>
+
+    <div id="reviews-list-general"></div>
+
+    <div class="dash-form-card" style="max-width:100%;margin-top:20px;">
+      <h3>Lascia la tua recensione</h3>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;">Raccontaci la tua esperienza con Gaming Relax — la tua recensione verrà pubblicata dopo una rapida verifica dello staff.</p>
+      <form id="review-form-general">
+        <div class="field">
+          <label for="rg-name">Il tuo nome</label>
+          <input type="text" id="rg-name" required>
+        </div>
+        <div class="field">
+          <label id="rg-rating-label">Valutazione</label>
+          <div class="star-picker" id="star-picker">
+            <input type="hidden" id="rg-rating" name="rating" value="5" required>
+            <div class="star-picker__row" role="radiogroup" aria-labelledby="rg-rating-label">
+              <button type="button" class="star-picker__btn is-on" data-star="1" aria-label="1 stella — Scarso"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.7 6.1 6.6.7-5 4.6 1.4 6.5L12 16.8 6.3 20.1 7.7 13.6l-5-4.6 6.6-.7L12 2.2z"/></svg></button>
+              <button type="button" class="star-picker__btn is-on" data-star="2" aria-label="2 stelle — Sufficiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.7 6.1 6.6.7-5 4.6 1.4 6.5L12 16.8 6.3 20.1 7.7 13.6l-5-4.6 6.6-.7L12 2.2z"/></svg></button>
+              <button type="button" class="star-picker__btn is-on" data-star="3" aria-label="3 stelle — Buono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.7 6.1 6.6.7-5 4.6 1.4 6.5L12 16.8 6.3 20.1 7.7 13.6l-5-4.6 6.6-.7L12 2.2z"/></svg></button>
+              <button type="button" class="star-picker__btn is-on" data-star="4" aria-label="4 stelle — Molto buono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.7 6.1 6.6.7-5 4.6 1.4 6.5L12 16.8 6.3 20.1 7.7 13.6l-5-4.6 6.6-.7L12 2.2z"/></svg></button>
+              <button type="button" class="star-picker__btn is-on" data-star="5" aria-label="5 stelle — Eccellente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.7 6.1 6.6.7-5 4.6 1.4 6.5L12 16.8 6.3 20.1 7.7 13.6l-5-4.6 6.6-.7L12 2.2z"/></svg></button>
+            </div>
+            <span class="star-picker__caption" id="star-picker-caption">— Eccellente</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rg-comment">La tua recensione</label>
+          <textarea id="rg-comment" placeholder="Raccontaci la tua esperienza..." required></textarea>
+        </div>
+        <div class="field">
+          <label for="rg-photo">Foto del tuo setup (opzionale)</label>
+          <input type="file" id="rg-photo" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn--lime">Invia recensione</button>
+        <p class="dash-save-msg" id="review-general-status"></p>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span> Gaming Relax</div>
+        <p>Custom Keyboards &amp; Digital Craftsmanship.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Link utili</h4>
+        <a href="faq.html">FAQ (Domande Frequenti)</a>
+        <a href="termini.html">Termini e Condizioni</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="chi-siamo.html">Chi siamo</a>
+        <p data-about="footer" style="margin-top:8px;">Studio di tastiere custom, art e tech.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Orari di supporto &amp; disponibilità</h4>
+        <p data-general="hoursWeekday">Lun - Ven: 10:00 - 19:00</p>
+        <p data-general="hoursWeekend">Sab - Dom: Su appuntamento</p>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <p>Unisciti al nostro server per news, setup e supporto diretto.</p>
+        <a class="social-link" href="https://discord.gg/5MxfYT7C5f" target="_blank" rel="noopener" data-social="discord">💬 Entra su Discord</a>
+        <a class="social-link" href="#" target="_blank" rel="noopener" data-social="youtube">▶️ Seguici su YouTube</a>
+        <a class="social-link" href="#" target="_blank" rel="noopener" data-social="instagram">📸 Seguici su Instagram</a>
+        <a class="social-link" href="https://www.tiktok.com/@gamingrelaxofficials?_r=1&_t=ZN-99DS7emVF8Y" target="_blank" rel="noopener" data-social="tiktok">🎵 Seguici su TikTok</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <small>© 2026 Gaming Relax. All rights reserved.</small>
+      <div class="socials">
+        <a href="#" aria-label="YouTube" data-social="youtube">▶️</a>
+        <a href="#" aria-label="Instagram" data-social="instagram">📸</a>
+        <a href="https://www.tiktok.com/@gamingrelaxofficials?_r=1&_t=ZN-99DS7emVF8Y" target="_blank" rel="noopener" aria-label="TikTok" data-social="tiktok">🎵</a>
+        <a href="https://discord.gg/5MxfYT7C5f" target="_blank" rel="noopener" aria-label="Discord" data-social="discord">💬</a>
+        <a href="mailto:gamingrelaxofficials@gmail.com" aria-label="Email" data-social="email">📧</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js?v=20260915y"></script>
+<script type="module" src="js/firebase-init.js?v=20260916k"></script>
+<script type="module" src="js/cart.js?v=20260915y"></script>
+<script type="module" src="js/bg-scene.js?v=20260916h"></script>
+<script type="module" src="js/auth.js?v=20260916i"></script>
+<script type="module" src="js/banner.js"></script>
+<script type="module" src="js/content-dynamic.js?v=20260916i"></script>
+<script type="module" src="js/reviews-general.js?v=20260916k"></script>
+
+<script>
+(function () {
+  var labels = { 1: "— Scarso", 2: "— Sufficiente", 3: "— Buono", 4: "— Molto buono", 5: "— Eccellente" };
+  var picker = document.getElementById("star-picker");
+  if (!picker) return;
+  var input = document.getElementById("rg-rating");
+  var caption = document.getElementById("star-picker-caption");
+  var buttons = picker.querySelectorAll(".star-picker__btn");
+  function paint(n) {
+    buttons.forEach(function (b) {
+      b.classList.toggle("is-on", Number(b.getAttribute("data-star")) <= n);
+    });
+    if (caption) caption.textContent = labels[n] || "";
+    if (input) input.value = String(n);
+  }
+  buttons.forEach(function (b) {
+    var n = Number(b.getAttribute("data-star"));
+    b.addEventListener("click", function (e) { e.preventDefault(); paint(n); });
+    b.addEventListener("mouseenter", function () {
+      buttons.forEach(function (x) {
+        x.classList.toggle("is-on", Number(x.getAttribute("data-star")) <= n);
+      });
+      if (caption) caption.textContent = labels[n] || "";
+    });
+  });
+  picker.addEventListener("mouseleave", function () { paint(Number(input && input.value) || 5); });
+  paint(Number(input && input.value) || 5);
+})();
+</script>
+
+</body>
+</html>

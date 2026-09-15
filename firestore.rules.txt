@@ -1,0 +1,223 @@
+// ==========================================================================
+// REGOLE DI SICUREZZA FIRESTORE — Gaming Relax
+// ==========================================================================
+// COSA FARE: vai su Console Firebase → Firestore Database → scheda "Regole",
+// cancella tutto il contenuto e incolla questo blocco al suo posto, poi
+// clicca "Pubblica".
+//
+// PERCHÉ SERVE: senza queste regole, chiunque potrebbe leggere o scrivere
+// nel database. Con queste regole:
+//   - Tutti (anche chi non ha fatto login) possono LEGGERE prodotti, team
+//     e contenuti del sito — necessario perché lo Store deve essere visibile
+//     a ogni visitatore.
+//   - Solo l'account con email "gamingrelaxadmin@gmail.com" può SCRIVERE
+//     (aggiungere, modificare, eliminare) prodotti, team e contenuti.
+//     Questa è la VERA protezione della Dashboard: anche se qualcuno legge
+//     il codice del sito su GitHub e vede l'email admin, non potrà comunque
+//     scrivere nulla senza conoscere anche la password E aver effettuato
+//     il login con quello specifico account.
+// ==========================================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /team/{memberId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /siteContent/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /faq/{faqId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /gallery/{photoId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /news/{postId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Voucher: registro interno, solo l'admin può leggerlo e scriverlo
+    // (nessuna lettura pubblica: non è un dato da mostrare sul sito)
+    match /vouchers/{voucherId} {
+      allow read, write: if request.auth != null
+                          && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Preferiti: ogni utente loggato legge e scrive SOLO il proprio documento
+    // (l'id del documento è il suo uid, quindi non può leggere quelli altrui)
+    match /wishlists/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Richieste dal form Contatti: chiunque (anche senza login) può INVIARE
+    // una richiesta, ma solo l'admin può leggerle, aggiornarne lo stato o
+    // eliminarle. Nessuno può leggere le richieste di altri, nemmeno le proprie.
+    match /richieste/{richiestaId} {
+      allow create: if request.resource.data.keys().hasAll(['alias', 'email', 'servizio', 'progetto', 'status', 'createdAt'])
+                    && request.resource.data.status == 'nuova';
+      allow read, update, delete: if request.auth != null
+                                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Recensioni prodotto: chiunque può scriverne una (parte sempre "pending"),
+    // ma è visibile pubblicamente solo dopo l'approvazione dello staff.
+    match /reviews/{reviewId} {
+      allow create: if request.resource.data.keys().hasAll(['name', 'rating', 'comment', 'status', 'createdAt'])
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.rating >= 1
+                    && request.resource.data.rating <= 5;
+      allow read: if resource.data.status == 'approved'
+                  || (request.auth != null && request.auth.token.email == 'gamingrelaxadmin@gmail.com');
+      allow update, delete: if request.auth != null
+                             && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Avvisi "Torna disponibile": chiunque può iscriversi, ma solo l'admin
+    // può vedere l'elenco (contiene email dei clienti).
+    match /restockRequests/{requestId} {
+      allow create: if request.resource.data.keys().hasAll(['productId', 'productName', 'email', 'notified', 'createdAt']);
+      allow read, update, delete: if request.auth != null
+                                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    match /orders/{orderId} {
+      allow create: if request.resource.data.keys().hasAll(['items', 'email', 'status', 'createdAt'])
+                    && request.resource.data.status == 'nuova';
+      allow read, update, delete: if request.auth != null
+                                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Tag dello staff nel Forum (email → etichetta + colore): visibili a
+    // tutti (servono per mostrare i badge sotto ai messaggi), modificabili
+    // solo dall'admin dalla Dashboard.
+    match /staffTags/{email} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Categorie del Forum: visibili (il client nasconde le private agli ospiti)
+    match /forumCategories/{catId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Pagine / sezioni del Forum
+    match /forumBoards/{boardId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    function isAdmin() {
+      return request.auth != null
+             && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    function isStaff() {
+      return isAdmin()
+             || (request.auth != null
+                 && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+                 && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('roleIds', []).size() > 0);
+    }
+
+    function canReadTopic(data) {
+      return data.private != true
+             || (request.auth != null && data.authorEmail == request.auth.token.email)
+             || isStaff();
+    }
+
+    function topicBoardIsPrivate(boardId) {
+      let bPath = /databases/$(database)/documents/forumBoards/$(boardId);
+      return exists(bPath) && (
+        get(bPath).data.get('private', false) == true
+        || (
+          get(bPath).data.categoryId is string
+          && get(bPath).data.categoryId != ''
+          && exists(/databases/$(database)/documents/forumCategories/$(get(bPath).data.categoryId))
+          && get(/databases/$(database)/documents/forumCategories/$(get(bPath).data.categoryId)).data.get('private', false) == true
+        )
+      );
+    }
+
+    // Forum — argomenti pubblici: tutti. Privati: solo staff + autore.
+    match /forumTopics/{topicId} {
+      allow read: if canReadTopic(resource.data);
+      allow create: if request.auth != null
+                    && request.resource.data.authorEmail == request.auth.token.email
+                    && request.resource.data.keys().hasAll(['title', 'categoryId', 'boardId', 'authorEmail', 'authorName', 'createdAt', 'lastActivityAt', 'replyCount', 'status', 'locked', 'pinned', 'private'])
+                    && request.resource.data.private is bool
+                    && request.resource.data.private == topicBoardIsPrivate(request.resource.data.boardId);
+      allow update: if isAdmin()
+                    || (isStaff()
+                        && request.resource.data.diff(resource.data).affectedKeys()
+                             .hasOnly(['status', 'locked', 'pinned', 'lastActivityAt', 'replyCount']))
+                    || (request.auth != null
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastActivityAt', 'replyCount']));
+      allow delete: if request.auth != null
+                    && (resource.data.authorEmail == request.auth.token.email
+                        || isStaff());
+
+      match /posts/{postId} {
+        allow read: if exists(/databases/$(database)/documents/forumTopics/$(topicId))
+                    && canReadTopic(get(/databases/$(database)/documents/forumTopics/$(topicId)).data);
+        allow create: if request.auth != null
+                      && request.resource.data.authorEmail == request.auth.token.email
+                      && request.resource.data.keys().hasAll(['authorEmail', 'authorName', 'text', 'createdAt'])
+                      && existsAfter(/databases/$(database)/documents/forumTopics/$(topicId))
+                      && canReadTopic(getAfter(/databases/$(database)/documents/forumTopics/$(topicId)).data);
+        allow delete: if request.auth != null
+                      && (resource.data.authorEmail == request.auth.token.email
+                          || isStaff());
+      }
+    }
+
+    // Anagrafica utenti (nickname + email, niente password)
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && (
+                       request.auth.token.email == 'gamingrelaxadmin@gmail.com'
+                       || (request.auth.uid == userId
+                           && request.resource.data.roleIds == resource.data.roleIds)
+                     );
+      allow delete: if false;
+    }
+
+    // Ruoli forum (Membro default + ruoli staff): lettura pubblica, scrittura admin
+    match /forumRoles/{roleId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
+    // Qualunque altra collezione: bloccata di default (nessuno legge o scrive).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
