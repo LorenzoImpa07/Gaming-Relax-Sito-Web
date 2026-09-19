@@ -46,7 +46,6 @@ function ensureLightbox() {
         <h2 id="art-lb-title"></h2>
         <p class="art-lightbox__desc" id="art-lb-desc"></p>
         <dl class="art-lightbox__meta" id="art-lb-meta"></dl>
-        <a class="btn btn--lime art-lightbox__link" id="art-lb-link" target="_blank" rel="noopener" hidden>Apri link</a>
       </div>
     </div>`;
   document.body.appendChild(box);
@@ -79,13 +78,6 @@ function openLightbox(index) {
   document.getElementById("art-lb-meta").innerHTML = meta.map(([k, v]) =>
     `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`
   ).join("");
-  const link = document.getElementById("art-lb-link");
-  if (item.link) {
-    link.href = item.link;
-    link.hidden = false;
-  } else {
-    link.hidden = true;
-  }
   box.removeAttribute("hidden");
   document.body.classList.add("art-lb-open");
 }
