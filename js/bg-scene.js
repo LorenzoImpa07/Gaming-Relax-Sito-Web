@@ -26,7 +26,7 @@ const DEFAULTS = {
 };
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const pageKey = document.body.dataset.page || "home";
+let pageKey = document.body.dataset.page || "home";
 
 function youtubeId(url = "") {
   const m = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
@@ -278,21 +278,29 @@ function loadCache() {
   }
 }
 
-const fallback = DEFAULTS[pageKey] || DEFAULTS.home;
-const cached = loadCache();
-if (cached && (cached.bgImageUrl || cached.bgVideoUrl)) {
-  apply({
-    bgImageUrl: cached.bgImageUrl,
-    bgVideoUrl: cached.bgVideoUrl,
-    bgStyle: cached.bgStyle || fallback.bgStyle,
-    bgOverlay: cached.bgOverlay != null && cached.bgOverlay !== "" ? Number(cached.bgOverlay) : 0,
-    bgMotion: cached.bgMotion !== false
-  });
-} else {
-  apply(fallback);
+let fallback = DEFAULTS[pageKey] || DEFAULTS.home;
+function bootPageBg() {
+  pageKey = document.body.dataset.page || "home";
+  fallback = DEFAULTS[pageKey] || DEFAULTS.home;
+  const cached = loadCache();
+  if (cached && (cached.bgImageUrl || cached.bgVideoUrl)) {
+    apply({
+      bgImageUrl: cached.bgImageUrl,
+      bgVideoUrl: cached.bgVideoUrl,
+      bgStyle: cached.bgStyle || fallback.bgStyle,
+      bgOverlay: cached.bgOverlay != null && cached.bgOverlay !== "" ? Number(cached.bgOverlay) : 0,
+      bgMotion: cached.bgMotion !== false
+    });
+  } else {
+    apply(fallback);
+  }
 }
+bootPageBg();
 
-onSnapshot(doc(db, "siteContent", pageKey), (snap) => {
+let unsubPageBg = () => {};
+function listenPageBg() {
+  unsubPageBg();
+  unsubPageBg = onSnapshot(doc(db, "siteContent", pageKey), (snap) => {
   const d = snap.exists() ? snap.data() : {};
   const image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
   const video = (d.bgVideoUrl || "").trim();
@@ -307,6 +315,12 @@ onSnapshot(doc(db, "siteContent", pageKey), (snap) => {
   saveCache(cfg);
   apply(cfg);
 }, () => {});
+}
+listenPageBg();
+window.addEventListener("gr:navigated", () => {
+  bootPageBg();
+  listenPageBg();
+});
 
 getDocs(collection(db, "siteContent")).then((snap) => {
   try {

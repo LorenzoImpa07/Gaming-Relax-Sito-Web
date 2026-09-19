@@ -2,9 +2,8 @@
 // Forum — indice: categorie + sezioni (stile forum classico)
 // ==========================================================================
 import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260919m";
-import {
-  collection, onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";

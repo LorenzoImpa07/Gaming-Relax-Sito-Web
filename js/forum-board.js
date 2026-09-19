@@ -2,9 +2,8 @@
 // Forum — pagina sezione: contenuto in sola lettura OPPURE elenco conversazioni
 // ==========================================================================
 import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=20260919m";
-import {
-  doc, getDoc, collection, setDoc, addDoc, onSnapshot, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, collection, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";

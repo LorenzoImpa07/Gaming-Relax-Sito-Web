@@ -3,10 +3,8 @@
 // Sistema custom con stati, lock, pin e permessi staff
 // ==========================================================================
 import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260919m";
-import {
-  doc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, onSnapshot,
-  addDoc, serverTimestamp, increment
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange } from "./user-card.js";
 import { viewerIsStaff } from "./forum-privacy.js";

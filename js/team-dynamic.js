@@ -2,7 +2,8 @@
 // Team dinamico — legge i membri da Firestore (aggiunti dalla Dashboard)
 // ==========================================================================
 import { db } from "./firebase-init.js";
-import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 
 function escapeHtml(str = "") {
   return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));

@@ -137,6 +137,7 @@ onAuthStateChanged(auth, async (user) => {
   }).catch(() => {});
 });
 
+function bindAuthForms() {
 const loginForm = document.getElementById("login-form");
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
@@ -260,3 +261,11 @@ if (forgotForm) {
     }
   });
 }
+}
+
+bindAuthForms();
+window.addEventListener("gr:navigated", () => {
+  const u = auth.currentUser;
+  renderAuthArea(u && isVerifiedUser(u) ? u : null);
+  bindAuthForms();
+});

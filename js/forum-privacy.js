@@ -2,9 +2,8 @@
 // Forum — visibilita argomenti pubblici vs privati (staff + autore)
 // ==========================================================================
 import { db, auth, ADMIN_EMAIL } from "./firebase-init.js";
-import {
-  collection, query, where, onSnapshot, doc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { isStaffByUid, onUsersChange } from "./user-card.js";
 

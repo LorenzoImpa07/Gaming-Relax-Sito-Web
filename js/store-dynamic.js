@@ -3,7 +3,8 @@
 // e gestisce i Preferiti (salvati nel browser, sincronizzati online se loggati)
 // ==========================================================================
 import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919m";
-import { collection, onSnapshot, query, orderBy, doc, getDoc, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection, query, orderBy, doc, getDoc, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { validateRealEmail } from "./email-check.js";
 

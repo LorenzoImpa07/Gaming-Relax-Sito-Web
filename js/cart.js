@@ -231,3 +231,4 @@ async function checkout(items, total) {
 mount();
 render();
 window.GRCart = { add: addToCart, open: openCart };
+window.addEventListener("gr:navigated", () => { try { render(); } catch (_) {} });

@@ -9,12 +9,11 @@ function escapeHtml(str = "") {
   return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
 }
 
-getDoc(doc(db, "siteContent", "banner")).then((snap) => {
-  if (!snap.exists()) return;
-  const d = snap.data();
-  if (!d.enabled || !d.text) return;
+let cachedBanner = null;
+function paintBanner(d) {
+  if (!d || !d.enabled || !d.text) return;
   if (sessionStorage.getItem("gr_banner_closed") === d.text) return;
-
+  if (document.querySelector(".promo-banner")) return;
   const bar = document.createElement("div");
   bar.className = "promo-banner";
   bar.innerHTML = `
@@ -24,19 +23,24 @@ getDoc(doc(db, "siteContent", "banner")).then((snap) => {
       <span class="promo-banner__text" aria-hidden="true">${escapeHtml(d.text)}</span>
     </div>
     <button type="button" class="promo-banner__close" aria-label="Chiudi banner">✕</button>`;
-
   if (d.link) {
     bar.style.cursor = "pointer";
     bar.addEventListener("click", (e) => {
       if (!e.target.closest(".promo-banner__close")) window.location.href = d.link;
     });
   }
-
   bar.querySelector(".promo-banner__close").addEventListener("click", (e) => {
     e.stopPropagation();
     sessionStorage.setItem("gr_banner_closed", d.text);
     bar.remove();
   });
+  const header = document.querySelector(".site-header");
+  document.body.insertBefore(bar, header || document.body.firstChild);
+}
 
-  document.body.insertBefore(bar, document.body.firstChild);
-}).catch(() => { /* nessun banner in caso di errore, il sito funziona comunque */ });
+getDoc(doc(db, "siteContent", "banner")).then((snap) => {
+  if (!snap.exists()) return;
+  cachedBanner = snap.data();
+  paintBanner(cachedBanner);
+}).catch(() => {});
+window.addEventListener("gr:navigated", () => paintBanner(cachedBanner));
