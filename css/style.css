@@ -3212,3 +3212,7 @@ body.art-lb-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .gx-layer { display: none !important; }
 }
+.email-verify-hint {
+  font-size: 12px;
+  margin: 6px 0 0;
+}

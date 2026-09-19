@@ -5,6 +5,7 @@
 // ==========================================================================
 import { auth, db, ADMIN_EMAIL, authReady } from "./firebase-init.js?v=20260919ae";
 import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260919ae";
+import { bindEmailFields } from "./email-check.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot,
@@ -2367,3 +2368,5 @@ function initPex() {
     form.querySelector("#pex-role-color").value = "#3b82f6";
   });
 }
+
+bindEmailFields();

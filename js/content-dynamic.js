@@ -1,6 +1,7 @@
 import { db } from "./firebase-init.js";
 import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
+import { bindEmailFields } from "./email-check.js";
 
 const DESIGN_VARS = {
   limeColor: "--lime",

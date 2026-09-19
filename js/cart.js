@@ -5,7 +5,7 @@ import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
 import { addDoc, collection, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { validateRealEmail } from "./email-check.js";
+import { validateRealEmailAsync } from "./email-check.js";
 
 const KEY = "gr_cart";
 let currentUser = null;
@@ -180,7 +180,7 @@ async function checkout(items, total) {
   const status = document.getElementById("cart-status");
   const email = (document.getElementById("cart-email")?.value || currentUser?.email || "").trim();
   const note = (document.getElementById("cart-note")?.value || "").trim();
-  const emailErr = validateRealEmail(email);
+  const emailErr = await validateRealEmailAsync(email);
   if (emailErr) {
     status.textContent = emailErr;
     status.className = "cart-status err";

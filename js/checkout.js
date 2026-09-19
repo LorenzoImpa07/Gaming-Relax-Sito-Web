@@ -1,8 +1,8 @@
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ad";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
 import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { COUNTRIES, ITALY_PROVINCES } from "./geo.js";
-import { validateRealEmail } from "./email-check.js";
+import { validateRealEmailAsync } from "./email-check.js";
 
 const KEY = "gr_cart";
 function escapeHtml(str = "") {
@@ -258,7 +258,7 @@ document.getElementById("co-form")?.addEventListener("submit", async (e) => {
     return;
   }
   const email = document.getElementById("co-email").value.trim();
-  const emailErr = validateRealEmail(email);
+  const emailErr = await validateRealEmailAsync(email);
   if (emailErr) {
     status.textContent = emailErr;
     status.className = "cart-status err";

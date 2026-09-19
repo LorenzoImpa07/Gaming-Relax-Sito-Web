@@ -1,7 +1,7 @@
 // ==========================================================================
 // Autenticazione: login, registrazione, logout, reset password, anagrafica utenti
 // ==========================================================================
-import { auth, db, ADMIN_EMAIL, authReady, isAdminEmail, isVerifiedUser } from "./firebase-init.js?v=20260919ad";
+import { auth, db, ADMIN_EMAIL, authReady, isAdminEmail, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -13,7 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import "./partners-dynamic.js";
-import { validateRealEmail } from "./email-check.js";
+import { validateRealEmailAsync } from "./email-check.js";
 
 const ERROR_MESSAGES = {
   "auth/email-already-in-use": "Questa email è già registrata. Prova ad accedere.",
@@ -189,7 +189,7 @@ if (registerForm) {
       errorEl.classList.add("visible");
       return;
     }
-    const emailErr = validateRealEmail(email);
+    const emailErr = await validateRealEmailAsync(email);
     if (emailErr) {
       errorEl.textContent = emailErr;
       errorEl.classList.add("visible");
@@ -240,6 +240,12 @@ if (forgotForm) {
     if (!email) {
       msgEl.className = "auth-error visible";
       msgEl.textContent = "Inserisci l'email del tuo account.";
+      return;
+    }
+    const emailErr = await validateRealEmailAsync(email);
+    if (emailErr) {
+      msgEl.className = "auth-error visible";
+      msgEl.textContent = emailErr;
       return;
     }
     btn.disabled = true;

@@ -2,10 +2,10 @@
 // Form Contatti — salva davvero la richiesta su Firestore, visibile
 // dalla Dashboard nella sezione "Richieste"
 // ==========================================================================
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ad";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { validateRealEmail } from "./email-check.js";
+import { validateRealEmailAsync } from "./email-check.js";
 
 const form = document.getElementById("contact-form");
 let currentUser = null;
@@ -35,7 +35,7 @@ if (form) {
       createdAt: serverTimestamp()
     };
 
-    const emailErr = validateRealEmail(data.email);
+    const emailErr = await validateRealEmailAsync(data.email);
     if (emailErr) {
       status.textContent = emailErr;
       status.classList.add("visible");

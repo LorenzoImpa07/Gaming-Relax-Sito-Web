@@ -2,11 +2,11 @@
 // Store dinamico — legge i prodotti da Firestore (aggiunti dalla Dashboard)
 // e gestisce i Preferiti (salvati nel browser, sincronizzati online se loggati)
 // ==========================================================================
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ad";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
 import { collection, query, orderBy, doc, getDoc, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { validateRealEmail } from "./email-check.js";
+import { validateRealEmailAsync } from "./email-check.js";
 
 const CATEGORY_LABELS = {
   tastiere: "Tastiere Custom",
@@ -279,7 +279,7 @@ function renderProducts(products) {
         const emailInput = wrap.querySelector(".notify-email");
         const statusEl = wrap.querySelector(".notify-status");
         const email = emailInput.value.trim();
-        const emailErr = validateRealEmail(email);
+        const emailErr = await validateRealEmailAsync(email);
         if (emailErr) {
           statusEl.textContent = emailErr;
           statusEl.style.color = "#ff8080";
