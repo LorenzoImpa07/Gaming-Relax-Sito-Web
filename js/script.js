@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', bindPageChrome);
 window.addEventListener('gr:navigated', bindPageChrome);
 
 (function galaxyHover() {
-  const SEL = 'a, button, .btn, section, article, .feature-card, .product-card, .team-card, .home-news-card, .home-store-card, .partner-card, .gallery-post, .cta-banner, .studio-contact__info, .filter-pill, .dash-tab, .faq-item, .cart-item';
+  const SEL = 'button, a.btn, .btn, .icon-btn, .filter-pill, .nav-toggle, .wish-btn';
   const SKIP = '.gx-layer, input, textarea, select, .promo-banner, .cookie-banner, .art-lightbox';
   const layer = document.createElement('div');
   layer.className = 'gx-layer';
