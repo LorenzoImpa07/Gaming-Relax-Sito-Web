@@ -21,6 +21,11 @@
 }
 
 * { box-sizing: border-box; }
+::selection { background: var(--lime); color: #0a0d16; }
+::-moz-selection { background: var(--lime); color: #0a0d16; }
+button, a, .btn, .filter-pill, .main-nav a, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
 
 html {
   scroll-behavior: smooth;
@@ -212,16 +217,28 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
 }
 .btn:hover { transform: translateY(-2px); }
+.btn:focus { outline: none; }
 .btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.btn:active { transform: translateY(0); }
 
 .btn--lime { background: var(--lime); color: #0a0d16; }
-.btn--lime:hover { background: #d9ff5c; }
+.btn--lime:hover,
+.btn--lime:focus,
+.btn--lime:active {
+  background: var(--lime);
+  color: #0a0d16;
+  filter: brightness(1.08);
+}
 
 .btn--outline { background: transparent; color: var(--text); border-color: var(--border); }
-.btn--outline:hover { border-color: var(--lime); color: var(--lime); }
+.btn--outline:hover,
+.btn--outline:focus,
+.btn--outline:active { border-color: var(--lime); color: var(--lime); }
 
 .btn--ghost-lime { background: transparent; color: var(--lime); border: 1px solid var(--lime-dim); }
-.btn--ghost-lime:hover { background: var(--lime-dim); }
+.btn--ghost-lime:hover,
+.btn--ghost-lime:focus,
+.btn--ghost-lime:active { background: var(--lime-dim); color: var(--lime); }
 
 /* ---------------- Header ---------------- */
 .site-header {
@@ -328,15 +345,19 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   white-space: nowrap;
   transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
-.main-nav a:hover {
-  background: rgba(198,255,26,.12);
+.main-nav a:hover,
+.main-nav a:focus {
+  background: var(--lime-dim);
   color: var(--lime);
-  box-shadow: 0 0 18px rgba(198,255,26,.16);
+  box-shadow: 0 0 18px var(--lime-dim);
+  outline: none;
 }
-.main-nav a.active {
+.main-nav a.active,
+.main-nav a.active:hover,
+.main-nav a.active:focus {
   background: var(--lime);
   color: #0a0d16;
-  box-shadow: 0 0 22px rgba(198,255,26,.28);
+  box-shadow: 0 0 22px var(--lime-dim);
 }
 
 @media (max-width: 980px) {
@@ -807,8 +828,8 @@ section { padding: 80px 0; }
 }
 .product-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(198,255,26,.35);
-  box-shadow: 0 20px 48px -18px rgba(155,61,255,.45);
+  border-color: var(--lime-dim);
+  box-shadow: 0 20px 48px -18px var(--lime-dim);
 }
 .product-card__hit {
   display: block;
@@ -2251,8 +2272,8 @@ body.art-lb-open { overflow: hidden; }
 }
 .topic-row:hover { border-color: var(--lime-dim); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
 .topic-row--pinned {
-  border-color: rgba(198, 255, 26, 0.35);
-  background: linear-gradient(135deg, rgba(198,255,26,0.06), var(--card-solid));
+  border-color: var(--lime-dim);
+  background: linear-gradient(135deg, var(--lime-dim), var(--card-solid));
 }
 .topic-row__top {
   display: flex;
@@ -2485,19 +2506,19 @@ body.art-lb-open { overflow: hidden; }
 }
 .star-picker__btn:hover {
   transform: translateY(-1px);
-  border-color: #c6ff1a55;
+  border-color: var(--lime-dim);
 }
 .star-picker__btn.is-on,
 .star-picker__btn.is-hover {
-  border-color: #c6ff1a99;
-  background: #121a0a;
-  box-shadow: 0 0 10px rgba(198,255,26,0.2);
+  border-color: var(--lime);
+  background: var(--lime-dim);
+  box-shadow: 0 0 10px var(--lime-dim);
 }
 .star-picker__btn.is-on svg,
 .star-picker__btn.is-hover svg {
   fill: var(--lime);
-  stroke: #f6ffc4;
-  filter: drop-shadow(0 0 5px rgba(198,255,26,0.85));
+  stroke: var(--lime);
+  filter: drop-shadow(0 0 5px var(--lime-dim));
 }
 .star-picker__btn:focus-visible {
   outline: 2px solid var(--lime);
@@ -2644,7 +2665,7 @@ body.art-lb-open { overflow: hidden; }
   font: inherit;
 }
 .pex-item:hover { background: #ffffff0a; }
-.pex-item.is-on { background: rgba(198,255,26,0.1); }
+.pex-item.is-on { background: var(--lime-dim); }
 .pex-item__ava {
   width: 34px; height: 34px; border-radius: 50%;
   display: grid; place-items: center;
