@@ -1,4 +1,4 @@
-import { storage, authReady } from "./firebase-init.js";
+import { storage, authReady } from "./firebase-init.js?v=20260919ae";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 function safeName(file) {

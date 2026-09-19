@@ -2,13 +2,13 @@
 // Forum — pagina singolo argomento: messaggi in tempo reale + moderazione
 // Sistema custom con stati, lock, pin e permessi staff
 // ==========================================================================
-import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260919ad";
+import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260919ae";
 import { doc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange } from "./user-card.js";
 import { viewerIsStaff } from "./forum-privacy.js";
-import { uploadFile } from "./upload.js";
+import { uploadFile } from "./upload.js?v=20260919ae";
 
 function escapeHtml(str = "") {
   return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));

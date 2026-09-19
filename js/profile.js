@@ -1,7 +1,7 @@
 import { auth, db } from "./firebase-init.js";
 import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { uploadFile } from "./upload.js";
+import { uploadFile } from "./upload.js?v=20260919ae";
 
 const form = document.getElementById("profile-form");
 const preview = document.getElementById("profile-preview");

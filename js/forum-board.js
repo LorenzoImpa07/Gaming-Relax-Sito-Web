@@ -1,13 +1,13 @@
 // ==========================================================================
 // Forum — pagina sezione: contenuto in sola lettura OPPURE elenco conversazioni
 // ==========================================================================
-import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=20260919ad";
+import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=20260919ae";
 import { doc, getDoc, collection, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
-import { uploadFile } from "./upload.js";
+import { uploadFile } from "./upload.js?v=20260919ae";
 
 function escapeHtml(str = "") {
   const map = {
