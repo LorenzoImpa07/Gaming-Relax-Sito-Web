@@ -1,6 +1,7 @@
 // Pagina prodotto — galleria, varianti, quantita, descrizione, carrello
 import { db } from "./firebase-init.js";
 import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 
 const CATEGORY_LABELS = {
   tastiere: "Tastiere Custom",
@@ -86,7 +87,7 @@ const detailEl = document.getElementById("product-detail");
 if (!productId) {
   detailEl.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Prodotto non specificato. <a href="store.html">Torna allo Store</a>.</p>';
 } else {
-  loadProduct();
+  onSnapshot(doc(db, "products", productId), () => { loadProduct(); });
 }
 
 async function loadProduct() {

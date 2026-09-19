@@ -1,8 +1,9 @@
 // ==========================================================================
 // Carrello — locale, drawer, ordine su Firestore, pagamento Stripe/PayPal
 // ==========================================================================
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ad";
-import { addDoc, collection, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
+import { addDoc, collection, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { validateRealEmail } from "./email-check.js";
 
@@ -11,9 +12,9 @@ let currentUser = null;
 let paypalMeUrl = "";
 
 onAuthStateChanged(auth, (u) => { currentUser = isVerifiedUser(u) ? u : null; });
-getDoc(doc(db, "siteContent", "general")).then((s) => {
+onSnapshot(doc(db, "siteContent", "general"), (s) => {
   if (s.exists()) paypalMeUrl = s.data().paypalMeUrl || "";
-}).catch(() => {});
+});
 
 function escapeHtml(str = "") {
   return String(str).replace(/[&<>"']/g, (m) => {

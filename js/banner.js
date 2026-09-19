@@ -3,7 +3,8 @@
 // gestito dalla Dashboard (tab "Banner")
 // ==========================================================================
 import { db } from "./firebase-init.js?v=20260919ae";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onSnapshot } from "./live.js";
 
 function escapeHtml(str = "") {
   return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -11,13 +12,23 @@ function escapeHtml(str = "") {
 
 let cachedBanner = null;
 function paintBanner(d) {
-  if (!d || !d.enabled || !d.text) return;
-  if (sessionStorage.getItem("gr_banner_closed") === d.text) return;
-  if (document.querySelector(".promo-banner")) return;
+  const existing = document.querySelector(".promo-banner");
+  if (!d || !d.enabled || !d.text) {
+    existing?.remove();
+    return;
+  }
+  if (sessionStorage.getItem("gr_banner_closed") === d.text) {
+    existing?.remove();
+    return;
+  }
+  if (existing && existing.dataset.text === d.text && existing.dataset.link === (d.link || "")) return;
+  existing?.remove();
   const text = escapeHtml(d.text);
   const item = `<span class="promo-banner__text">${text}</span>`;
   const bar = document.createElement("div");
   bar.className = "promo-banner";
+  bar.dataset.text = d.text;
+  bar.dataset.link = d.link || "";
   bar.innerHTML = `
     <div class="promo-banner__viewport">
       <div class="promo-banner__track">
@@ -50,9 +61,8 @@ function paintBanner(d) {
   });
 }
 
-getDoc(doc(db, "siteContent", "banner")).then((snap) => {
-  if (!snap.exists()) return;
-  cachedBanner = snap.data();
+onSnapshot(doc(db, "siteContent", "banner"), (snap) => {
+  cachedBanner = snap.exists() ? snap.data() : null;
   paintBanner(cachedBanner);
-}).catch(() => {});
+});
 window.addEventListener("gr:navigated", () => paintBanner(cachedBanner));
