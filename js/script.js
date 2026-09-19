@@ -97,3 +97,44 @@ function bindPageChrome() {
 
 document.addEventListener('DOMContentLoaded', bindPageChrome);
 window.addEventListener('gr:navigated', bindPageChrome);
+
+(function galaxyHover() {
+  const SEL = 'a, button, .btn, section, article, .feature-card, .product-card, .team-card, .home-news-card, .home-store-card, .partner-card, .gallery-post, .cta-banner, .studio-contact__info, .filter-pill, .dash-tab, .faq-item, .cart-item';
+  const SKIP = '.gx-layer, input, textarea, select, .promo-banner, .cookie-banner, .art-lightbox';
+  const layer = document.createElement('div');
+  layer.className = 'gx-layer';
+  layer.setAttribute('aria-hidden', 'true');
+  layer.innerHTML = '<div class="gx-nebula"></div><div class="gx-stars"></div><div class="gx-dust"></div>';
+  let current = null;
+  function clear() {
+    if (!current) return;
+    current.classList.remove('gx-hot');
+    current = null;
+    layer.remove();
+  }
+  function attach(el) {
+    if (current === el) return;
+    if (current) current.classList.remove('gx-hot');
+    current = el;
+    const pos = getComputedStyle(el).position;
+    if (pos === 'static') el.style.position = 'relative';
+    el.classList.add('gx-hot');
+    el.appendChild(layer);
+  }
+  document.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    const skip = e.target.closest && e.target.closest(SKIP);
+    if (skip && skip.classList && skip.classList.contains('gx-layer')) return;
+    const el = e.target.closest && e.target.closest(SEL);
+    if (!el || (e.target.closest && e.target.closest(SKIP) && !el.contains(layer))) {
+      clear();
+      return;
+    }
+    attach(el);
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--gx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--gy', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+  document.addEventListener('pointerleave', clear);
+})();
+

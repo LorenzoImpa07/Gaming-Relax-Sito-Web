@@ -3135,3 +3135,70 @@ body.art-lb-open { overflow: hidden; }
 .thanks-actions .btn--lime {
   box-shadow: 0 8px 28px var(--lime-dim);
 }
+
+/* Galaxy hover — colore Dashboard */
+.gx-hot { isolation: isolate; }
+.gx-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 6;
+  border-radius: inherit;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity .28s ease;
+}
+.gx-hot > .gx-layer { opacity: 1; }
+.gx-nebula {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  left: var(--gx, 50%);
+  top: var(--gy, 50%);
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 38% 36%, color-mix(in srgb, var(--lime) 75%, #fff) 0 6%, transparent 20%),
+    radial-gradient(circle at 58% 48%, color-mix(in srgb, var(--lime) 55%, transparent) 0%, transparent 42%),
+    radial-gradient(circle at 46% 60%, color-mix(in srgb, var(--lime) 28%, #7ad7ff) 0%, transparent 58%);
+  filter: blur(12px);
+  animation: gx-pulse 2.6s ease-in-out infinite;
+}
+.gx-stars {
+  position: absolute;
+  inset: -30%;
+  background-image:
+    radial-gradient(1.4px 1.4px at 10% 20%, #fff 70%, transparent),
+    radial-gradient(1px 1px at 22% 72%, var(--lime) 70%, transparent),
+    radial-gradient(1.6px 1.6px at 38% 34%, #fff 80%, transparent),
+    radial-gradient(1px 1px at 54% 18%, var(--lime) 80%, transparent),
+    radial-gradient(1.2px 1.2px at 68% 58%, #fff 70%, transparent),
+    radial-gradient(1px 1px at 82% 26%, var(--lime) 70%, transparent),
+    radial-gradient(1.5px 1.5px at 90% 78%, #fff 80%, transparent),
+    radial-gradient(1px 1px at 14% 48%, var(--lime) 80%, transparent),
+    radial-gradient(1.2px 1.2px at 46% 86%, #fff 70%, transparent);
+  background-size: 210px 170px;
+  animation: gx-drift 16s linear infinite;
+  opacity: .8;
+}
+.gx-dust {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  left: var(--gx, 50%);
+  top: var(--gy, 50%);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--lime) 22%, transparent), transparent 70%);
+  filter: blur(22px);
+}
+@keyframes gx-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.14); opacity: .82; }
+}
+@keyframes gx-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-48px, -28px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gx-layer { display: none !important; }
+}
