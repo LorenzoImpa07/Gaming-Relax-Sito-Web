@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cassa — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919i">
+<script>(function(){try{var d=JSON.parse(localStorage.getItem("gr_design")||"{}");var s=document.documentElement.style;if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";s.backgroundColor="#05070e";}}catch(e){}})();</script>
+</head>
+<body data-page="store">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      <span class="brand__name">Gaming Relax</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="store.html">Store</a>
+      <a href="custom.html">Custom</a>
+      <a href="art.html">Art</a>
+      <a href="novita.html">Novità</a>
+      <a href="forum.html">Forum</a>
+      <a href="team.html">Team</a>
+      <a href="recensioni.html">Recensioni</a>
+      <a href="contatti.html">Contatti</a>
+    </nav>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+      <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="co-wrap">
+  <div class="container co-grid">
+    <form id="co-form" class="co-form" novalidate>
+      <p class="co-kicker">Express checkout</p>
+      <div class="co-express" id="co-express"></div>
+      <p class="co-or">oppure</p>
+
+      <h2>Contatto</h2>
+      <input type="email" id="co-email" required placeholder="Email">
+      <label class="co-check"><input type="checkbox" id="co-news" checked> Inviami novità e offerte</label>
+
+      <h2>Consegna</h2>
+      <label class="co-lab">Nazione / Regione</label>
+      <select id="co-country" required></select>
+      <div class="co-2">
+        <input type="text" id="co-fn" required placeholder="Nome">
+        <input type="text" id="co-ln" required placeholder="Cognome">
+      </div>
+      <input type="text" id="co-company" placeholder="Azienda (opzionale)">
+      <input type="text" id="co-address" required placeholder="Indirizzo">
+      <input type="text" id="co-address2" placeholder="Appartamento, interno (opzionale)">
+      <div class="co-3">
+        <input type="text" id="co-city" required placeholder="Città">
+        <select id="co-province" required><option value="">Provincia / Stato</option></select>
+        <input type="text" id="co-zip" required placeholder="CAP">
+      </div>
+      <input type="tel" id="co-phone" placeholder="Telefono (opzionale)">
+
+      <h2>Mancia</h2>
+      <p class="co-hint">Un piccolo extra per il team Gaming Relax.</p>
+      <div class="co-tips" id="co-tips">
+        <button type="button" data-tip="2" class="is-on">2%</button>
+        <button type="button" data-tip="5">5%</button>
+        <button type="button" data-tip="10">10%</button>
+        <button type="button" data-tip="0">Nessuna</button>
+      </div>
+
+      <h2>Pagamento</h2>
+      <p class="co-hint">Transazioni sicure. I numeri della carta passano da Stripe, non restano sul nostro sito.</p>
+      <div id="co-methods" class="co-methods"></div>
+      <div id="co-card-box" class="co-card-box" hidden>
+        <div class="co-card-head">
+          <label><input type="radio" checked readOnly> Carta di credito</label>
+          <span class="co-brands">VISA · Mastercard · AMEX</span>
+        </div>
+        <div class="co-card-body">
+          <input type="text" id="card-number" class="co-cc" placeholder="Numero carta" inputmode="numeric" autocomplete="cc-number" maxlength="24">
+          <div class="co-2">
+            <input type="text" id="card-expiry" class="co-cc" placeholder="Scadenza (MM / YY)" inputmode="numeric" autocomplete="cc-exp" maxlength="7">
+            <input type="text" id="card-cvc" class="co-cc" placeholder="Codice di sicurezza" inputmode="numeric" autocomplete="cc-csc" maxlength="4">
+          </div>
+          <input type="text" id="co-cardname" class="co-cc" placeholder="Nome sulla carta" autocomplete="cc-name">
+          <label class="co-check"><input type="checkbox" id="co-bill-same" checked> Usa l'indirizzo di spedizione come fatturazione</label>
+          <p class="co-hint" id="co-stripe-hint">I numeri non vengono salvati sul sito.</p>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--lime co-pay" id="co-pay">Paga ora</button>
+      <p class="cart-status" id="co-status"></p>
+      <p class="co-links"><a href="carrello.html">← Torna al carrello</a> · <a href="privacy.html">Privacy</a> · <a href="termini.html">Termini</a></p>
+    </form>
+
+    <aside class="co-sum">
+      <div id="co-items"></div>
+      <div class="co-disc">
+        <input type="text" id="co-code" placeholder="Codice sconto o gift card">
+        <button type="button" class="btn btn--outline" id="co-apply">Applica</button>
+      </div>
+      <p class="co-disc-msg" id="co-disc-msg"></p>
+      <dl class="co-totals">
+        <div><dt>Subtotale</dt><dd id="co-sub">€ 0,00</dd></div>
+        <div><dt>Spedizione</dt><dd id="co-ship">—</dd></div>
+        <div><dt>IVA stimata</dt><dd id="co-tax">€ 0,00</dd></div>
+        <div><dt>Mancia</dt><dd id="co-tip">€ 0,00</dd></div>
+        <div class="is-total"><dt>Totale</dt><dd id="co-total">€ 0,00</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <small>© 2026 Gaming Relax. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+<script src="js/script.js?v=20260915z"></script>
+<script type="module" src="js/firebase-init.js?v=20260915z"></script>
+<script type="module" src="js/cart.js?v=20260915z"></script>
+<script type="module" src="js/bg-scene.js?v=20260919d"></script>
+<script type="module" src="js/auth.js?v=20260915z"></script>
+<script type="module" src="js/banner.js"></script>
+<script type="module" src="js/checkout.js?v=20260919m"></script>
+</body>
+</html>

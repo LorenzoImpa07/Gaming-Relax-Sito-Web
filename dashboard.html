@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gaming Relax">
+<meta property="og:title" content="Dashboard — Gaming Relax">
+<meta property="og:description" content="Pannello di gestione riservato allo staff di Gaming Relax.">
+<meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta property="og:url" content="https://gamingrelaxofficials.it/dashboard.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dashboard — Gaming Relax">
+<meta name="twitter:description" content="Pannello di gestione riservato allo staff di Gaming Relax.">
+<meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919i">
+<script>(function(){try{var d=JSON.parse(localStorage.getItem("gr_design")||"{}");var s=document.documentElement.style;if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";s.backgroundColor="#05070e";}}catch(e){}})();</script>
+</head>
+<body data-page="dashboard">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      <span class="brand__name">Gaming Relax</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="store.html">Store</a>
+      <a href="custom.html">Custom</a>
+      <a href="art.html">Art</a>
+      <a href="novita.html">Novità</a>
+      <a href="forum.html">Forum</a>
+      <a href="team.html">Team</a>
+      <a href="recensioni.html">Recensioni</a>
+      <a href="contatti.html">Contatti</a>
+    </nav>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+      <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="dashboard-guard" id="dashboard-guard">
+  <p>Verifica accesso in corso…</p>
+</div>
+
+<div id="dashboard-root">
+  <div class="container">
+
+    <div class="dash-header">
+      <div>
+        <h1>Dashboard</h1>
+        <span>Connesso come <strong id="admin-email"></strong></span>
+      </div>
+      <button type="button" id="logout-dash" class="btn btn--outline">Esci</button>
+    </div>
+
+    <div class="dash-stats" id="dash-stats">
+      <div class="dash-stat"><strong id="stat-products">–</strong><span>Prodotti pubblicati</span></div>
+      <div class="dash-stat"><strong id="stat-team">–</strong><span>Membri del team</span></div>
+      <div class="dash-stat"><strong id="stat-orders">–</strong><span>Ordini nuovi</span></div>
+      <div class="dash-stat"><strong id="stat-reviews">–</strong><span>Recensioni da approvare</span></div>
+      <div class="dash-stat"><strong id="stat-users">–</strong><span>Utenti registrati</span></div>
+      <a href="index.html" target="_blank" rel="noopener" id="dash-open-site" class="dash-stat dash-stat--link">Apri il sito ↗</a>
+    </div>
+
+    <div class="dash-shell">
+      <nav class="dash-sidebar">
+        <div class="dash-sidebar__group">
+          <span class="dash-sidebar__label">Catalogo</span>
+          <button class="dash-tab active" data-panel="panel-products"><span>📦</span> Prodotti (Store)</button>
+          <button class="dash-tab" data-panel="panel-store-nav"><span>📂</span> Categorie Store</button>
+          <button class="dash-tab" data-panel="panel-team"><span>👥</span> Team</button>
+          <button class="dash-tab" data-panel="panel-gallery"><span>🖼️</span> Galleria Art</button>
+          <button class="dash-tab" data-panel="panel-partners"><span>🤝</span> Partner</button>
+        </div>
+        <div class="dash-sidebar__group">
+          <span class="dash-sidebar__label">Contenuti</span>
+          <button class="dash-tab" data-panel="panel-news"><span>📰</span> Novità</button>
+          <button class="dash-tab" data-panel="panel-reviews"><span>⭐</span> Recensioni</button>
+          <button class="dash-tab" data-panel="panel-faq"><span>❓</span> FAQ</button>
+          <button class="dash-tab" data-panel="panel-pages"><span>📝</span> Testi delle pagine</button>
+          <button class="dash-tab" data-panel="panel-backgrounds"><span>🌌</span> Sfondi</button>
+        </div>
+        <div class="dash-sidebar__group">
+          <span class="dash-sidebar__label">Community</span>
+          <button class="dash-tab" data-panel="panel-richieste"><span>📬</span> Richieste</button>
+          <button class="dash-tab" data-panel="panel-orders"><span>🛒</span> Ordini carrello</button>
+          <button class="dash-tab" data-panel="panel-checkout"><span>💳</span> Cassa e pagamenti</button>
+          <button class="dash-tab" data-panel="panel-restock"><span>🔔</span> Avvisi Restock</button>
+          <button class="dash-tab" data-panel="panel-vouchers"><span>🎟️</span> Voucher</button>
+          <button class="dash-tab" data-panel="panel-forum"><span>💬</span> Forum</button>
+          <button class="dash-tab" data-panel="panel-users"><span>👤</span> Utenti</button>
+          <button class="dash-tab" data-panel="panel-pex"><span>⭐</span> Pex / Depex</button>
+        </div>
+        <div class="dash-sidebar__group">
+          <span class="dash-sidebar__label">Impostazioni</span>
+          <button class="dash-tab" data-panel="panel-design"><span>🎨</span> Aspetto grafico</button>
+          <button class="dash-tab" data-panel="panel-general"><span>📞</span> Contatti & Social</button>
+          <button class="dash-tab" data-panel="panel-banner"><span>📣</span> Banner promozionale</button>
+        </div>
+      </nav>
+
+      <div class="dash-content">
+
+    <!-- ==================== PRODOTTI ==================== -->
+    <div class="dash-panel active" id="panel-products">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica prodotto</h3>
+          <form id="product-form">
+            <div class="field">
+              <label for="p-name">Nome prodotto</label>
+              <input type="text" id="p-name" required>
+            </div>
+            <div class="field">
+              <label for="p-category">Categoria</label>
+              <select id="p-category">
+                <option value="tastiere">Tastiere Custom</option>
+                <option value="tastiere_preassemblate">Tastiere Preassemblate</option>
+                <option value="keycaps">Keycaps</option>
+                <option value="accessori">Accessori</option>
+                <option value="servizi">Servizi Tech</option>
+              </select>
+            </div>
+            <div class="field" id="p-subcategory-wrap" style="display:none;">
+              <label for="p-subcategory">Sottocategoria (menu a tendina)</label>
+              <select id="p-subcategory">
+                <option value="">—</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="p-price">Prezzo (es. 149,00 € oppure "Su preventivo")</label>
+              <input type="text" id="p-price" required>
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="p-onsale" style="width:auto;">
+              <label for="p-onsale" style="margin:0;">In offerta (badge arancione nello Store)</label>
+            </div>
+            <div class="field">
+              <label for="p-sale-percent">Sconto % (es. 20)</label>
+              <input type="number" id="p-sale-percent" min="1" max="90" step="1" placeholder="20">
+            </div>
+            <div class="field">
+              <label for="p-sale-price">Oppure prezzo scontato (se lo scrivi, vince su %)</label>
+              <input type="text" id="p-sale-price" placeholder="es. 119,00 €">
+            </div>
+            <div class="field">
+              <label for="p-payment-link">Link di pagamento Stripe (opzionale)</label>
+              <input type="url" id="p-payment-link" placeholder="https://buy.stripe.com/...">
+            </div>
+            <div class="field">
+              <label for="p-image-file">Immagine principale</label>
+              <input type="file" id="p-image-file" accept="image/*">
+              <input type="hidden" id="p-image">
+              <img id="p-image-preview" class="file-preview" alt="">
+              <p class="file-status" id="p-image-status"></p>
+            </div>
+            <div class="field">
+              <label for="p-gallery-file">Altre foto (puoi selezionarne più di una)</label>
+              <input type="file" id="p-gallery-file" accept="image/*" multiple>
+              <input type="hidden" id="p-gallery">
+              <p class="file-status" id="p-gallery-status"></p>
+            </div>
+            <div class="field">
+              <label for="p-brand">Marca / linea (opzionale)</label>
+              <input type="text" id="p-brand" placeholder="es. Keychron">
+            </div>
+            <div class="field">
+              <label for="p-variant-label">Nome variante (es. Switch)</label>
+              <input type="text" id="p-variant-label" placeholder="Switch">
+            </div>
+            <div class="field">
+              <label for="p-variants">Opzioni variante (separate da virgola)</label>
+              <input type="text" id="p-variants" placeholder="Red, Brown">
+            </div>
+            <div class="field">
+              <label for="p-shipping">Nota spedizione</label>
+              <input type="text" id="p-shipping" placeholder="Spedizione in Italia e UE">
+            </div>
+            <div class="field">
+              <label for="p-leadtime">Tempi di consegna</label>
+              <input type="text" id="p-leadtime" placeholder="es. 3–5 giorni lavorativi  oppure  Su misura 2–4 settimane">
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="p-handmade" style="width:auto;">
+              <label for="p-handmade" style="margin:0;">Fatto a mano (badge nello Store)</label>
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="p-quote" style="width:auto;">
+              <label for="p-quote" style="margin:0;">Su preventivo (badge nello Store)</label>
+            </div>
+            <div class="field">
+              <label for="p-desc">Descrizione breve (sotto il prezzo)</label>
+              <textarea id="p-desc"></textarea>
+            </div>
+            <div class="field">
+              <label for="p-details">Descrizione completa (sotto i pulsanti). Righe che iniziano con - diventano elenco.</label>
+              <textarea id="p-details" style="min-height:140px;"></textarea>
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="p-instock" checked style="width:auto;">
+              <label for="p-instock" style="margin:0;">Disponibile in Store (togli la spunta per segnarlo "Esaurito")</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi prodotto</button>
+              <button type="button" id="product-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Prodotti pubblicati</h3>
+          <input type="search" id="product-search" class="dash-search" placeholder="Cerca per nome...">
+          <div class="admin-list" id="admin-products-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== CATEGORIE STORE ==================== -->
+    <div class="dash-panel" id="panel-store-nav">
+      <div class="dash-layout">
+        <div class="dash-form-card">
+          <h3>Categoria / menu a tendina</h3>
+          <p style="color:var(--text-dim);font-size:14px;margin-bottom:16px;">Esempio: pulsante <strong>Accessori ▾</strong> con voci Lubrificante, Pinza togli keycaps, Pennello. Se il riquadro voci è vuoto, nello Store resta un filtro semplice senza tendina.</p>
+          <form id="store-nav-form">
+            <div class="field">
+              <label for="sn-label">Nome pulsante (es. Accessori)</label>
+              <input type="text" id="sn-label" required placeholder="Accessori">
+            </div>
+            <div class="field">
+              <label for="sn-items">Voci del menu (una per riga)</label>
+              <textarea id="sn-items" rows="6" placeholder="Lubrificante&#10;Pinza togli keycaps&#10;Pennello"></textarea>
+            </div>
+            <div class="field">
+              <label for="sn-order">Ordine (1 = primo)</label>
+              <input type="number" id="sn-order" min="1" step="1" value="1">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva categoria</button>
+              <button type="button" id="store-nav-cancel" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+            <p class="dash-save-msg" id="store-nav-status"></p>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:20px;">Categorie nello Store</h3>
+          <div class="admin-list" id="store-nav-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PARTNER ==================== -->
+    <div class="dash-panel" id="panel-partners">
+      <div class="dash-layout">
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica partner</h3>
+          <p style="color:var(--text-dim);font-size:14px;margin-bottom:16px;">Il logo compare in fondo alla Home. Cliccandolo si apre il sito del partner.</p>
+          <form id="partner-form">
+            <div class="field">
+              <label for="pt-name">Nome</label>
+              <input type="text" id="pt-name" required placeholder="es. Keychron">
+            </div>
+            <div class="field">
+              <label for="pt-url">Link del sito</label>
+              <input type="text" id="pt-url" required placeholder="https://esempio.com">
+            </div>
+            <div class="field">
+              <label for="pt-logo-file">Logo</label>
+              <input type="file" id="pt-logo-file" accept="image/*">
+              <input type="hidden" id="pt-logo">
+              <img id="pt-logo-preview" class="file-preview" alt="">
+              <p class="file-status" id="pt-logo-status"></p>
+            </div>
+            <div class="field">
+              <label for="pt-order">Ordine (1 = primo)</label>
+              <input type="number" id="pt-order" min="1" step="1" value="1">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva partner</button>
+              <button type="button" id="partner-cancel-edit" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:20px;">Partner pubblicati</h3>
+          <div class="admin-list" id="admin-partners-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TEAM ==================== -->
+    <div class="dash-panel" id="panel-team">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica membro del team</h3>
+          <form id="team-form">
+            <div class="field">
+              <label for="t-name">Nome</label>
+              <input type="text" id="t-name" required>
+            </div>
+            <div class="field">
+              <label for="t-role">Ruolo (es. Founder & Designer)</label>
+              <input type="text" id="t-role" required>
+            </div>
+            <div class="field">
+              <label for="t-category">Area / settore</label>
+              <select id="t-category">
+                <option value="tastiere">Tastiere Custom</option>
+                <option value="bot">Sviluppo Bot</option>
+                <option value="consulenze">Consulenze</option>
+                <option value="grafico">Team Grafico</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="t-photo-file">Foto</label>
+              <input type="file" id="t-photo-file" accept="image/*">
+              <input type="hidden" id="t-photo">
+              <img id="t-photo-preview" class="file-preview" alt="">
+              <p class="file-status" id="t-photo-status"></p>
+            </div>
+            <div class="field">
+              <label for="t-order">Ordine in pagina (1 = primo)</label>
+              <input type="number" id="t-order" min="1" step="1" value="1">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi membro</button>
+              <button type="button" id="team-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Team pubblicato</h3>
+          <input type="search" id="team-search" class="dash-search" placeholder="Cerca per nome...">
+          <div class="admin-list" id="admin-team-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== GALLERIA ART ==================== -->
+    <div class="dash-panel" id="panel-gallery">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica foto</h3>
+          <form id="gallery-form">
+            <div class="field">
+              <label for="gal-image-file">Immagine</label>
+              <input type="file" id="gal-image-file" accept="image/*">
+              <input type="hidden" id="gal-image">
+              <img id="gal-image-preview" class="file-preview" alt="">
+              <p class="file-status" id="gal-image-status"></p>
+            </div>
+            <div class="field">
+              <label for="gal-category">Categoria</label>
+              <select id="gal-category">
+                <option value="tastiere">Tastiere Custom</option>
+                <option value="keycaps">Keycaps</option>
+                <option value="setup">Setup & RGB</option>
+                <option value="grafica">Grafica / Identità visiva</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="gal-caption">Didascalia (opzionale)</label>
+              <input type="text" id="gal-caption" placeholder="es. Keycap in resina edizione galassia">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi foto</button>
+              <button type="button" id="gallery-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Foto pubblicate</h3>
+          <div class="admin-list" id="admin-gallery-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== RICHIESTE ==================== -->
+    <div class="dash-panel" id="panel-richieste">
+      <div class="filter-row" style="justify-content:flex-start;margin-bottom:20px;">
+        <button class="filter-pill active" data-richieste-filter="tutte">Tutte</button>
+        <button class="filter-pill" data-richieste-filter="nuova">Nuove</button>
+        <button class="filter-pill" data-richieste-filter="gestita">Gestite</button>
+      </div>
+      <input type="search" id="richieste-search" class="dash-search" placeholder="Cerca per nome o email...">
+      <div class="admin-list" id="admin-richieste-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+    <div class="dash-panel" id="panel-orders">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Qui arrivano gli ordini dopo il Check-out. Vedi acquirente, prodotti, indirizzo e pagamento.</p>
+      <div class="filter-row" style="justify-content:flex-start;margin-bottom:16px;">
+        <button class="filter-pill active" data-ord-filter="tutte">Tutti</button>
+        <button class="filter-pill" data-ord-filter="nuova">Nuovi</button>
+        <button class="filter-pill" data-ord-filter="pagato">Pagati</button>
+        <button class="filter-pill" data-ord-filter="spedito">Spediti</button>
+        <button class="filter-pill" data-ord-filter="gestita">Gestiti</button>
+      </div>
+      <input type="search" id="orders-search" class="dash-search" placeholder="Cerca per nome o email...">
+      <div class="admin-list" id="admin-orders-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+    <div class="dash-panel" id="panel-checkout">
+      <div class="dash-form-card" style="max-width:640px;">
+        <h3>Cassa: spedizione, IVA, pagamenti</h3>
+        <p style="font-size:13px;color:var(--text-dim);">I metodi compaiono in checkout. Per la carta usa un Payment Link Stripe (non inseriamo numeri carta sul sito). PayPal: link paypal.me. Satispay/Klarna/altro: metti il link o le istruzioni.</p>
+        <form id="checkout-cfg-form">
+          <div class="field">
+            <label for="ck-ship">Spedizione fissa (€) — 0 = da confermare</label>
+            <input type="number" id="ck-ship" min="0" step="0.01" value="0">
+          </div>
+          <div class="field">
+            <label for="ck-free">Spedizione gratis sopra (€) — 0 = mai</label>
+            <input type="number" id="ck-free" min="0" step="0.01" value="0">
+          </div>
+          <div class="field">
+            <label for="ck-tax">IVA % (es. 22)</label>
+            <input type="number" id="ck-tax" min="0" step="0.1" value="22">
+          </div>
+          <div class="field">
+            <label for="ck-stripe">Chiave pubblica Stripe (pk_live_… o pk_test_…) per il form carta</label>
+            <input type="text" id="ck-stripe" placeholder="pk_live_...">
+          </div>
+          <h4 style="margin:18px 0 8px;">Metodi di pagamento</h4>
+          <div id="ck-methods"></div>
+          <button type="button" class="btn btn--outline" id="ck-add-method" style="margin:8px 0 16px;">+ Aggiungi metodo</button>
+          <p style="font-size:13px;color:var(--text-dim);margin:0 0 12px;">Gli sconti si gestiscono da <strong>Voucher</strong>: i codici creati lì valgono in cassa.</p>
+          <button type="submit" class="btn btn--lime">Salva cassa</button>
+          <p class="dash-save-msg" id="ck-status"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== FAQ ==================== -->
+    <div class="dash-panel" id="panel-faq">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica domanda</h3>
+          <form id="faq-form">
+            <div class="field">
+              <label for="f-question">Domanda</label>
+              <input type="text" id="f-question" required>
+            </div>
+            <div class="field">
+              <label for="f-answer">Risposta</label>
+              <textarea id="f-answer" required></textarea>
+            </div>
+            <div class="field">
+              <label for="f-order">Ordine (numero, 1 = mostrata per prima)</label>
+              <input type="number" id="f-order" min="1" step="1" value="1">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Aggiungi domanda</button>
+              <button type="button" id="faq-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">FAQ pubblicate</h3>
+          <div class="admin-list" id="admin-faq-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== TESTI DELLE PAGINE ==================== -->
+    <div class="dash-panel" id="panel-pages">
+      <div class="dash-form-card" style="max-width:640px;">
+        <h3>Seleziona la pagina da modificare</h3>
+        <div class="field">
+          <label for="page-select">Pagina</label>
+          <select id="page-select">
+            <option value="home">Home</option>
+            <option value="store">Store</option>
+            <option value="custom">Custom</option>
+            <option value="art">Art</option>
+            <option value="novita">Novità</option>
+            <option value="forum">Forum</option>
+            <option value="team">Team</option>
+            <option value="recensioni">Recensioni</option>
+            <option value="contatti">Contatti</option>
+          </select>
+        </div>
+        <form id="page-content-form">
+          <div id="page-content-fields"></div>
+          <button type="submit" class="btn btn--lime">Salva testi di questa pagina</button>
+          <p class="dash-save-msg" id="page-content-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:20px;">Lascia un campo vuoto per mantenere il testo predefinito del sito. Per andare a capo nel testo, premi Invio dentro il campo.</p>
+    </div>
+
+    <!-- ==================== SFONDI INTERATTIVI ==================== -->
+    <div class="dash-panel" id="panel-backgrounds">
+      <div class="dash-form-card" style="max-width:640px;">
+        <h3>Sfondo interattivo per pagina</h3>
+        <p style="color:var(--text-dim);font-size:14px;margin:0 0 18px;">Il link deve aprire <strong>direttamente l’immagine</strong>. I link PhotoToURL / Google Drive “non pubblici” non funzionano. Meglio: carica il file su GitHub in <code>images/bgs/</code> e qui scrivi <code>images/bgs/home.png</code>. Copertura scura: 10–20%.</p>
+        <form id="bg-form">
+          <div class="field">
+            <label for="bg-page">Pagina</label>
+            <select id="bg-page">
+              <option value="home">Home</option>
+              <option value="store">Store</option>
+              <option value="custom">Custom</option>
+              <option value="art">Art</option>
+              <option value="novita">Novità</option>
+              <option value="forum">Forum</option>
+              <option value="team">Team</option>
+              <option value="recensioni">Recensioni</option>
+              <option value="contatti">Contatti</option>
+              <option value="faq">FAQ</option>
+              <option value="login">Login</option>
+              <option value="register">Registrazione</option>
+              <option value="chi-siamo">Chi siamo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bg-image-file">Immagine di sfondo</label>
+            <input type="file" id="bg-image-file" accept="image/*">
+            <input type="hidden" id="bg-image">
+            <img id="bg-preview" class="file-preview" alt="">
+            <p class="file-status" id="bg-preview-hint"></p>
+          </div>
+          <div class="field">
+            <label for="bg-video">Video di sfondo (opzionale, da GitHub)</label>
+            <input type="text" id="bg-video" placeholder="videos/coding-lofi.mp4">
+            <p class="file-status">I video non stanno nel piano gratis. Caricali nella cartella videos/ su GitHub, poi scrivi qui il percorso.</p>
+          </div>
+          <div class="field">
+            <label for="bg-style">Stile visivo</label>
+            <select id="bg-style">
+              <option value="aurora">Aurora (luci gaming)</option>
+              <option value="grid">Griglia HUD</option>
+              <option value="particles">Particelle</option>
+              <option value="cinematic">Cinematic (aurora + griglia)</option>
+              <option value="none">Solo media / scuro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bg-overlay">Copertura scura <span id="bg-overlay-val">60%</span></label>
+            <input type="range" id="bg-overlay" min="0" max="70" value="28">
+          </div>
+          <div class="field" style="display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" id="bg-motion" checked>
+            <label for="bg-motion" style="margin:0;">Movimento col mouse</label>
+          </div>
+          <button type="submit" class="btn btn--lime">Salva sfondo</button>
+          <p class="dash-save-msg" id="bg-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:16px;">Esempio URL sito: <code>https://gamingrelaxofficials.it/videos/coding-lofi.mp4</code> — prima carica il file su GitHub. Copertura scura: tieni 25–40% se vuoi vedere bene foto o video.</p>
+    </div>
+
+    <!-- ==================== ASPETTO GRAFICO ==================== -->
+    <div class="dash-panel" id="panel-design">
+      <div class="dash-form-card" style="max-width:520px;">
+        <h3>Colori generali del sito</h3>
+        <div class="color-preview" id="color-preview"></div>
+        <form id="design-form">
+          <div class="field">
+            <label for="d-lime">Colore principale (bottoni, accenti)</label>
+            <input type="color" id="d-lime" value="#c6ff1a" data-var="--lime">
+          </div>
+          <div class="field">
+            <label for="d-purple">Colore secondario (sezione Art, dettagli)</label>
+            <input type="color" id="d-purple" value="#9b3dff" data-var="--purple">
+          </div>
+          <div class="field">
+            <label for="d-bg">Sfondo pagina</label>
+            <input type="color" id="d-bg" value="#0a0d16" data-var="--bg">
+          </div>
+          <div class="field">
+            <label for="d-bg-alt">Sfondo alternativo (footer)</label>
+            <input type="color" id="d-bg-alt" value="#10141f" data-var="--bg-alt">
+          </div>
+          <div class="field">
+            <label for="d-card">Sfondo delle card</label>
+            <input type="color" id="d-card" value="#14182a" data-var="--card">
+          </div>
+          <div class="field">
+            <label for="d-logo-file">Logo (opzionale)</label>
+            <input type="file" id="d-logo-file" accept="image/*">
+            <input type="hidden" id="d-logo">
+            <img id="d-logo-preview" class="file-preview" alt="">
+            <p class="file-status" id="d-logo-status"></p>
+          </div>
+          <button type="submit" class="btn btn--lime">Salva colori</button>
+          <button type="button" id="design-reset" class="btn btn--outline" style="margin-left:10px;">Ripristina colori predefiniti</button>
+          <p class="dash-save-msg" id="design-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:20px;">I colori e il logo si applicano a tutto il sito, su tutte le pagine, subito dopo il salvataggio.</p>
+    </div>
+
+    <!-- ==================== CONTATTI & SOCIAL ==================== -->
+    <div class="dash-panel" id="panel-general">
+      <div class="dash-form-card" style="max-width:560px;">
+        <h3>Email, orari e link social</h3>
+        <form id="general-form">
+          <div class="field">
+            <label for="g-email">Email di supporto</label>
+            <input type="email" id="g-email" placeholder="gamingrelaxofficials@gmail.com">
+          </div>
+          <div class="field">
+            <label for="g-hours-weekday">Orari Lun - Ven</label>
+            <input type="text" id="g-hours-weekday" placeholder="Lun - Ven: 10:00 - 19:00">
+          </div>
+          <div class="field">
+            <label for="g-hours-weekend">Orari Sab - Dom</label>
+            <input type="text" id="g-hours-weekend" placeholder="Sab - Dom: Su appuntamento">
+          </div>
+          <div class="field">
+            <label for="g-discord">💬 Link Discord</label>
+            <input type="url" id="g-discord" placeholder="https://discord.gg/...">
+          </div>
+          <div class="field">
+            <label for="g-youtube">▶️ Link YouTube</label>
+            <input type="url" id="g-youtube" placeholder="https://youtube.com/@...">
+          </div>
+          <div class="field">
+            <label for="g-instagram">📸 Link Instagram</label>
+            <input type="url" id="g-instagram" placeholder="https://instagram.com/...">
+          </div>
+          <div class="field">
+            <label for="g-tiktok">🎵 Link TikTok</label>
+            <input type="url" id="g-tiktok" placeholder="https://tiktok.com/@...">
+          </div>
+          <div class="field">
+            <label for="g-paypal">PayPal.Me (opzionale, per il pulsante giallo nel carrello)</label>
+            <input type="url" id="g-paypal" placeholder="https://paypal.me/tuonome">
+          </div>
+          <div class="field">
+            <label for="g-whatsapp">WhatsApp (opzionale, pagina Contatti)</label>
+            <input type="url" id="g-whatsapp" placeholder="https://wa.me/39...">
+          </div>
+          <div class="field">
+            <label for="g-telegram">Telegram (opzionale, pagina Contatti)</label>
+            <input type="url" id="g-telegram" placeholder="https://t.me/tuonome">
+          </div>
+          <div class="field">
+            <label for="g-reply">Tempo di risposta (Contatti)</label>
+            <input type="text" id="g-reply" placeholder="Rispondiamo entro 24h">
+          </div>
+          <div class="field">
+            <label for="g-location">Sede / spedizioni</label>
+            <input type="text" id="g-location" placeholder="Basati in Italia · spediamo in UE">
+          </div>
+          <h4 style="margin:22px 0 12px;">Chi siamo</h4>
+          <p style="font-size:13px;color:var(--text-dim);margin:0 0 12px;">Compare nel footer (Link utili) e nella pagina Chi siamo.</p>
+          <div class="field">
+            <label for="g-about-title">Titolo</label>
+            <input type="text" id="g-about-title" placeholder="Chi siamo">
+          </div>
+          <div class="field">
+            <label for="g-about-footer">Testo breve nel footer</label>
+            <textarea id="g-about-footer" placeholder="Studio di tastiere custom, art e tech."></textarea>
+          </div>
+          <div class="field">
+            <label for="g-about-body">Testo completo della pagina</label>
+            <textarea id="g-about-body" placeholder="Racconta Gaming Relax..."></textarea>
+          </div>
+          <button type="submit" class="btn btn--lime">Salva contatti e social</button>
+          <p class="dash-save-msg" id="general-status"></p>
+        </form>
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-top:20px;">Questi dati si aggiornano su tutto il sito, in ogni pagina, subito dopo il salvataggio — comodo per quando cambi canale o orari senza dover più toccare il codice.</p>
+    </div>
+
+    <!-- ==================== VOUCHER ==================== -->
+    <div class="dash-panel" id="panel-vouchers">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;max-width:760px;">Crea qui i voucher: il cliente li inserisce in cassa e lo sconto si applica subito. Tipo percentuale (es. 10%) o importo fisso in euro.</p>
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Crea nuovo voucher</h3>
+          <form id="voucher-form">
+            <div class="field">
+              <label for="v-code">Codice voucher</label>
+              <div style="display:flex;gap:10px;">
+                <input type="text" id="v-code" placeholder="es. MARCO10" style="text-transform:uppercase;" required>
+                <button type="button" id="v-generate" class="btn btn--outline" style="flex-shrink:0;padding:10px 16px;font-size:13px;">Genera</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="v-assigned">Assegnato a (opzionale, per il tuo registro)</label>
+              <input type="text" id="v-assigned" placeholder="es. Marco - Creator TikTok">
+            </div>
+            <div class="field">
+              <label for="v-type">Tipo di sconto</label>
+              <select id="v-type">
+                <option value="percentuale">Percentuale (%)</option>
+                <option value="fisso">Importo fisso (€)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="v-value">Valore (numero)</label>
+              <input type="number" id="v-value" min="0" step="0.01" placeholder="es. 10" required>
+            </div>
+            <div class="field">
+              <label for="v-notes">Note (opzionale)</label>
+              <textarea id="v-notes" placeholder="es. Codice per la campagna estate 2026"></textarea>
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="v-active" checked style="width:auto;">
+              <label for="v-active" style="margin:0;">Utilizzabile in cassa</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva voucher</button>
+              <button type="button" id="voucher-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Voucher creati</h3>
+          <input type="search" id="voucher-search" class="dash-search" placeholder="Cerca per codice o nome...">
+          <div class="admin-list" id="admin-voucher-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== NOVITÀ ==================== -->
+    <div class="dash-panel" id="panel-news">
+      <div class="dash-layout">
+
+        <div class="dash-form-card">
+          <h3>Pubblica un annuncio</h3>
+          <form id="news-form">
+            <div class="field">
+              <label for="n-title">Titolo</label>
+              <input type="text" id="n-title" placeholder="es. Nuovo drop di keycaps disponibile!" required>
+            </div>
+            <div class="field">
+              <label for="n-category">Categoria</label>
+              <select id="n-category">
+                <option value="aggiornamenti">Aggiornamenti</option>
+                <option value="nuovi-prodotti">Nuovi Prodotti</option>
+                <option value="annunci">Annunci</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="n-image-file">Immagine (opzionale)</label>
+              <input type="file" id="n-image-file" accept="image/*">
+              <input type="hidden" id="n-image">
+              <img id="n-image-preview" class="file-preview" alt="">
+              <p class="file-status" id="n-image-status"></p>
+            </div>
+            <div class="field">
+              <label for="n-body">Testo dell'annuncio</label>
+              <textarea id="n-body" placeholder="Racconta la novità..." required style="min-height:140px;"></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Pubblica</button>
+              <button type="button" id="news-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:20px;">Annunci pubblicati</h3>
+          <div class="admin-list" id="admin-news-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== RECENSIONI ==================== -->
+    <div class="dash-panel" id="panel-reviews">
+      <div class="filter-row" style="justify-content:flex-start;margin-bottom:20px;">
+        <button class="filter-pill active" data-review-filter="pending">Da approvare</button>
+        <button class="filter-pill" data-review-filter="approved">Approvate</button>
+        <button class="filter-pill" data-review-filter="tutte">Tutte</button>
+      </div>
+      <div class="admin-list" id="admin-reviews-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+    <!-- ==================== AVVISI RESTOCK ==================== -->
+    <div class="dash-panel" id="panel-restock">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;max-width:760px;">Elenco dei clienti che hanno chiesto di essere avvisati quando un prodotto esaurito torna disponibile. Quando rifai il drop, contattali via email e segna "Contattato" — è solo un archivio, l'invio email resta manuale.</p>
+      <input type="search" id="restock-search" class="dash-search" placeholder="Cerca per prodotto o email...">
+      <div class="admin-list" id="admin-restock-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+
+    <!-- ==================== UTENTI REGISTRATI ==================== -->
+    <div class="dash-panel" id="panel-users">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;max-width:800px;">
+        Anagrafica automatica: ogni registrazione salva nickname e email. Il ruolo <strong>Membro</strong> (bianco) viene assegnato da solo.
+        Da qui puoi anche <strong>eliminare un account</strong>: sparisce dalla lista e non potrà più accedere. L'account admin non si può cancellare.
+      </p>
+      <input type="search" id="users-search" class="dash-search" placeholder="Cerca per nickname o email...">
+      <div class="admin-list" id="admin-users-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
+
+    <!-- ==================== PEX / DEPEX ==================== -->
+    <div class="dash-panel" id="panel-pex">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:22px;max-width:860px;">
+        Clicca un membro nella lista a sinistra (tutti gli iscritti). A destra fai <strong>Pex</strong> (aggiungi ruolo) o <strong>Depex</strong> (toglilo).
+        Il tag <strong>Membro</strong> resta sempre: non si depexa.
+      </p>
+      <div class="pex-layout">
+        <div class="pex-col">
+          <h3 style="margin-bottom:10px;">Tutti i membri</h3>
+          <input type="search" id="pex-search" class="dash-search" placeholder="Filtra per nick o email...">
+          <div class="pex-list" id="pex-member-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+        <div class="pex-col">
+          <div class="pex-detail" id="pex-detail">
+            <p class="empty-hint">Seleziona un membro dalla lista.</p>
+          </div>
+          <div class="dash-form-card" style="margin-top:22px;">
+            <h3>Crea un ruolo da assegnare</h3>
+            <form id="pex-role-form">
+              <div class="field">
+                <label for="pex-role-label">Nome ruolo</label>
+                <input type="text" id="pex-role-label" required placeholder="es. Mod, Staff, Helper">
+              </div>
+              <div class="field">
+                <label for="pex-role-color">Colore</label>
+                <input type="color" id="pex-role-color" value="#3b82f6">
+              </div>
+              <button type="submit" class="btn btn--lime">Crea ruolo</button>
+            </form>
+            <div class="admin-list" id="pex-roles-mini" style="margin-top:16px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== FORUM (Categorie + Pagine + Tag Staff) ==================== -->
+    <div class="dash-panel" id="panel-forum">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:28px;max-width:800px;">
+        Struttura a due livelli, come un forum classico: <strong>categorie</strong> (gruppi) e <strong>pagine/sezioni</strong> dentro ciascuna categoria.
+        Una pagina può essere <em>Conversazioni</em> (gli utenti aprono topic) oppure <em>Solo lettura</em> (regolamento, FAQ, annunci).
+        Le conversazioni non appaiono tutte in home: si vedono solo dopo aver cliccato la sezione.
+      </p>
+
+      <h2 style="font-size:18px;margin-bottom:16px;">1. Categorie (gruppi)</h2>
+      <div class="dash-layout" style="margin-bottom:40px;">
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica categoria</h3>
+          <form id="forum-cat-form">
+            <div class="field">
+              <label for="fc-name">Nome</label>
+              <input type="text" id="fc-name" required maxlength="40" placeholder="Es. Community, Supporto">
+            </div>
+            <div class="field">
+              <label for="fc-icon">Icona (emoji)</label>
+              <input type="text" id="fc-icon" maxlength="4" placeholder="🎮">
+            </div>
+            <div class="field">
+              <label for="fc-desc">Descrizione breve</label>
+              <input type="text" id="fc-desc" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="fc-color">Colore</label>
+              <input type="color" id="fc-color" value="#c6ff1a">
+            </div>
+            <div class="field">
+              <label for="fc-order">Ordine</label>
+              <input type="number" id="fc-order" value="10" min="0" max="999">
+            </div>
+            <div class="field" style="display:flex;align-items:flex-start;gap:10px;">
+              <input type="checkbox" id="fc-private" style="width:auto;margin-top:3px;">
+              <label for="fc-private" style="margin:0;">Categoria privata — le discussioni le vedono solo lo staff e chi le ha aperte</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva categoria</button>
+              <button type="button" id="forum-cat-cancel-edit" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:16px;">Categorie attive</h3>
+          <div class="admin-list" id="admin-forum-cats-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="font-size:18px;margin-bottom:16px;">2. Pagine / sezioni (cliccabili nel forum)</h2>
+      <div class="dash-layout" style="margin-bottom:40px;">
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica pagina</h3>
+          <form id="forum-board-form">
+            <div class="field">
+              <label for="fb-cat">Categoria</label>
+              <select id="fb-cat" required></select>
+            </div>
+            <div class="field">
+              <label for="fb-name">Nome pagina</label>
+              <input type="text" id="fb-name" required maxlength="60" placeholder="Es. Regolamenti, Guide, Presentazioni">
+            </div>
+            <div class="field">
+              <label for="fb-icon">Icona (emoji)</label>
+              <input type="text" id="fb-icon" maxlength="4" placeholder="📢">
+            </div>
+            <div class="field">
+              <label for="fb-desc">Descrizione</label>
+              <input type="text" id="fb-desc" maxlength="180" placeholder="Testo che compare sotto il titolo">
+            </div>
+            <div class="field">
+              <label for="fb-type">Tipo</label>
+              <select id="fb-type">
+                <option value="discussion">Conversazioni — gli utenti aprono topic</option>
+                <option value="readonly">Solo lettura — solo contenuto (regole, FAQ…)</option>
+              </select>
+            </div>
+            <div class="field" id="fb-content-wrap" style="display:none;">
+              <label for="fb-content">Contenuto (solo lettura)</label>
+              <textarea id="fb-content" rows="8" placeholder="Testo visibile quando si apre la pagina"></textarea>
+            </div>
+            <div class="field">
+              <label for="fb-order">Ordine</label>
+              <input type="number" id="fb-order" value="10" min="0" max="999">
+            </div>
+            <div class="field" style="display:flex;align-items:flex-start;gap:10px;">
+              <input type="checkbox" id="fb-private" style="width:auto;margin-top:3px;">
+              <label for="fb-private" style="margin:0;">Sezione privata — solo staff + autore della conversazione</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva pagina</button>
+              <button type="button" id="forum-board-cancel-edit" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:16px;">Pagine attive</h3>
+          <div class="admin-list" id="admin-forum-boards-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+
+
+      <h2 style="font-size:18px;margin:36px 0 16px;">4. Ruoli profilo (hover sul nick)</h2>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;max-width:800px;">
+        Ogni iscritto ha in automatico il tag <strong>Membro</strong> bianco. Crea qui gli altri ruoli (Staff, Mod, Founder…) e assegnali dalla scheda Utenti.
+      </p>
+      <div class="dash-layout" style="margin-bottom:28px;">
+        <div class="dash-form-card">
+          <h3>Nuovo ruolo</h3>
+          <form id="forum-role-form">
+            <div class="field">
+              <label for="fr-label">Nome ruolo</label>
+              <input type="text" id="fr-label" required placeholder="es. Mod, Staff, Founder">
+            </div>
+            <div class="field">
+              <label for="fr-color">Colore</label>
+              <input type="color" id="fr-color" value="#3b82f6">
+            </div>
+            <div class="field">
+              <label for="fr-order">Ordine</label>
+              <input type="number" id="fr-order" value="10" min="1" max="999">
+            </div>
+            <button type="submit" class="btn btn--lime">Salva ruolo</button>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:16px;">Ruoli attivi</h3>
+          <div class="admin-list" id="admin-forum-roles-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="font-size:18px;margin-bottom:16px;">3. Tag Staff (per email, opzionale)</h2>
+      <div class="dash-layout">
+        <div class="dash-form-card">
+          <h3>Aggiungi / modifica tag staff</h3>
+          <form id="staff-tag-form">
+            <div class="field">
+              <label for="st-email">Email dello staffer</label>
+              <input type="email" id="st-email" required placeholder="es. mario@gmail.com">
+            </div>
+            <div class="field">
+              <label for="st-label">Etichetta</label>
+              <input type="text" id="st-label" required placeholder="es. Founder, Supporto, Moderatore">
+            </div>
+            <div class="field">
+              <label for="st-color">Colore del tag</label>
+              <input type="color" id="st-color" value="#c6ff1a">
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva tag</button>
+              <button type="button" id="staff-tag-cancel-edit" class="btn btn--outline" style="display:none;">Annulla modifica</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:20px;">Tag assegnati</h3>
+          <div class="admin-list" id="admin-staff-tags-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== BANNER PROMOZIONALE ==================== -->
+    <div class="dash-panel" id="panel-banner">
+      <div class="dash-form-card" style="max-width:560px;">
+        <h3>Banner scorrevole in cima al sito</h3>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;">Quando attivo, appare in cima a tutte le pagine del sito — utile per spedizioni gratuite, nuovi drop, promozioni a tempo. I visitatori possono chiuderlo con la ✕ (ricompare alla visita successiva).</p>
+        <form id="banner-form">
+          <div class="field" style="display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" id="b-enabled" style="width:auto;">
+            <label for="b-enabled" style="margin:0;">Banner attivo</label>
+          </div>
+          <div class="field">
+            <label for="b-text">Testo del banner</label>
+            <input type="text" id="b-text" placeholder="es. Spedizioni gratuite sopra i 150€ — Nuova Drop Artisan disponibile!">
+          </div>
+          <div class="field">
+            <label for="b-link">Link al click (opzionale)</label>
+            <input type="url" id="b-link" placeholder="es. store.html">
+          </div>
+          <button type="submit" class="btn btn--lime">Salva banner</button>
+          <p class="dash-save-msg" id="banner-status"></p>
+        </form>
+      </div>
+    </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="js/firebase-init.js?v=20260919m"></script>
+<script type="module" src="js/cart.js?v=20260919m"></script>
+<script type="module" src="js/bg-scene.js?v=20260919d"></script>
+<script type="module" src="js/auth.js?v=20260919m"></script>
+<script type="module" src="js/banner.js"></script>
+<script type="module" src="js/dashboard.js?v=20260919k"></script>
+</body>
+</html>

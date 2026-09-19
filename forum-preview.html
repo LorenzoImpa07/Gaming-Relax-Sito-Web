@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anteprima Forum — Gaming Relax</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919i">
+<script>(function(){try{var d=JSON.parse(localStorage.getItem("gr_design")||"{}");var s=document.documentElement.style;if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";s.backgroundColor="#05070e";}}catch(e){}})();</script>
+<style>
+  /* Extra solo per l'anteprima */
+  body { background: var(--bg); }
+  .preview-banner {
+    background: linear-gradient(90deg, #c6ff1a22, #a855f722);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .preview-banner strong { color: var(--lime); }
+  .preview-section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .preview-note {
+    background: rgba(198,255,26,0.08);
+    border: 1px solid rgba(198,255,26,0.25);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-banner">
+  <strong>ANTEPRIMA STATICA</strong> — Questo è un mockup visuale del Forum. I dati sono finti. Il sistema reale usa Firebase in tempo reale.
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="#" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      Gaming Relax
+    </a>
+    <div class="header-actions">
+      <span id="auth-area">
+        <div class="auth-menu open" style="position:relative;">
+          <button class="icon-btn auth-menu__trigger">D</button>
+        </div>
+      </span>
+      <nav class="main-nav">
+        <a href="#">Home</a>
+        <a href="#">Store</a>
+        <a href="#" class="active">Forum</a>
+        <a href="#">Team</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== PAGINA LISTA FORUM ==================== -->
+<section class="page-hero">
+  <div class="container">
+    <h1>Forum della Community</h1>
+    <p class="lede">Chatta con la community, condividi il tuo setup, parla con lo staff — apri un argomento o rispondi a chi ha già iniziato.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container" style="max-width:820px;">
+
+    <div class="preview-note">
+      <strong style="color:var(--lime);">① Lista argomenti</strong> — Tab categorie, stati colorati, pin, lock, nickname + tag staff.
+    </div>
+
+    <!-- Pulsante nuovo argomento -->
+    <div style="margin-bottom:20px;">
+      <button type="button" class="btn btn--lime new-topic-toggle" style="width:100%;">+ Apri un nuovo argomento</button>
+    </div>
+
+    <!-- Tab categorie -->
+    <div class="forum-tabs">
+      <button type="button" class="forum-tab active">Tutti</button>
+      <button type="button" class="forum-tab">Supporto</button>
+      <button type="button" class="forum-tab">Setup & Build</button>
+      <button type="button" class="forum-tab">Proposte</button>
+      <button type="button" class="forum-tab">Off-topic</button>
+    </div>
+
+    <!-- Lista topics -->
+    <div id="topics-list">
+
+      <!-- Topic 1 - Pinned + Supporto + Aperto -->
+      <a href="#topic-detail" class="topic-row topic-row--pinned">
+        <div class="topic-row__top">
+          <span class="pin-icon" title="Fissato">📌</span>
+          <span class="cat-badge" style="color:#22c55e;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.3);">Supporto</span>
+          <div class="topic-row__title">Problema con spedizione ordine #GR-2841</div>
+          <span class="status-badge" style="color:#22c55e;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.2);">Aperto</span>
+        </div>
+        <div class="topic-row__meta">
+          <span>di <strong>MarcoR</strong><span class="staff-badge" style="background:#c6ff1a;color:#0a0d16;">Founder</span></span>
+          <span>💬 7 risposte</span>
+          <span>Ultima attività: 14 set 2026, 15:42</span>
+        </div>
+      </a>
+
+      <!-- Topic 2 - Proposte + In attesa -->
+      <a href="#topic-detail" class="topic-row">
+        <div class="topic-row__top">
+          <span class="cat-badge" style="color:#a855f7;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.3);">Proposte</span>
+          <div class="topic-row__title">Idee per nuovi keycaps artisan 2026</div>
+          <span class="status-badge" style="color:#f59e0b;background:rgba(245,158,11,0.18);border:1px solid rgba(245,158,11,0.25);">In attesa</span>
+        </div>
+        <div class="topic-row__meta">
+          <span>di <strong>LunaKeys</strong></span>
+          <span>💬 12 risposte</span>
+          <span>Ultima attività: 14 set 2026, 14:18</span>
+        </div>
+      </a>
+
+      <!-- Topic 3 - Setup + Approvato + Locked -->
+      <a href="#topic-detail" class="topic-row">
+        <div class="topic-row__top">
+          <span class="cat-badge" style="color:#06b6d4;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.3);">Setup & Build</span>
+          <div class="topic-row__title">Il mio primo build 75% — feedback?</div>
+          <span class="status-badge" style="color:#06b6d4;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.25);">Approvato</span>
+          <span class="lock-icon" title="Bloccato">🔒</span>
+        </div>
+        <div class="topic-row__meta">
+          <span>di <strong>DarkKnight92</strong></span>
+          <span>💬 4 risposte</span>
+          <span>Ultima attività: 13 set 2026, 21:05</span>
+        </div>
+      </a>
+
+      <!-- Topic 4 - Off-topic + Chiuso -->
+      <a href="#topic-detail" class="topic-row">
+        <div class="topic-row__top">
+          <span class="cat-badge" style="color:#94a3b8;background:rgba(148,163,184,0.18);border:1px solid rgba(148,163,184,0.3);">Off-topic</span>
+          <div class="topic-row__title">Consigli per mousepad da gaming</div>
+          <span class="status-badge" style="color:#94a3b8;background:rgba(148,163,184,0.18);border:1px solid rgba(148,163,184,0.25);">Chiuso</span>
+        </div>
+        <div class="topic-row__meta">
+          <span>di <strong>AlexGamer</strong></span>
+          <span>💬 9 risposte</span>
+          <span>Ultima attività: 12 set 2026, 18:30</span>
+        </div>
+      </a>
+
+      <!-- Topic 5 - Proposte + Respinto -->
+      <a href="#topic-detail" class="topic-row">
+        <div class="topic-row__top">
+          <span class="cat-badge" style="color:#a855f7;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.3);">Proposte</span>
+          <div class="topic-row__title">Richiesta bot Discord personalizzato per server</div>
+          <span class="status-badge" style="color:#ef4444;background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.25);">Respinto</span>
+        </div>
+        <div class="topic-row__meta">
+          <span>di <strong>ServerKing</strong></span>
+          <span>💬 3 risposte</span>
+          <span>Ultima attività: 11 set 2026, 11:12</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PAGINA SINGOLO ARGOMENTO ==================== -->
+<section id="topic-detail" style="padding:60px 0; border-top:1px solid var(--border); margin-top:40px;">
+  <div class="container" style="max-width:820px;">
+
+    <div class="preview-note">
+      <strong style="color:var(--lime);">② Pagina argomento</strong> — Badge categoria + stato, pannello moderazione staff, messaggi con avatar e nickname, form risposta.
+    </div>
+
+    <a href="#" style="display:inline-block;margin-bottom:24px;color:var(--text-dim);font-size:14px;">← Torna al Forum</a>
+
+    <!-- Header topic -->
+    <div class="topic-header-card">
+      <div class="topic-header-card__badges">
+        <span class="cat-badge" style="color:#22c55e;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.3);">Supporto</span>
+        <span class="status-badge" style="color:#22c55e;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.2);">Aperto</span>
+        <span class="pin-icon">📌</span>
+      </div>
+      <h1 class="topic-header-card__title">Problema con spedizione ordine #GR-2841</h1>
+      <p class="topic-header-card__meta">
+        Aperto da <strong>MarcoR</strong><span class="staff-badge" style="background:#c6ff1a;color:#0a0d16;">Founder</span>
+        · 12 set 2026, 09:15
+      </p>
+
+      <!-- Pannello moderazione (solo staff) -->
+      <div class="mod-panel">
+        <div class="mod-panel__title">Moderazione staff</div>
+        <div class="mod-panel__actions">
+          <select class="mod-select">
+            <option selected>Aperto</option>
+            <option>In attesa</option>
+            <option>Approvato</option>
+            <option>Respinto</option>
+            <option>Chiuso</option>
+          </select>
+          <button type="button" class="btn btn--outline btn-sm">Blocca risposte</button>
+          <button type="button" class="btn btn--outline btn-sm">Togli pin</button>
+          <button type="button" class="btn btn--outline btn-sm" style="color:#ff8080;border-color:#ff808055;">Elimina argomento</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messaggi -->
+    <div style="margin-top:28px;">
+
+      <div class="forum-post">
+        <div class="forum-post__avatar">M</div>
+        <div class="forum-post__body">
+          <div class="forum-post__head">
+            <span class="forum-post__author">MarcoR</span>
+            <span class="staff-badge" style="background:#c6ff1a;color:#0a0d16;">Founder</span>
+            <span class="forum-post__date">12 set 2026, 09:15</span>
+          </div>
+          <div class="forum-post__text">Ciao a tutti! Ho effettuato l’ordine #GR-2841 tre giorni fa ma non ho ancora ricevuto il tracking. Qualcuno dello staff può darmi aggiornamenti? Grazie!</div>
+        </div>
+      </div>
+
+      <div class="forum-post">
+        <div class="forum-post__avatar">S</div>
+        <div class="forum-post__body">
+          <div class="forum-post__head">
+            <span class="forum-post__author">SofiaSupport</span>
+            <span class="staff-badge" style="background:#60a5fa;color:#0a0d16;">Supporto</span>
+            <span class="forum-post__date">12 set 2026, 10:42</span>
+          </div>
+          <div class="forum-post__text">Ciao Marco! Sto controllando subito. L’ordine è in lavorazione, il tracking dovrebbe arrivare entro oggi. Ti aggiorno non appena esce dal magazzino 👍</div>
+        </div>
+      </div>
+
+      <div class="forum-post">
+        <div class="forum-post__avatar">D</div>
+        <div class="forum-post__body">
+          <div class="forum-post__head">
+            <span class="forum-post__author">DarkKnight92</span>
+            <span class="forum-post__date">12 set 2026, 14:20</span>
+          </div>
+          <div class="forum-post__text">Stessa situazione qui, ordine di ieri. Aspetto con ansia i nuovi keycaps 🔥</div>
+        </div>
+      </div>
+
+      <div class="forum-post">
+        <div class="forum-post__avatar">S</div>
+        <div class="forum-post__body">
+          <div class="forum-post__head">
+            <span class="forum-post__author">SofiaSupport</span>
+            <span class="staff-badge" style="background:#60a5fa;color:#0a0d16;">Supporto</span>
+            <span class="forum-post__date">14 set 2026, 15:42</span>
+          </div>
+          <div class="forum-post__text">Aggiornamento: tracking inviato via email a entrambi! Dovreste vederlo tra pochi minuti. Grazie per la pazienza 💚</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Form risposta -->
+    <div style="margin-top:28px;">
+      <div class="dash-form-card reply-card">
+        <h3 style="font-size:16px;margin-bottom:16px;">Rispondi come <strong style="color:var(--lime);">DarkKnight92</strong></h3>
+        <div class="field">
+          <label>Il tuo messaggio</label>
+          <textarea rows="4" placeholder="Scrivi la tua risposta..."></textarea>
+        </div>
+        <div class="field">
+          <label>URL immagine (opzionale)</label>
+          <input type="url" placeholder="https://...">
+        </div>
+        <button type="button" class="btn btn--lime">Invia risposta</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== DASHBOARD CATEGORIE (mini preview) ==================== -->
+<section style="padding:50px 0; border-top:1px solid var(--border);">
+  <div class="container" style="max-width:820px;">
+    <div class="preview-note">
+      <strong style="color:var(--lime);">③ Dashboard → Forum</strong> — Gestione categorie e tag staff (solo admin).
+    </div>
+
+    <h2 style="font-size:20px;margin-bottom:20px;">📂 Categorie del Forum</h2>
+    <div class="admin-list" style="display:flex;flex-direction:column;gap:10px;">
+      <div class="admin-row" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--card-solid);">
+        <span class="status-badge" style="color:#22c55e;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.3);">Supporto</span>
+        <div style="flex:1;">
+          <strong>Supporto</strong>
+          <span style="display:block;font-size:12px;color:var(--text-dim);">Problemi ordini, spedizioni, assistenza</span>
+        </div>
+        <button class="btn btn--outline btn-sm">Modifica</button>
+        <button class="btn btn--outline btn-sm">Elimina</button>
+      </div>
+      <div class="admin-row" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--card-solid);">
+        <span class="status-badge" style="color:#06b6d4;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.3);">Setup & Build</span>
+        <div style="flex:1;">
+          <strong>Setup & Build</strong>
+          <span style="display:block;font-size:12px;color:var(--text-dim);">Mostra le tue tastiere e chiedi feedback</span>
+        </div>
+        <button class="btn btn--outline btn-sm">Modifica</button>
+        <button class="btn btn--outline btn-sm">Elimina</button>
+      </div>
+      <div class="admin-row" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--card-solid);">
+        <span class="status-badge" style="color:#a855f7;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.3);">Proposte</span>
+        <div style="flex:1;">
+          <strong>Proposte</strong>
+          <span style="display:block;font-size:12px;color:var(--text-dim);">Idee, feature request, collaborazioni</span>
+        </div>
+        <button class="btn btn--outline btn-sm">Modifica</button>
+        <button class="btn btn--outline btn-sm">Elimina</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <small>© 2026 Gaming Relax — Anteprima sistema Forum custom</small>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

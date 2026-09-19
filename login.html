@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accedi — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gaming Relax">
+<meta property="og:title" content="Accedi — Gaming Relax">
+<meta property="og:description" content="Accedi al tuo account Gaming Relax.">
+<meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<meta property="og:url" content="https://gamingrelaxofficials.it/login.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Accedi — Gaming Relax">
+<meta name="twitter:description" content="Accedi al tuo account Gaming Relax.">
+<meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919i">
+<script>(function(){try{var d=JSON.parse(localStorage.getItem("gr_design")||"{}");var s=document.documentElement.style;if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";s.backgroundColor="#05070e";}}catch(e){}})();</script>
+</head>
+<body data-page="login">
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span>
+      <span class="brand__name">Gaming Relax</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="store.html">Store</a>
+      <a href="custom.html">Custom</a>
+      <a href="art.html">Art</a>
+      <a href="novita.html">Novità</a>
+      <a href="forum.html">Forum</a>
+      <a href="team.html">Team</a>
+      <a href="recensioni.html">Recensioni</a>
+      <a href="contatti.html">Contatti</a>
+    </nav>
+    <div class="header-actions">
+      <span id="auth-area"></span>
+      <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Bentornato</h1>
+    <p class="lede">Accedi al tuo account Gaming Relax.</p>
+
+    <p class="auth-error" id="login-error"></p>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" name="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn--lime">Accedi</button>
+    </form>
+
+    <p class="auth-forgot"><button type="button" id="forgot-toggle">Password dimenticata?</button></p>
+    <div id="forgot-wrap" style="display:none;margin-top:8px;">
+      <p id="forgot-msg"></p>
+      <form id="forgot-form">
+        <div class="field">
+          <label for="forgot-email">Email dell'account</label>
+          <input type="email" id="forgot-email" name="forgot-email" autocomplete="email" placeholder="la tua email">
+        </div>
+        <button type="submit" class="btn btn--outline" style="width:100%;justify-content:center;">Invia link di reset</button>
+      </form>
+    </div>
+
+    <p class="auth-switch">Non hai un account? <a href="register.html">Registrati</a></p>
+    <p class="admin-hint">Sei dello staff? Accedi con l'account amministratore per aprire la Dashboard.</p>
+  </div>
+</div>
+
+<script type="module" src="js/firebase-init.js?v=20260919m"></script>
+<script type="module" src="js/cart.js?v=20260919m"></script>
+<script type="module" src="js/bg-scene.js?v=20260919d"></script>
+<script type="module" src="js/auth.js?v=20260919m"></script>
+<script type="module" src="js/banner.js"></script>
+<script src="js/script.js?v=20260919i"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+GAMING RELAX — carica TUTTO su GitHub
+
+1. Scompatta lo zip.
+2. Carica tutti i file tenendo le cartelle: css/  js/  images/  videos/
+   I file .html stanno nella radice (incluso profilo.html).
+3. GitHub → Settings → Pages: Deploy from branch, cartella / (root).
+4. Firebase Auth + Firestore restano quelli già configurati.
+   Storage NON serve (piano gratis). Le foto si caricano con Sfoglia.
+   I video di sfondo: cartella videos/ su GitHub (es. videos/coding-lofi.mp4).
+5. Dopo il deploy: Ctrl+Shift+R.
+
+Non cancellare nulla su Firebase: prodotti, forum, utenti, recensioni, ordini restano.
