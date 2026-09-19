@@ -1282,6 +1282,7 @@ body.art-lb-open { overflow: hidden; }
   height: 18px;
   flex: 0 0 18px;
   color: var(--text);
+  overflow: visible;
 }
 .footer-col .social-link:hover .soc-ico { color: var(--lime); }
 .footer-bottom {
@@ -1317,6 +1318,7 @@ body.art-lb-open { overflow: hidden; }
   height: 18px;
   display: block;
   fill: currentColor;
+  overflow: visible;
 }
 .footer-bottom .socials a:hover {
   border-color: var(--lime);
