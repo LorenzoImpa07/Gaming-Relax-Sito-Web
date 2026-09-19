@@ -56,7 +56,7 @@ body.has-page-bg {
 body.has-page-bg > .site-header {
   z-index: 400;
 }
-body.has-page-bg > *:not(.page-bg):not(.site-header) {
+body.has-page-bg > *:not(.page-bg):not(.site-header):not(.art-lightbox):not(.promo-banner):not(.cookie-banner):not(.floating-discord) {
   position: relative;
   z-index: 1;
 }
@@ -952,12 +952,12 @@ section { padding: 80px 0; }
   color: var(--text);
 }
 
-.art-lightbox[hidden] { display: none; }
-.art-lightbox {
-  position: fixed;
+.art-lightbox[hidden] { display: none !important; }
+.art-lightbox:not([hidden]) {
+  position: fixed !important;
   inset: 0;
-  z-index: 9000;
-  display: grid;
+  z-index: 10000 !important;
+  display: grid !important;
   place-items: center;
   padding: 24px 16px;
 }
