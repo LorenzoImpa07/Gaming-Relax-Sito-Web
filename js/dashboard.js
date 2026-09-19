@@ -675,6 +675,7 @@ const PAGE_FIELDS = {
     { key: "heroAccent", label: "Titolo hero — parola evidenziata", type: "input", placeholder: "unico." },
     { key: "heroSubtitle", label: "Sottotitolo hero", type: "textarea", placeholder: "Grafiche custom per tastiere e arte su misura..." },
     { key: "heroCta", label: "Testo pulsante hero", type: "input", placeholder: "Esplora il nostro mondo →" },
+    { key: "heroCtaAbout", label: "Testo pulsante hero Chi siamo", type: "input", placeholder: "Chi siamo →" },
     { key: "heroSideImage", label: "Immagine a destra — Hero (Home)", type: "image" },
     { key: "newsSubtitle", label: "Sottotitolo sezione Novità in Home (testo grigio)", type: "textarea", placeholder: "Annunci, nuovi prodotti..." },
     { key: "storeTitle", label: "Titolo vetrina Store in Home", type: "input", placeholder: "Dal nostro Store" },

@@ -425,6 +425,14 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   font-size: 18px;
   text-shadow: 0 1px 12px rgba(0,0,0,.55);
 }
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+.hero.has-side .hero-actions { justify-content: flex-start; }
 .split-section {
   display: grid;
   grid-template-columns: 1fr;
