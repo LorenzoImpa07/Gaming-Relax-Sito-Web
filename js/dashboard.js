@@ -675,11 +675,14 @@ const PAGE_FIELDS = {
     { key: "heroAccent", label: "Titolo hero — parola evidenziata", type: "input", placeholder: "unico." },
     { key: "heroSubtitle", label: "Sottotitolo hero", type: "textarea", placeholder: "Grafiche custom per tastiere e arte su misura..." },
     { key: "heroCta", label: "Testo pulsante hero", type: "input", placeholder: "Esplora il nostro mondo →" },
+    { key: "heroSideImage", label: "Immagine a destra — Hero (Home)", type: "image" },
     { key: "newsSubtitle", label: "Sottotitolo sezione Novità in Home (testo grigio)", type: "textarea", placeholder: "Annunci, nuovi prodotti..." },
     { key: "storeTitle", label: "Titolo vetrina Store in Home", type: "input", placeholder: "Dal nostro Store" },
     { key: "storeSubtitle", label: "Sottotitolo vetrina Store in Home", type: "textarea", placeholder: "Una selezione di prodotti..." },
+    { key: "storeSideImage", label: "Immagine a destra — sezione Store (Home)", type: "image" },
     { key: "studioTitle", label: "Titolo sezione \"Un team. Uno studio.\"", type: "textarea", placeholder: "Un team.\nUno studio." },
     { key: "studioText", label: "Testo sezione \"Un team. Uno studio.\"", type: "textarea" },
+    { key: "studioSideImage", label: "Immagine a destra — sezione Team (Home)", type: "image" },
     { key: "ctaTitle", label: "Titolo banner finale (\"Hai un'idea?\")", type: "textarea", placeholder: "Hai un'idea?\nTrasformiamola in qualcosa di unico." },
     { key: "partnersTitle", label: "Titolo sezione Partner", type: "input", placeholder: "Partner" },
     { key: "partnersSubtitle", label: "Sottotitolo sezione Partner", type: "textarea", placeholder: "I brand e gli studi con cui collaboriamo." }
@@ -731,8 +734,17 @@ function initPageContent() {
 
   function renderFieldsFor(pageKey) {
     const fields = PAGE_FIELDS[pageKey] || [];
-    fieldsContainer.innerHTML = fields.map((f) => `
-      <div class="field">
+    fieldsContainer.innerHTML = fields.map((f) => {
+      if (f.type === "image") {
+        return `<div class="field">
+          <label>${f.label}</label>
+          <input type="file" id="pf-${f.key}-file" accept="image/*">
+          <input type="hidden" id="pf-${f.key}">
+          <img id="pf-${f.key}-preview" class="file-preview" alt="">
+          <p class="file-status" id="pf-${f.key}-status"></p>
+        </div>`;
+      }
+      return `<div class="field">
         <label for="pf-${f.key}">${f.label}</label>
         ${f.type === "textarea"
           ? `<textarea id="pf-${f.key}" placeholder="${f.placeholder || ""}"></textarea>`
@@ -740,15 +752,28 @@ function initPageContent() {
           ? `<input type="url" id="pf-${f.key}" placeholder="${f.placeholder || ""}">`
           : `<input type="text" id="pf-${f.key}" placeholder="${f.placeholder || ""}">`
         }
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
+
+    fields.filter((f) => f.type === "image").forEach((f) => {
+      bindUploader({
+        fileId: "pf-" + f.key + "-file",
+        hiddenId: "pf-" + f.key,
+        previewId: "pf-" + f.key + "-preview",
+        statusId: "pf-" + f.key + "-status",
+        folder: "pages"
+      });
+    });
 
     getDoc(doc(db, "siteContent", pageKey)).then((snap) => {
       if (!snap.exists()) return;
       const d = snap.data();
       fields.forEach((f) => {
         const el = document.getElementById(`pf-${f.key}`);
-        if (el && d[f.key]) el.value = d[f.key];
+        if (el && d[f.key]) {
+          el.value = d[f.key];
+          if (f.type === "image") setPreview(document.getElementById("pf-" + f.key + "-preview"), d[f.key]);
+        }
       });
     });
   }
@@ -934,7 +959,6 @@ function initGeneral() {
     instagramUrl: document.getElementById("g-instagram"),
     tiktokUrl: document.getElementById("g-tiktok"),
     paypalMeUrl: document.getElementById("g-paypal"),
-    whatsappUrl: document.getElementById("g-whatsapp"),
     telegramUrl: document.getElementById("g-telegram"),
     replyTime: document.getElementById("g-reply"),
     studioLocation: document.getElementById("g-location"),
@@ -946,7 +970,7 @@ function initGeneral() {
   getDoc(ref).then((snap) => {
     if (!snap.exists()) return;
     const d = snap.data();
-    Object.entries(fields).forEach(([key, el]) => { if (d[key]) el.value = d[key]; });
+    Object.entries(fields).forEach(([key, el]) => { if (el && d[key]) el.value = d[key]; });
   });
 
   form.addEventListener("submit", async (e) => {

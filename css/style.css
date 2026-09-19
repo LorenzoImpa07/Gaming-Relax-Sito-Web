@@ -404,6 +404,43 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   font-size: 18px;
   text-shadow: 0 1px 12px rgba(0,0,0,.55);
 }
+.split-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+  align-items: center;
+}
+.hero.has-side,
+.home-store.has-side,
+.studio-band.has-side { text-align: left; }
+.hero.has-side .split-section,
+.home-store.has-side .split-section,
+.studio-band.has-side .split-section {
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, .8fr);
+}
+.hero.has-side .lede { margin: 24px 0 34px; }
+.split-copy { min-width: 0; }
+.split-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  max-height: 460px;
+  object-fit: cover;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.12);
+  display: block;
+  background: #0b0f18;
+}
+.home-store.has-side .home-store-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (max-width: 900px) {
+  .hero.has-side .split-section,
+  .home-store.has-side .split-section,
+  .studio-band.has-side .split-section {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ---------------- Page Hero (TEAM) ---------------- */
 .page-hero {

@@ -118,8 +118,6 @@ getDoc(doc(db, "siteContent", "general")).then((snap) => {
   if (d.studioLocation) {
     document.querySelectorAll('[data-general="studioLocation"]').forEach((el) => { el.textContent = d.studioLocation; });
   }
-  const wa = document.getElementById("contact-whatsapp");
-  if (wa && d.whatsappUrl) { wa.href = d.whatsappUrl; wa.hidden = false; }
   const tg = document.getElementById("contact-telegram");
   if (tg && d.telegramUrl) { tg.href = d.telegramUrl; tg.hidden = false; }
 }).catch(() => { applySocials({}); });
@@ -133,6 +131,18 @@ if (pageKey) {
     document.querySelectorAll("[data-edit]").forEach((el) => {
       const key = el.dataset.edit;
       if (d[key]) el.innerHTML = applyLineBreaks(d[key]);
+    });
+    document.querySelectorAll("[data-side-img]").forEach((img) => {
+      const key = img.dataset.sideImg;
+      const url = d[key];
+      const wrap = document.querySelector('[data-side-wrap="' + key + '"]');
+      if (url) {
+        img.src = url;
+        if (wrap) wrap.hidden = false;
+        img.closest("section")?.classList.add("has-side");
+      } else if (wrap) {
+        wrap.hidden = true;
+      }
     });
   }).catch(() => { /* restano i testi/sfondo predefiniti */ });
 }
