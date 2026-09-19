@@ -2,11 +2,18 @@
 // Galleria Art dinamica — immagini cliccabili con scheda info (Dashboard)
 // ==========================================================================
 import { db } from "./firebase-init.js";
-import { collection, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 
 function escapeHtml(str = "") {
-  return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;" }[m]));
+  const map = {
+    "&": "&" + "amp;",
+    "<": "&" + "lt;",
+    ">": "&" + "gt;",
+    '"': "&" + "quot;",
+    "'": "&#39;"
+  };
+  return String(str).replace(/[&<>"']/g, (m) => map[m]);
 }
 
 const CATEGORY_LABELS = {
@@ -16,7 +23,6 @@ const CATEGORY_LABELS = {
   grafica: "Grafica / Identità visiva"
 };
 
-const grid = document.getElementById("gallery-grid");
 let currentItems = [];
 let visibleItems = [];
 let activeIndex = 0;
@@ -103,6 +109,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 function render(items) {
+  const grid = document.getElementById("gallery-grid");
   if (!grid) return;
 
   if (items.length === 0) {
@@ -132,11 +139,17 @@ function render(items) {
   });
 }
 
-onSnapshot(query(collection(db, "gallery"), orderBy("createdAt", "desc")), (snap) => {
-  currentItems = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+onSnapshot(collection(db, "gallery"), (snap) => {
+  currentItems = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => {
+      const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+      const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
   render(currentItems);
 }, () => {
-  if (grid) grid.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Impossibile caricare la galleria al momento.</p>';
+  const g = document.getElementById("gallery-grid");
+  if (g) g.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Impossibile caricare la galleria al momento.</p>';
 });
 
 document.querySelectorAll("[data-gallery-filter]").forEach((pill) => {
