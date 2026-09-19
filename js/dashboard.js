@@ -675,6 +675,8 @@ const PAGE_FIELDS = {
     { key: "heroAccent", label: "Titolo hero — parola evidenziata", type: "input", placeholder: "unico." },
     { key: "heroSubtitle", label: "Sottotitolo hero", type: "textarea", placeholder: "Grafiche custom per tastiere e arte su misura..." },
     { key: "heroCta", label: "Testo pulsante hero", type: "input", placeholder: "Esplora il nostro mondo →" },
+    { key: "storeTitle", label: "Titolo vetrina Store in Home", type: "input", placeholder: "Dal nostro Store" },
+    { key: "storeSubtitle", label: "Sottotitolo vetrina Store in Home", type: "textarea", placeholder: "Una selezione di prodotti..." },
     { key: "studioTitle", label: "Titolo sezione \"Un team. Uno studio.\"", type: "textarea", placeholder: "Un team.\nUno studio." },
     { key: "studioText", label: "Testo sezione \"Un team. Uno studio.\"", type: "textarea" },
     { key: "ctaTitle", label: "Titolo banner finale (\"Hai un'idea?\")", type: "textarea", placeholder: "Hai un'idea?\nTrasformiamola in qualcosa di unico." },
