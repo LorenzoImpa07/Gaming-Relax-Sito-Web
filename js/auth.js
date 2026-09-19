@@ -1,7 +1,7 @@
 // ==========================================================================
 // Autenticazione: login, registrazione, logout, reset password, anagrafica utenti
 // ==========================================================================
-import { auth, db, ADMIN_EMAIL, authReady, isAdminEmail, isVerifiedUser } from "./firebase-init.js?v=20260919y";
+import { auth, db, ADMIN_EMAIL, authReady, isAdminEmail, isVerifiedUser } from "./firebase-init.js?v=20260919ad";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

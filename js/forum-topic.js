@@ -2,7 +2,7 @@
 // Forum — pagina singolo argomento: messaggi in tempo reale + moderazione
 // Sistema custom con stati, lock, pin e permessi staff
 // ==========================================================================
-import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260919y";
+import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260919ad";
 import { doc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

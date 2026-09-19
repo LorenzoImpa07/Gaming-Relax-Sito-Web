@@ -1,72 +1,18 @@
-function loadImage(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("img")); };
-    img.src = url;
-  });
-}
+import { storage, authReady } from "./firebase-init.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-export async function compressImage(file, maxSide = 1200, maxChars = 720000, cover = false) {
-  const img = await loadImage(file);
-  let w = img.width;
-  let h = img.height;
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  if (cover) {
-    canvas.width = maxSide;
-    canvas.height = maxSide;
-    const scale = Math.max(maxSide / w, maxSide / h);
-    const dw = w * scale;
-    const dh = h * scale;
-    ctx.fillStyle = "#111111";
-    ctx.fillRect(0, 0, maxSide, maxSide);
-    ctx.drawImage(img, (maxSide - dw) / 2, (maxSide - dh) / 2, dw, dh);
-  } else {
-    if (w > maxSide || h > maxSide) {
-      if (w > h) { h = Math.round(h * maxSide / w); w = maxSide; }
-      else { w = Math.round(w * maxSide / h); h = maxSide; }
-    }
-    canvas.width = w;
-    canvas.height = h;
-    ctx.drawImage(img, 0, 0, w, h);
-  }
-  let q = 0.74;
-  let data = canvas.toDataURL("image/jpeg", q);
-  while (data.length > maxChars && q > 0.38) {
-    q -= 0.08;
-    data = canvas.toDataURL("image/jpeg", q);
-  }
-  if (data.length > maxChars && maxSide > 640) {
-    return compressImage(file, Math.round(maxSide * 0.75), maxChars, cover);
-  }
-  if (data.length > 900000) throw new Error("too-big");
-  return data;
+function safeName(file) {
+  const raw = String(file?.name || "file").replace(/[^\w.\-]+/g, "_");
+  return (raw || "file").slice(0, 80);
 }
-
-const SIZE = {
-  avatars: 256,
-  products: 1100,
-  team: 800,
-  gallery: 1000,
-  news: 1100,
-  backgrounds: 1600,
-  logo: 400,
-  forum: 900,
-  reviews: 900,
-  uploads: 1100
-};
 
 export async function uploadFile(file, folder = "uploads") {
   if (!file) return "";
-  if (file.type && file.type.startsWith("video/")) {
-    throw new Error("video");
-  }
-  const side = SIZE[folder] || 1100;
-  const maxChars = folder === "avatars" ? 180000 : folder === "backgrounds" ? 820000 : 720000;
-  const cover = folder === "avatars" || folder === "logo";
-  return compressImage(file, side, maxChars, cover);
+  await authReady.catch(() => {});
+  const path = (folder || "uploads") + "/" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + safeName(file);
+  const fileRef = ref(storage, path);
+  await uploadBytes(fileRef, file, { contentType: file.type || "application/octet-stream" });
+  return getDownloadURL(fileRef);
 }
 
 export function setPreview(el, url) {
@@ -80,6 +26,17 @@ export function setPreview(el, url) {
   el.style.display = "block";
 }
 
+function failMessage(err) {
+  const code = String(err && (err.code || err.message) || "");
+  if (/storage\/unauthorized|permission/i.test(code)) {
+    return "Accesso negato a Storage. Pubblica le regole in Console Firebase → Storage → Regole (file storage.rules.txt).";
+  }
+  if (/storage\/retry-limit|storage\/unknown|404|not found|bucket/i.test(code)) {
+    return "Attiva Firebase Storage: Console → Storage → Inizia. Il piano gratuito Spark va bene, non c'è limite di peso file lato sito.";
+  }
+  return "Caricamento non riuscito. Riprova. Se è la prima volta, attiva Storage in Firebase.";
+}
+
 export function bindUploader(opts) {
   const fileEl = document.getElementById(opts.fileId);
   const hidden = document.getElementById(opts.hiddenId);
@@ -90,22 +47,21 @@ export function bindUploader(opts) {
   fileEl.addEventListener("change", async () => {
     const file = fileEl.files?.[0];
     if (!file) return;
-    if (file.type && file.type.startsWith("video/")) {
-      if (status) {
-        status.textContent = "I video non stanno nel piano gratis. Caricali su GitHub in videos/ e scrivi es. videos/sfondo.mp4";
-        status.style.color = "#fca5a5";
-      }
-      return;
+    if (status) {
+      status.textContent = "Caricamento in corso…";
+      status.style.color = "var(--text-dim)";
     }
-    if (status) { status.textContent = "Ottimizzazione foto…"; status.style.color = "var(--text-dim)"; }
     try {
       const url = await uploadFile(file, opts.folder || "uploads");
       hidden.value = url;
-      setPreview(preview, url);
-      if (status) { status.textContent = "Foto pronta. Salva per pubblicarla."; status.style.color = "var(--lime)"; }
-    } catch (_) {
+      if (file.type && file.type.startsWith("image/")) setPreview(preview, url);
       if (status) {
-        status.textContent = "Foto troppo pesante. Usa un jpg più piccolo.";
+        status.textContent = "File pronto. Salva per pubblicarlo.";
+        status.style.color = "var(--lime)";
+      }
+    } catch (err) {
+      if (status) {
+        status.textContent = failMessage(err);
         status.style.color = "#fca5a5";
       }
     }
@@ -118,29 +74,25 @@ export function bindMultiUploader(opts) {
   const status = opts.statusId ? document.getElementById(opts.statusId) : null;
   if (!fileEl || !hidden) return;
   fileEl.addEventListener("change", async () => {
-    const files = [...(fileEl.files || [])].slice(0, 4);
+    const files = [...(fileEl.files || [])];
     if (!files.length) return;
-    if (status) { status.textContent = "Ottimizzazione foto…"; status.style.color = "var(--text-dim)"; }
+    if (status) {
+      status.textContent = "Caricamento in corso…";
+      status.style.color = "var(--text-dim)";
+    }
     try {
       const urls = [];
       for (const f of files) urls.push(await uploadFile(f, opts.folder || "uploads"));
       const prev = hidden.value.split("\n").map((s) => s.trim()).filter(Boolean);
       const all = [...prev, ...urls];
-      let out = [];
-      let total = 0;
-      for (const u of all) {
-        if (total + u.length > 800000) break;
-        out.push(u);
-        total += u.length;
-      }
-      hidden.value = out.join("\n");
+      hidden.value = all.join("\n");
       if (status) {
-        status.textContent = out.length + " foto pronte. Salva per pubblicarle.";
+        status.textContent = all.length + " file pronti. Salva per pubblicarli.";
         status.style.color = "var(--lime)";
       }
-    } catch (_) {
+    } catch (err) {
       if (status) {
-        status.textContent = "Una foto è troppo pesante. Usa jpg più piccoli.";
+        status.textContent = failMessage(err);
         status.style.color = "#fca5a5";
       }
     }

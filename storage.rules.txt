@@ -1,10 +1,15 @@
+// ==========================================================================
+// REGOLE STORAGE — Gaming Relax
+// Console Firebase → Storage → scheda "Regole" → incolla e Pubblica.
+// Serve una volta: Console → Storage → Inizia (piano Spark gratuito ok).
+// ==========================================================================
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null
-                   && request.resource.size < 40 * 1024 * 1024;
+      allow write: if request.auth != null;
     }
   }
 }
