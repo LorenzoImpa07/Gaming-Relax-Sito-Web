@@ -1,17 +1,106 @@
 // ==========================================================================
-// Galleria Art dinamica — legge le immagini da Firestore (gestite dalla Dashboard)
-// con filtro per categoria (Tastiere Custom, Keycaps, Setup & RGB, Grafica)
+// Galleria Art dinamica — immagini cliccabili con scheda info (Dashboard)
 // ==========================================================================
 import { db } from "./firebase-init.js";
 import { collection, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 
 function escapeHtml(str = "") {
-  return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+  return String(str).replace(/[&<>"']/g, (m) => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;" }[m]));
 }
+
+const CATEGORY_LABELS = {
+  tastiere: "Tastiere Custom",
+  keycaps: "Keycaps",
+  setup: "Setup & RGB",
+  grafica: "Grafica / Identità visiva"
+};
 
 const grid = document.getElementById("gallery-grid");
 let currentItems = [];
+let visibleItems = [];
+let activeIndex = 0;
+
+function ensureLightbox() {
+  let box = document.getElementById("art-lightbox");
+  if (box) return box;
+  box = document.createElement("div");
+  box.id = "art-lightbox";
+  box.className = "art-lightbox";
+  box.setAttribute("hidden", "");
+  box.innerHTML = `
+    <div class="art-lightbox__backdrop" data-art-close></div>
+    <div class="art-lightbox__panel" role="dialog" aria-modal="true" aria-labelledby="art-lb-title">
+      <button type="button" class="art-lightbox__close" data-art-close aria-label="Chiudi">✕</button>
+      <button type="button" class="art-lightbox__nav art-lightbox__nav--prev" data-art-prev aria-label="Precedente">‹</button>
+      <button type="button" class="art-lightbox__nav art-lightbox__nav--next" data-art-next aria-label="Successiva">›</button>
+      <div class="art-lightbox__media"><img id="art-lb-img" alt=""></div>
+      <div class="art-lightbox__info">
+        <span class="art-lightbox__cat" id="art-lb-cat"></span>
+        <h2 id="art-lb-title"></h2>
+        <p class="art-lightbox__desc" id="art-lb-desc"></p>
+        <dl class="art-lightbox__meta" id="art-lb-meta"></dl>
+        <a class="btn btn--lime art-lightbox__link" id="art-lb-link" target="_blank" rel="noopener" hidden>Apri link</a>
+      </div>
+    </div>`;
+  document.body.appendChild(box);
+  box.addEventListener("click", (e) => {
+    if (e.target.closest("[data-art-close]")) closeLightbox();
+    if (e.target.closest("[data-art-prev]")) stepLightbox(-1);
+    if (e.target.closest("[data-art-next]")) stepLightbox(1);
+  });
+  return box;
+}
+
+function openLightbox(index) {
+  if (!visibleItems.length) return;
+  activeIndex = (index + visibleItems.length) % visibleItems.length;
+  const item = visibleItems[activeIndex];
+  const box = ensureLightbox();
+  const title = item.title || item.caption || "Opera";
+  document.getElementById("art-lb-img").src = item.imageUrl || "";
+  document.getElementById("art-lb-img").alt = title;
+  document.getElementById("art-lb-cat").textContent = CATEGORY_LABELS[item.category] || item.category || "";
+  document.getElementById("art-lb-title").textContent = title;
+  const desc = item.description || item.caption || "";
+  const descEl = document.getElementById("art-lb-desc");
+  descEl.textContent = desc;
+  descEl.hidden = !desc;
+  const meta = [];
+  if (item.technique) meta.push(["Tecnica", item.technique]);
+  if (item.year) meta.push(["Anno", item.year]);
+  if (item.caption && item.title && item.caption !== item.title) meta.push(["Nota", item.caption]);
+  document.getElementById("art-lb-meta").innerHTML = meta.map(([k, v]) =>
+    `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`
+  ).join("");
+  const link = document.getElementById("art-lb-link");
+  if (item.link) {
+    link.href = item.link;
+    link.hidden = false;
+  } else {
+    link.hidden = true;
+  }
+  box.removeAttribute("hidden");
+  document.body.classList.add("art-lb-open");
+}
+
+function closeLightbox() {
+  const box = document.getElementById("art-lightbox");
+  if (box) box.setAttribute("hidden", "");
+  document.body.classList.remove("art-lb-open");
+}
+
+function stepLightbox(dir) {
+  openLightbox(activeIndex + dir);
+}
+
+document.addEventListener("keydown", (e) => {
+  const box = document.getElementById("art-lightbox");
+  if (!box || box.hasAttribute("hidden")) return;
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowLeft") stepLightbox(-1);
+  if (e.key === "ArrowRight") stepLightbox(1);
+});
 
 function render(items) {
   if (!grid) return;
@@ -22,23 +111,29 @@ function render(items) {
   }
 
   const activeFilter = document.querySelector(".filter-pill.active")?.dataset.galleryFilter || "tutti";
-  const visible = activeFilter === "tutti" ? items : items.filter((i) => i.category === activeFilter);
+  visibleItems = activeFilter === "tutti" ? items : items.filter((i) => i.category === activeFilter);
 
-  if (visible.length === 0) {
+  if (visibleItems.length === 0) {
     grid.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Nessuna foto in questa categoria, per ora.</p>';
     return;
   }
 
-  grid.innerHTML = visible.map((item) => `
-    <figure class="gallery-post">
-      <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.caption || "Foto della galleria Gaming Relax")}" loading="lazy">
-      ${item.caption ? `<figcaption class="gallery-post__caption">${escapeHtml(item.caption)}</figcaption>` : ""}
+  grid.innerHTML = visibleItems.map((item, i) => `
+    <figure class="gallery-post" data-art-index="${i}">
+      <button type="button" class="gallery-post__hit" aria-label="Apri ${escapeHtml(item.title || item.caption || "immagine")}">
+        <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title || item.caption || "Foto della galleria Gaming Relax")}" loading="lazy">
+      </button>
+      ${item.caption || item.title ? `<figcaption class="gallery-post__caption">${escapeHtml(item.title || item.caption)}</figcaption>` : ""}
     </figure>
   `).join("");
+
+  grid.querySelectorAll("[data-art-index]").forEach((el) => {
+    el.addEventListener("click", () => openLightbox(Number(el.dataset.artIndex)));
+  });
 }
 
 onSnapshot(query(collection(db, "gallery"), orderBy("createdAt", "desc")), (snap) => {
-  currentItems = snap.docs.map((d) => d.data());
+  currentItems = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   render(currentItems);
 }, () => {
   if (grid) grid.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Impossibile caricare la galleria al momento.</p>';

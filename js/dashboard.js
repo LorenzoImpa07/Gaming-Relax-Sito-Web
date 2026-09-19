@@ -995,7 +995,7 @@ function initGallery() {
       row.innerHTML = `
         <img class="admin-row__thumb" src="${escapeHtml(g.imageUrl || "")}" alt="" onerror="this.style.visibility='hidden'">
         <div class="admin-row__info">
-          <strong>${escapeHtml(g.caption || "(senza didascalia)")}</strong>
+          <strong>${escapeHtml(g.title || g.caption || "(senza titolo)")}</strong>
           <span>${escapeHtml(GALLERY_CATEGORY_LABELS[g.category] || g.category || "—")}</span>
         </div>
         <div class="admin-row__actions">
@@ -1021,6 +1021,11 @@ function initGallery() {
         setPreview(document.getElementById("gal-image-preview"), g.imageUrl || "");
         form.querySelector("#gal-category").value = g.category || "tastiere";
         form.querySelector("#gal-caption").value = g.caption || "";
+        form.querySelector("#gal-title").value = g.title || "";
+        form.querySelector("#gal-description").value = g.description || "";
+        form.querySelector("#gal-technique").value = g.technique || "";
+        form.querySelector("#gal-year").value = g.year || "";
+        form.querySelector("#gal-link").value = g.link || "";
         form.dataset.editId = btn.dataset.id;
         form.querySelector("button[type=submit]").textContent = "Salva modifiche";
         cancelBtn.style.display = "inline-flex";
@@ -1034,7 +1039,12 @@ function initGallery() {
     const data = {
       imageUrl: form.querySelector("#gal-image").value.trim(),
       category: form.querySelector("#gal-category").value,
-      caption: form.querySelector("#gal-caption").value.trim()
+      caption: form.querySelector("#gal-caption").value.trim(),
+      title: form.querySelector("#gal-title").value.trim(),
+      description: form.querySelector("#gal-description").value.trim(),
+      technique: form.querySelector("#gal-technique").value.trim(),
+      year: form.querySelector("#gal-year").value.trim(),
+      link: form.querySelector("#gal-link").value.trim()
     };
     if (!data.imageUrl) {
       alert("Carica un'immagine con Sfoglia.");
