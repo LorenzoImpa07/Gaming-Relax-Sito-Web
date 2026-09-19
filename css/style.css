@@ -1502,13 +1502,32 @@ body.art-lb-open { overflow: hidden; }
 .dash-sidebar {
   position: sticky;
   top: 96px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 22px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card-solid);
-  padding: 18px;
+  padding: 18px 10px 18px 18px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lime-dim) transparent;
+}
+.dash-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+.dash-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dash-sidebar::-webkit-scrollbar-thumb {
+  background: var(--lime-dim);
+  border-radius: 99px;
+}
+.dash-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--lime);
 }
 .dash-sidebar__group { display: flex; flex-direction: column; gap: 4px; }
 .dash-sidebar__label {
