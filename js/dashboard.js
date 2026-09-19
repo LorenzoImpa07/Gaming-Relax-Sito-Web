@@ -675,6 +675,7 @@ const PAGE_FIELDS = {
     { key: "heroAccent", label: "Titolo hero — parola evidenziata", type: "input", placeholder: "unico." },
     { key: "heroSubtitle", label: "Sottotitolo hero", type: "textarea", placeholder: "Grafiche custom per tastiere e arte su misura..." },
     { key: "heroCta", label: "Testo pulsante hero", type: "input", placeholder: "Esplora il nostro mondo →" },
+    { key: "newsSubtitle", label: "Sottotitolo sezione Novità in Home (testo grigio)", type: "textarea", placeholder: "Annunci, nuovi prodotti..." },
     { key: "storeTitle", label: "Titolo vetrina Store in Home", type: "input", placeholder: "Dal nostro Store" },
     { key: "storeSubtitle", label: "Sottotitolo vetrina Store in Home", type: "textarea", placeholder: "Una selezione di prodotti..." },
     { key: "studioTitle", label: "Titolo sezione \"Un team. Uno studio.\"", type: "textarea", placeholder: "Un team.\nUno studio." },
@@ -686,7 +687,8 @@ const PAGE_FIELDS = {
   store: [
     { key: "eyebrow", label: "Etichetta sopra il titolo", type: "input", placeholder: "Esplora lo Store" },
     { key: "title", label: "Titolo", type: "textarea", placeholder: "Hardware & Accessori" },
-    { key: "subtitle", label: "Sottotitolo", type: "textarea" }
+    { key: "subtitle", label: "Sottotitolo", type: "textarea" },
+    { key: "footNote", label: "Nota in basso (testo grigio piccolo)", type: "textarea", placeholder: "I prodotti sono gestiti dallo staff..." }
   ],
   custom: [
     { key: "eyebrow", label: "Etichetta sopra il titolo", type: "input", placeholder: "Il processo" },
@@ -699,7 +701,8 @@ const PAGE_FIELDS = {
   ],
   team: [
     { key: "title", label: "Titolo", type: "textarea", placeholder: "Il nostro team" },
-    { key: "subtitle", label: "Sottotitolo", type: "textarea" }
+    { key: "subtitle", label: "Sottotitolo", type: "textarea" },
+    { key: "footNote", label: "Nota in basso (testo grigio piccolo)", type: "textarea", placeholder: "Il team è gestito dallo staff..." }
   ],
   contatti: [
     { key: "eyebrow", label: "Etichetta sopra il titolo", type: "input", placeholder: "Progetti" },
