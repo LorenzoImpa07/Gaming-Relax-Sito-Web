@@ -206,37 +206,41 @@ function renderProducts(products) {
     const hiddenByPrice = priceN != null && priceN > maxPrice;
     return `
     <div class="product-card" data-product-id="${p.id}" data-product-category="${p.category}" style="${hiddenByCategory || hiddenByWishlist || hiddenBySale || hiddenByStock || hiddenByPrice ? "display:none;" : ""}">
-      <a href="prodotto.html?id=${p.id}" class="product-card__img" style="background:${p.imageUrl ? `url('${escapeHtml(p.imageUrl)}') center/cover` : "linear-gradient(135deg,#101522,#050608)"};display:block;">
-        ${isRecent(p.createdAt) ? '<span class="badge-new">Novità</span>' : ""}
-        ${sale.onSale ? '<span class="badge-sale">In offerta</span>' : ""}
-        ${p.inStock === false ? '<span class="badge-oos">Esaurito</span>' : ""}
-      </a>
-      <div class="product-card__body">
-        <div class="product-card__top">
-          <div>
-            <span class="product-card__cat">${escapeHtml(categoryLabel(p))}</span>
-            <h3><a href="prodotto.html?id=${p.id}" style="color:inherit;">${escapeHtml(p.name)}</a></h3>
+      ${sale.onSale ? '<span class="badge-sale">In offerta</span>' : ""}
+      ${isRecent(p.createdAt) ? '<span class="badge-new">Novità</span>' : ""}
+      ${p.inStock === false ? '<span class="badge-oos">Esaurito</span>' : ""}
+      <a href="prodotto.html?id=${p.id}" class="product-card__hit">
+        <div class="product-card__brand">
+          <img src="images/logo.png" alt="Gaming Relax">
+          <div class="product-card__brand-text">
+            <strong>GAMING RELAX</strong>
+            <span>Custom Keyboards & Digital Craftsmanship</span>
           </div>
-          <button class="wish-btn ${isFav ? "active" : ""}" data-product-id="${p.id}" aria-label="${isFav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}">${isFav ? "♥" : "♡"}</button>
+          <span class="product-card__accent" aria-hidden="true"></span>
         </div>
-        ${p.description ? `<p style="font-size:14px;">${escapeHtml(p.description)}</p>` : ""}
-        <div class="product-flags">
-          ${flags.handmade ? '<span class="flag-chip">Fatto a mano</span>' : ""}
-          ${flags.quote ? '<span class="flag-chip flag-chip--quote">Su preventivo</span>' : ""}
-          <span class="flag-chip flag-chip--ship">${escapeHtml(flags.lead)}</span>
+        <div class="product-card__body">
+          <span class="product-card__cat">${escapeHtml((storeNavGroups.find((x) => x.id === p.category)?.label) || CATEGORY_LABELS[p.category] || p.category || "")}</span>
+          <h3>${escapeHtml(p.name)}</h3>
+          ${p.description ? `<p class="product-card__desc">${escapeHtml(p.description)}</p>` : ""}
+          <div class="product-flags">
+            ${flags.handmade ? '<span class="flag-chip">Fatto a mano</span>' : ""}
+            ${flags.quote ? '<span class="flag-chip flag-chip--quote">Su preventivo</span>' : ""}
+            <span class="flag-chip flag-chip--ship">${escapeHtml(flags.lead)}</span>
+          </div>
         </div>
-        <div class="product-card__footer">
-          ${sale.onSale
-            ? `<span class="product-card__price is-sale"><s class="price-old">${escapeHtml(withEuro(sale.listStr))}</s><strong class="price-now">${escapeHtml(withEuro(sale.saleStr))}</strong></span>`
-            : `<span class="product-card__price">${escapeHtml(withEuro(p.price))}</span>`
-          }
-          ${p.inStock === false
-            ? `<button type="button" class="btn btn--outline btn-notify" data-id="${p.id}" data-name="${escapeHtml(p.name)}" style="padding:10px 18px;font-size:13px;">Avvisami 🔔</button>`
-            : `<a href="prodotto.html?id=${p.id}" class="btn btn--lime" style="padding:10px 18px;font-size:13px;">Vedi prodotto</a>`
-          }
-        </div>
-        <div class="notify-form" id="notify-form-${p.id}" style="display:none;"></div>
+      </a>
+      <div class="product-card__footer">
+        <button class="wish-btn ${isFav ? "active" : ""}" data-product-id="${p.id}" aria-label="${isFav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}">${isFav ? "♥" : "♡"}</button>
+        ${sale.onSale
+          ? `<span class="product-card__price is-sale"><s class="price-old">${escapeHtml(withEuro(sale.listStr))}</s><strong class="price-now">${escapeHtml(withEuro(sale.saleStr))}</strong></span>`
+          : `<span class="product-card__price">${escapeHtml(withEuro(p.price))}</span>`
+        }
+        ${p.inStock === false
+          ? `<button type="button" class="btn btn--outline btn-notify" data-id="${p.id}" data-name="${escapeHtml(p.name)}">Avvisami</button>`
+          : `<a href="prodotto.html?id=${p.id}" class="btn btn--lime product-card__cta">Vedi prodotto</a>`
+        }
       </div>
+      <div class="notify-form" id="notify-form-${p.id}" style="display:none;"></div>
     </div>`;
   }).join("");
 
