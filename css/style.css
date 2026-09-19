@@ -1914,25 +1914,41 @@ body.art-lb-open { overflow: hidden; }
   height: 40px;
   display: flex;
   align-items: center;
+  padding-right: 44px;
+}
+.promo-banner__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 .promo-banner__track {
   display: flex;
-  gap: 60px;
-  white-space: nowrap;
-  animation: promo-scroll 18s linear infinite;
-  padding-left: 60px;
+  width: max-content;
+  will-change: transform;
+  animation: promo-scroll var(--promo-speed, 22s) linear infinite;
 }
 .promo-banner:hover .promo-banner__track { animation-play-state: paused; }
+.promo-banner__group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
 .promo-banner__text {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 3.5em;
+  flex-shrink: 0;
 }
 @keyframes promo-scroll {
   from { transform: translateX(0); }
-  to { transform: translateX(-33.333%); }
+  to { transform: translateX(-50%); }
 }
 .promo-banner__close {
   position: absolute;
