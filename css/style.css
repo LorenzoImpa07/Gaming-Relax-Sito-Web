@@ -2691,3 +2691,46 @@ section { padding: 80px 0; }
   font-weight: 700;
   color: #111;
 }
+
+.thanks-hero {
+  min-height: 68vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 20px 60px;
+}
+.thanks-card {
+  max-width: 640px;
+}
+.thanks-card h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 700;
+  margin: 0 0 14px;
+  letter-spacing: -0.03em;
+  text-transform: none;
+}
+.thanks-card h1 span { font-size: 0.85em; }
+.thanks-card p {
+  margin: 0 auto 28px;
+  color: var(--text-dim);
+  font-size: 16px;
+  line-height: 1.55;
+  max-width: 480px;
+}
+.thanks-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.thanks-btn {
+  min-width: 168px;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-weight: 600;
+}
+.thanks-actions .btn--lime {
+  box-shadow: 0 8px 28px var(--lime-dim);
+}
