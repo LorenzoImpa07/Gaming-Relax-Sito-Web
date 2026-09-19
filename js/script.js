@@ -2,6 +2,28 @@
 // Gaming Relax — interazioni base
 // ==========================================================================
 
+(function prefetchPages() {
+  const seen = new Set();
+  function prefetch(href) {
+    try {
+      const u = new URL(href, location.href);
+      if (u.origin !== location.origin) return;
+      if (u.pathname === location.pathname && u.search === location.search) return;
+      const key = u.pathname + u.search;
+      if (seen.has(key)) return;
+      seen.add(key);
+      const l = document.createElement("link");
+      l.rel = "prefetch";
+      l.href = u.href;
+      document.head.appendChild(l);
+    } catch (_) {}
+  }
+  document.addEventListener("pointerover", (e) => {
+    const a = e.target.closest && e.target.closest("a[href]");
+    if (a) prefetch(a.getAttribute("href"));
+  }, true);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // --- Menu di navigazione (hamburger) ---

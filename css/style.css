@@ -22,7 +22,24 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; background: #05070e; }
+html {
+  scroll-behavior: smooth;
+  background: #05070e;
+  color-scheme: dark;
+}
+@view-transition { navigation: auto; }
+::view-transition-old(root) {
+  animation: gr-fade-out .18s ease both;
+}
+::view-transition-new(root) {
+  animation: gr-fade-in .22s ease both;
+}
+@keyframes gr-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes gr-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  html { scroll-behavior: auto; }
+}
 
 body {
   margin: 0;
@@ -33,7 +50,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 body.has-page-bg {
-  background: transparent;
+  background-color: transparent;
+  background-image: none;
 }
 body.has-page-bg > .site-header {
   z-index: 400;

@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Store — Gaming Relax</title>
 <link rel="icon" type="image/x-icon" href="images/favicon.ico">
@@ -21,8 +22,8 @@
 <meta name="description" content="Sfoglia tastiere custom, keycaps, switch e accessori per il tuo desk setup.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919u">
-<script>(function(){try{var d=JSON.parse(localStorage.getItem("gr_design")||"{}");var s=document.documentElement.style;if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";s.backgroundColor="#05070e";}}catch(e){}})();</script>
+<link rel="stylesheet" href="css/style.css?v=20260919v">
+<script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){s.setProperty("--lime",d.limeColor);s.setProperty("--lime-dim",d.limeColor+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 </head>
 <body data-page="store">
 
@@ -137,7 +138,7 @@
   </div>
 </footer>
 
-<script src="js/script.js?v=20260919i"></script>
+<script src="js/script.js?v=20260919v"></script>
 <script type="module" src="js/firebase-init.js?v=20260919m"></script>
 <script type="module" src="js/cart.js?v=20260919m"></script>
 <script type="module" src="js/bg-scene.js?v=20260919d"></script>
