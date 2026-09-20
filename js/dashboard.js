@@ -1573,7 +1573,7 @@ function initCustomStudio() {
     const list = document.getElementById(listId);
     const cancel = document.getElementById(cancelId);
     const colRef = collection(db, colName);
-    onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
+    onSnapshot(colRef, (snap) => {
       if (!list) return;
       if (snap.empty) {
         list.innerHTML = '<p class="empty-hint">Nessun elemento.</p>';

@@ -1,19 +1,19 @@
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
-import { collection, addDoc, doc, getDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, auth, isVerifiedUser } from "./firebase-init.js";
+import { collection, addDoc, doc, getDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { validateRealEmailAsync } from "./email-check.js";
 
 const DEFAULTS = {
   packages: [
-    { name: "Essential", fromPrice: 89, time: "7–10 giorni", hot: false, features: "Lube switch\nStabilizzatori tuned\nTest base", imageUrl: "" },
-    { name: "Pro", fromPrice: 149, time: "10–14 giorni", hot: true, features: "Tutto Essential\nFoam case + tape mod\nTest audio\nRegolazione plate", imageUrl: "" },
-    { name: "Signature", fromPrice: 249, time: "2–4 settimane", hot: false, features: "Full custom\nArt / keycaps\nLayout su misura\nVideo unboxing", imageUrl: "" }
+    { name: "Essential", fromPrice: 89, time: "7–10 giorni", hot: false, features: "Lube switch\nStabilizzatori tuned\nTest base" },
+    { name: "Pro", fromPrice: 149, time: "10–14 giorni", hot: true, features: "Tutto Essential\nFoam case + tape mod\nTest audio\nRegolazione plate" },
+    { name: "Signature", fromPrice: 249, time: "2–4 settimane", hot: false, features: "Full custom\nArt / keycaps\nLayout su misura\nVideo unboxing" }
   ],
   wizard: {
-    services: "Tastiera custom\nArt / keycaps\nAssemblaggio PC\nSito web\nConsulenza",
-    layouts: "60%\n65%\n75%\nTKL\nFull size\nNon applicabile",
-    switches: "Lineare\nTattile\nClicky\nDa consigliare",
-    extras: "Lube switch\nStabilizzatori\nFoam\nTape mod\nRGB\nKeycaps custom"
+    services: ["Tastiera custom", "Art / keycaps", "Assemblaggio PC", "Sito web", "Consulenza"],
+    layouts: ["60%", "65%", "75%", "TKL", "Full size", "Non applicabile"],
+    switches: ["Lineare", "Tattile", "Clicky", "Da consigliare"],
+    extras: ["Lube switch", "Stabilizzatori", "Foam", "Tape mod", "RGB", "Keycaps custom"]
   }
 };
 
@@ -29,21 +29,25 @@ function esc(s) {
 
 let packages = [];
 let builds = [];
-let wizard = { ...DEFAULTS.wizard };
+let wizard = {
+  services: DEFAULTS.wizard.services.slice(),
+  layouts: DEFAULTS.wizard.layouts.slice(),
+  switches: DEFAULTS.wizard.switches.slice(),
+  extras: DEFAULTS.wizard.extras.slice()
+};
 let currentUser = null;
-const state = { step: 1, service: "", layout: "", sw: "", extras: [], pack: "", note: "" };
+const state = { step: 1, service: "", layout: "", sw: "", extras: [], pack: "" };
 
-onAuthStateChanged(auth, (u) => {
-  currentUser = isVerifiedUser(u) ? u : null;
-  const em = document.getElementById("cfg-email");
-  if (em && currentUser?.email) { em.value = currentUser.email; em.readOnly = true; }
-});
+function parseList(raw, fallback) {
+  const arr = lines(raw);
+  return arr.length ? arr : fallback.slice();
+}
 
 function renderPackages() {
   const el = document.getElementById("custom-packs");
   if (!el) return;
   const list = packages.length ? packages : DEFAULTS.packages;
-  el.innerHTML = list.map((p, i) => `
+  el.innerHTML = list.map((p) => `
     <article class="cpack ${p.hot ? "is-hot" : ""}">
       ${p.hot ? '<span class="cpack-badge">Consigliato</span>' : ""}
       ${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="">` : ""}
@@ -51,16 +55,8 @@ function renderPackages() {
       <p class="cpack-price">da ${euro(p.fromPrice)}</p>
       <p class="cpack-time">${esc(p.time || "")}</p>
       <ul>${lines(p.features).map((f) => `<li>${esc(f)}</li>`).join("")}</ul>
-      <button type="button" class="btn btn--lime" data-pack="${esc(p.name)}" data-i="${i}">Configura questo</button>
+      <button type="button" class="btn btn--lime js-cfg-pack" data-pack="${esc(p.name)}">Configura questo</button>
     </article>`).join("");
-  el.querySelectorAll("[data-pack]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.pack = btn.dataset.pack;
-      state.step = 1;
-      renderWizard();
-      document.getElementById("custom-cfg")?.scrollIntoView({ behavior: "smooth" });
-    });
-  });
 }
 
 function renderBuilds() {
@@ -76,46 +72,34 @@ function renderBuilds() {
     </figure>`).join("");
 }
 
-function chips(id, items, multi) {
-  const box = document.getElementById(id);
+function paintChips(boxId, items, selected, multi) {
+  const box = document.getElementById(boxId);
   if (!box) return;
-  box.innerHTML = items.map((v) => {
-    const on = multi ? state.extras.includes(v) : (id.includes("service") ? state.service === v : id.includes("layout") ? state.layout === v : state.sw === v);
-    return `<button type="button" class="cfg-chip ${on ? "is-on" : ""}" data-v="${esc(v)}">${esc(v)}</button>`;
+  box.innerHTML = (items || []).map((v) => {
+    const on = multi ? selected.includes(v) : selected === v;
+    return `<button type="button" class="cfg-chip ${on ? "is-on" : ""}" data-chip="${esc(v)}">${esc(v)}</button>`;
   }).join("");
-  box.querySelectorAll(".cfg-chip").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const v = btn.dataset.v;
-      if (multi) {
-        state.extras = state.extras.includes(v) ? state.extras.filter((x) => x !== v) : state.extras.concat(v);
-      } else if (id.includes("service")) state.service = v;
-      else if (id.includes("layout")) state.layout = v;
-      else state.sw = v;
-      renderWizard();
-    });
-  });
 }
 
 function estimate() {
   const list = packages.length ? packages : DEFAULTS.packages;
   const p = list.find((x) => x.name === state.pack);
-  let n = p ? Number(p.fromPrice) || 0 : 89;
-  n += state.extras.length * 15;
-  return n;
+  return (p ? Number(p.fromPrice) || 0 : 89) + state.extras.length * 15;
 }
 
 function renderWizard() {
   const total = 5;
   const bar = document.getElementById("cfg-progress");
   if (bar) bar.style.width = `${(state.step / total) * 100}%`;
-  document.getElementById("cfg-step-label") && (document.getElementById("cfg-step-label").textContent = `Passo ${state.step} di ${total}`);
+  const lab = document.getElementById("cfg-step-label");
+  if (lab) lab.textContent = `Passo ${state.step} di ${total}`;
   document.querySelectorAll(".cfg-pane").forEach((p) => {
     p.hidden = Number(p.dataset.step) !== state.step;
   });
-  chips("cfg-services", lines(wizard.services), false);
-  chips("cfg-layouts", lines(wizard.layouts), false);
-  chips("cfg-switches", lines(wizard.switches), false);
-  chips("cfg-extras", lines(wizard.extras), true);
+  paintChips("cfg-services", wizard.services, state.service, false);
+  paintChips("cfg-layouts", wizard.layouts, state.layout, false);
+  paintChips("cfg-switches", wizard.switches, state.sw, false);
+  paintChips("cfg-extras", wizard.extras, state.extras, true);
   const packEl = document.getElementById("cfg-pack-hint");
   if (packEl) packEl.textContent = state.pack ? ("Pacchetto: " + state.pack) : "";
   const sum = document.getElementById("cfg-summary");
@@ -134,6 +118,14 @@ function renderWizard() {
   if (next) next.textContent = state.step === 5 ? "Invia richiesta" : "Avanti";
 }
 
+function setStatus(msg, html) {
+  const s = document.getElementById("cfg-status");
+  if (!s) return;
+  s.className = msg ? "form-status visible" : "form-status";
+  if (html) s.innerHTML = msg;
+  else s.textContent = msg || "";
+}
+
 function canNext() {
   if (state.step === 1) return !!state.service;
   if (state.step === 2) return !!state.layout;
@@ -142,17 +134,15 @@ function canNext() {
 }
 
 async function submitCfg() {
-  const status = document.getElementById("cfg-status");
   const alias = (document.getElementById("cfg-alias")?.value || "").trim();
   const email = (document.getElementById("cfg-email")?.value || "").trim();
   const discord = (document.getElementById("cfg-discord")?.value || "").trim();
   const note = (document.getElementById("cfg-note")?.value || "").trim();
-  if (!alias) { status.textContent = "Inserisci un nome."; status.className = "form-status visible"; return; }
+  if (!alias) { setStatus("Inserisci un nome."); return; }
   const emailErr = await validateRealEmailAsync(email);
-  if (emailErr) { status.textContent = emailErr; status.className = "form-status visible"; return; }
+  if (emailErr) { setStatus(emailErr); return; }
   if (!currentUser) {
-    status.innerHTML = 'Per inviare accedi con un\'email confermata. <a href="login.html">Accedi</a>';
-    status.className = "form-status visible";
+    setStatus('Per inviare accedi con un\'email confermata. <a href="login.html">Accedi</a>', true);
     return;
   }
   const progetto = [
@@ -177,50 +167,93 @@ async function submitCfg() {
       status: "nuova",
       createdAt: serverTimestamp()
     });
-    status.textContent = "Richiesta inviata. Ti ricontattiamo noi.";
-    status.className = "form-status visible";
+    setStatus("Richiesta inviata. Ti ricontattiamo noi.");
     state.step = 1; state.service = ""; state.layout = ""; state.sw = ""; state.extras = []; state.pack = "";
     renderWizard();
   } catch (_) {
-    status.textContent = "Invio non riuscito. Riprova o scrivici su Discord.";
-    status.className = "form-status visible";
+    setStatus("Invio non riuscito. Riprova o scrivici su Discord.");
   }
 }
 
-function bootNav() {
-  document.getElementById("cfg-next")?.addEventListener("click", () => {
+function onClick(e) {
+  const packBtn = e.target.closest(".js-cfg-pack");
+  if (packBtn) {
+    state.pack = packBtn.dataset.pack || "";
+    state.step = 1;
+    renderWizard();
+    document.getElementById("custom-cfg")?.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  const chip = e.target.closest(".cfg-chip");
+  if (chip) {
+    const v = chip.dataset.chip || chip.textContent.trim();
+    const box = chip.parentElement?.id || "";
+    if (box === "cfg-services") state.service = v;
+    else if (box === "cfg-layouts") state.layout = v;
+    else if (box === "cfg-switches") state.sw = v;
+    else if (box === "cfg-extras") {
+      state.extras = state.extras.includes(v) ? state.extras.filter((x) => x !== v) : state.extras.concat(v);
+    }
+    renderWizard();
+    return;
+  }
+  if (e.target.closest("#cfg-next")) {
     if (state.step < 5) {
-      if (!canNext()) {
-        const s = document.getElementById("cfg-status");
-        if (s) { s.textContent = "Scegli un'opzione per continuare."; s.className = "form-status visible"; }
-        return;
-      }
-      const s = document.getElementById("cfg-status");
-      if (s) s.className = "form-status";
+      if (!canNext()) { setStatus("Scegli un'opzione per continuare."); return; }
+      setStatus("");
       state.step += 1;
       renderWizard();
     } else submitCfg();
-  });
-  document.getElementById("cfg-back")?.addEventListener("click", () => {
+    return;
+  }
+  if (e.target.closest("#cfg-back")) {
     if (state.step > 1) { state.step -= 1; renderWizard(); }
-  });
+  }
 }
 
-onSnapshot(collection(db, "customPackages"), (snap) => {
-  packages = snap.docs.map((d) => d.data()).sort((a, b) => (a.order || 99) - (b.order || 99));
+function boot() {
+  if (!document.getElementById("custom-packs")) return;
+  if (document.documentElement.dataset.cfgBound === "1") {
+    renderPackages();
+    renderWizard();
+    return;
+  }
+  document.documentElement.dataset.cfgBound = "1";
+  document.addEventListener("click", onClick);
+  try {
+    onAuthStateChanged(auth, (u) => {
+      currentUser = isVerifiedUser(u) ? u : null;
+      const em = document.getElementById("cfg-email");
+      if (em && currentUser?.email) { em.value = currentUser.email; em.readOnly = true; }
+    });
+  } catch (_) {}
+
   renderPackages();
-}, () => { packages = []; renderPackages(); });
-
-onSnapshot(query(collection(db, "customBuilds"), orderBy("createdAt", "desc")), (snap) => {
-  builds = snap.docs.map((d) => d.data()).filter((b) => b.imageUrl);
-  renderBuilds();
-}, () => { builds = []; renderBuilds(); });
-
-getDoc(doc(db, "siteContent", "customWizard")).then((s) => {
-  if (s.exists()) wizard = { ...DEFAULTS.wizard, ...s.data() };
   renderWizard();
-}).catch(() => renderWizard());
 
-renderPackages();
-renderWizard();
-bootNav();
+  try {
+    onSnapshot(collection(db, "customPackages"), (snap) => {
+      packages = snap.docs.map((d) => d.data()).sort((a, b) => (a.order || 99) - (b.order || 99));
+      renderPackages();
+    }, () => { packages = []; renderPackages(); });
+  } catch (_) { renderPackages(); }
+
+  try {
+    onSnapshot(collection(db, "customBuilds"), (snap) => {
+      builds = snap.docs.map((d) => d.data()).filter((b) => b.imageUrl);
+      renderBuilds();
+    }, () => { builds = []; renderBuilds(); });
+  } catch (_) {}
+
+  getDoc(doc(db, "siteContent", "customWizard")).then((s) => {
+    if (!s.exists()) return;
+    const d = s.data() || {};
+    wizard.services = parseList(d.services, DEFAULTS.wizard.services);
+    wizard.layouts = parseList(d.layouts, DEFAULTS.wizard.layouts);
+    wizard.switches = parseList(d.switches, DEFAULTS.wizard.switches);
+    wizard.extras = parseList(d.extras, DEFAULTS.wizard.extras);
+    renderWizard();
+  }).catch(() => {});
+}
+
+boot();
