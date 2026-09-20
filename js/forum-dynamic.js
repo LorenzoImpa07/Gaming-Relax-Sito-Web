@@ -181,24 +181,23 @@ function boardRow(b, cat) {
     ? `<a class="forum-board-row__last" href="forum-topic.html?id=${last.id}">
         <span class="forum-board-row__last-meta">${prefixChip(last)}${formatDate(last.createdAt || last.lastActivityAt)}</span>
       </a>`
-    : "";
+    : `<div class="forum-board-row__last"></div>`;
 
   const href = pageLink(b.link) || `forum-board.html?id=${b.id}`;
   const ext = /^https?:\/\//i.test(href);
   const extra = ext ? ` target="_blank" rel="noopener"` : "";
 
   return `
-    <div class="forum-board-row${last ? " has-last" : ""}">
+    <div class="forum-board-row">
       <a class="forum-board-row__hit" href="${escapeHtml(href)}"${extra}>
         <div class="forum-board-row__icon" style="color:${escapeHtml(cat.color || "#ff4dad")}">${escapeHtml(b.icon || (isRead ? "📄" : (priv ? "🔒" : "💬")))}</div>
         <div class="forum-board-row__main">
           <div class="forum-board-row__title">${escapeHtml(b.name)}${b.link ? " ↗" : ""}</div>
-          <p>${escapeHtml(b.description || (priv ? "Solo tu e lo staff vedete le vostre conversazioni." : ""))}</p>
+          <p>${escapeHtml(b.description || "")}</p>
         </div>
         <div class="forum-board-row__stats">
-          ${isRead
-            ? `<span class="forum-type-pill">Lettura</span>`
-            : `<span><strong>${discussions}</strong> Discussioni</span><span><strong>${messages}</strong> Messaggi</span>`}
+          <span><strong>${discussions}</strong> Discussioni</span>
+          <span><strong>${messages}</strong> Messaggi</span>
         </div>
       </a>
       ${lastHtml}
