@@ -172,6 +172,8 @@ function pageLink(raw) {
   if (/^[a-z0-9._-]+\.html(\?.*)?$/i.test(s)) return s;
   return "https://" + s;
 }
+
+function boardRow(b, cat) {
   const { discussions, messages, last } = statsForBoard(b.id);
   const isRead = b.type === "readonly";
   const priv = areaIsPrivate(cat, b);
