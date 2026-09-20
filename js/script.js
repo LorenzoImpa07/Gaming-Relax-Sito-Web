@@ -120,23 +120,6 @@ function bindHeaderScroll() {
 document.addEventListener('DOMContentLoaded', bindHeaderScroll);
 window.addEventListener('gr:navigated', bindHeaderScroll);
 
-function bindHomeCursor() {
-  document.querySelectorAll('.gr-cursor').forEach((el) => el.remove());
-  if (document.body.dataset.page !== 'home') return;
-  if (window.matchMedia('(pointer: coarse)').matches) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const cur = document.createElement('div');
-  cur.className = 'gr-cursor';
-  cur.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(cur);
-  document.body.classList.add('has-gr-cursor');
-  window.addEventListener('pointermove', (e) => {
-    cur.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
-  }, { passive: true });
-}
-document.addEventListener('DOMContentLoaded', bindHomeCursor);
-window.addEventListener('gr:navigated', bindHomeCursor);
-
 function bindReveal() {
   const nodes = document.querySelectorAll('.reveal');
   if (!nodes.length) return;

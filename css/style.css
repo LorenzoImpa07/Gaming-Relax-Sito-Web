@@ -3475,32 +3475,8 @@ body:not([data-page="home"]) .site-header {
   margin: 0 0 8px;
   font-weight: 700;
 }
-
-body.has-gr-cursor,
-body.has-gr-cursor * { cursor: none; }
-body.has-gr-cursor input,
-body.has-gr-cursor textarea,
-body.has-gr-cursor select { cursor: text; }
-.gr-cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  border: 1.5px solid color-mix(in srgb, var(--lime) 75%, #fff);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: difference;
-}
-@media (pointer: coarse) {
-  .gr-cursor { display: none !important; }
-  body.has-gr-cursor, body.has-gr-cursor * { cursor: auto; }
-}
 @media (prefers-reduced-motion: reduce) {
   .hero .split-media.is-hero-photo::after,
   .product-card__media::after,
   .home-store-card.is-photo .home-store-card__img::after { display: none; }
-  .gr-cursor { display: none !important; }
 }
