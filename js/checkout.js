@@ -31,6 +31,9 @@ let cfg = { shippingFlat: 0, freeOver: 0, taxPercent: 22, methods: [], stripePk:
 let tipPct = 2;
 let discount = 0;
 let discountCode = "";
+let creatorCode = "";
+let creatorPercent = 0;
+let creatorName = "";
 let currentUser = null;
 let stripe = null;
 let cardNumberEl = null;
@@ -236,8 +239,32 @@ document.getElementById("co-apply")?.addEventListener("click", async () => {
   const msg = document.getElementById("co-disc-msg");
   discount = 0;
   discountCode = "";
+  creatorCode = "";
+  creatorPercent = 0;
+  creatorName = "";
   if (!code) { msg.textContent = ""; renderSum(); return; }
   try {
+    const crSnap = await getDoc(doc(db, "siteContent", "publicCreators"));
+    const creators = crSnap.exists() ? (crSnap.data().codes || {}) : {};
+    const creator = creators[code];
+    if (creator) {
+      creatorCode = code;
+      creatorPercent = Number(creator.commission) || 0;
+      creatorName = creator.name || "";
+      const dPct = Number(creator.discount) || 0;
+      const sub = subtotal();
+      if (dPct > 0) {
+        discount = sub * (dPct / 100);
+        if (discount > sub) discount = sub;
+        discountCode = code;
+      }
+      const bits = [];
+      bits.push("Codice creatore " + (creatorName || code) + " applicato.");
+      if (dPct > 0) bits.push("Sconto cliente " + dPct + "%.");
+      msg.textContent = bits.join(" ");
+      renderSum();
+      return;
+    }
     const snap = await getDoc(doc(db, "siteContent", "publicVouchers"));
     const codes = snap.exists() ? (snap.data().codes || {}) : {};
     const found = codes[code];
@@ -342,6 +369,10 @@ document.getElementById("co-form")?.addEventListener("submit", async (e) => {
       paymentMethod: method.name,
       discountCode,
       discount,
+      creatorCode,
+      creatorName,
+      creatorPercent,
+      creatorCommission: creatorPercent ? +(t.afterDisc * (creatorPercent / 100)).toFixed(2) : 0,
       shipping: t.ship,
       tax: t.tax,
       tip: t.tip,

@@ -57,6 +57,7 @@ onAuthStateChanged(auth, (user) => {
   initDesign();
   initGeneral();
   initVouchers();
+  initCreators();
   initNews();
   initReviews();
   initRestock();
@@ -1228,6 +1229,142 @@ function syncPublicVouchers(snap) {
 }
 
 // ==========================================================================
+// CODICI CREATORE — commissione % + sconto cliente opzionale
+// ==========================================================================
+function initCreators() {
+  const form = document.getElementById("creator-form");
+  const list = document.getElementById("admin-creator-list");
+  const cancelBtn = document.getElementById("creator-cancel-edit");
+  if (!form || !list) return;
+  const colRef = collection(db, "creators");
+  let creators = [];
+  let orders = [];
+
+  document.getElementById("cr-generate")?.addEventListener("click", () => {
+    form.querySelector("#cr-code").value = "CR-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+  });
+
+  function euro(n) {
+    return (Number(n) || 0).toLocaleString("it-IT", { style: "currency", currency: "EUR" });
+  }
+
+  function statsFor(code) {
+    const rows = orders.filter((o) => String(o.creatorCode || "").toUpperCase() === String(code || "").toUpperCase());
+    const earned = rows.reduce((s, o) => s + (Number(o.creatorCommission) || 0), 0);
+    return { uses: rows.length, earned };
+  }
+
+  function render() {
+    const q = (document.getElementById("creator-search")?.value || "").trim().toLowerCase();
+    const vis = creators.filter((c) => {
+      if (!q) return true;
+      return `${c.code} ${c.name} ${c.email}`.toLowerCase().includes(q);
+    });
+    if (!vis.length) {
+      list.innerHTML = '<p class="empty-hint">Nessun codice creatore. Creane uno dal form.</p>';
+      return;
+    }
+    list.innerHTML = "";
+    vis.forEach((c) => {
+      const st = statsFor(c.code);
+      const on = c.active !== false;
+      const row = document.createElement("div");
+      row.className = "admin-row";
+      row.innerHTML = `
+        <div class="admin-row__info">
+          <strong>${escapeHtml(c.code)} — ${escapeHtml(c.name || "")}${on ? "" : " (disattivo)"}</strong>
+          <span>Creator ${Number(c.commission) || 0}% · sconto cliente ${Number(c.discount) || 0}% · ${st.uses} usi · guadagno ${euro(st.earned)}${c.email ? " · " + escapeHtml(c.email) : ""}</span>
+        </div>
+        <div class="admin-row__actions">
+          <button type="button" class="btn btn--outline btn-edit" data-id="${c.id}">Modifica</button>
+          <button type="button" class="btn btn--outline btn-delete" data-id="${c.id}">Elimina</button>
+        </div>`;
+      list.appendChild(row);
+    });
+    list.querySelectorAll(".btn-delete").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (confirm("Eliminare questo codice creatore?")) await deleteDoc(doc(db, "creators", btn.dataset.id));
+      });
+    });
+    list.querySelectorAll(".btn-edit").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const c = creators.find((x) => x.id === btn.dataset.id);
+        if (!c) return;
+        form.querySelector("#cr-code").value = c.code || "";
+        form.querySelector("#cr-name").value = c.name || "";
+        form.querySelector("#cr-email").value = c.email || "";
+        form.querySelector("#cr-commission").value = c.commission ?? 10;
+        form.querySelector("#cr-discount").value = c.discount ?? 0;
+        form.querySelector("#cr-notes").value = c.notes || "";
+        form.querySelector("#cr-active").checked = c.active !== false;
+        form.dataset.editId = c.id;
+        form.querySelector("button[type=submit]").textContent = "Salva modifiche";
+        cancelBtn.style.display = "inline-flex";
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }
+
+  function syncPublic(listDocs) {
+    const codes = {};
+    listDocs.forEach((c) => {
+      if (!c.code || c.active === false) return;
+      codes[String(c.code).toUpperCase()] = {
+        name: c.name || "",
+        commission: Number(c.commission) || 0,
+        discount: Number(c.discount) || 0
+      };
+    });
+    setDoc(doc(db, "siteContent", "publicCreators"), { codes }, { merge: false }).catch(() => {});
+  }
+
+  onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
+    creators = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    syncPublic(creators);
+    render();
+  });
+  onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), (snap) => {
+    orders = snap.docs.map((d) => d.data());
+    render();
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = {
+      code: form.querySelector("#cr-code").value.trim().toUpperCase(),
+      name: form.querySelector("#cr-name").value.trim(),
+      email: form.querySelector("#cr-email").value.trim(),
+      commission: parseFloat(form.querySelector("#cr-commission").value) || 0,
+      discount: parseFloat(form.querySelector("#cr-discount").value) || 0,
+      notes: form.querySelector("#cr-notes").value.trim(),
+      active: form.querySelector("#cr-active").checked
+    };
+    if (!data.code) return;
+    if (form.dataset.editId) {
+      await updateDoc(doc(db, "creators", form.dataset.editId), data);
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(colRef, data);
+    }
+    form.reset();
+    delete form.dataset.editId;
+    form.querySelector("button[type=submit]").textContent = "Salva codice";
+    cancelBtn.style.display = "none";
+    form.querySelector("#cr-active").checked = true;
+    form.querySelector("#cr-commission").value = 10;
+    form.querySelector("#cr-discount").value = 0;
+  });
+  cancelBtn.addEventListener("click", () => {
+    form.reset();
+    delete form.dataset.editId;
+    form.querySelector("button[type=submit]").textContent = "Salva codice";
+    cancelBtn.style.display = "none";
+    form.querySelector("#cr-active").checked = true;
+  });
+  document.getElementById("creator-search")?.addEventListener("input", render);
+}
+
+// ==========================================================================
 // RICHIESTE — messaggi inviati dal form Contatti del sito pubblico
 // ==========================================================================
 function initOrders() {
@@ -1284,6 +1421,8 @@ function initOrders() {
           <strong>Ordine</strong><br>${items || "—"}
           ${addr ? `<br><br><strong>Spedizione</strong><br>${escapeHtml(addr)}` : ""}
           ${o.paymentMethod ? `<br><br><strong>Pagamento</strong> ${escapeHtml(o.paymentMethod)}${o.cardLast4 ? " · **** " + escapeHtml(o.cardLast4) : ""}` : ""}
+          ${o.creatorCode ? `<br><br><strong>Creator</strong> ${escapeHtml(o.creatorCode)}${o.creatorName ? " · " + escapeHtml(o.creatorName) : ""} · commissione ${euro(o.creatorCommission)} (${Number(o.creatorPercent) || 0}%)` : ""}
+          ${o.discountCode && o.discountCode !== o.creatorCode ? `<br><strong>Voucher</strong> ${escapeHtml(o.discountCode)}` : ""}
         </div>
         <div class="richiesta-card__actions">
           <button type="button" class="btn btn--outline btn-ord-set" data-id="${o.id}" data-st="pagato">Pagato</button>

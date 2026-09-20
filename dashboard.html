@@ -104,6 +104,7 @@
           <button class="dash-tab" data-panel="panel-restock"><span>🔔</span> Avvisi Restock</button>
           <button class="dash-tab" data-panel="panel-newsletter"><span>✉️</span> Newsletter</button>
           <button class="dash-tab" data-panel="panel-vouchers"><span>🎟️</span> Voucher</button>
+          <button class="dash-tab" data-panel="panel-creators"><span>🎬</span> Codici creatore</button>
           <button class="dash-tab" data-panel="panel-forum"><span>💬</span> Forum</button>
           <button class="dash-tab" data-panel="panel-users"><span>👤</span> Utenti</button>
           <button class="dash-tab" data-panel="panel-pex"><span>⭐</span> Pex / Depex</button>
@@ -783,6 +784,62 @@
       </div>
     </div>
 
+    <!-- ==================== CODICI CREATORE ==================== -->
+    <div class="dash-panel" id="panel-creators">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;max-width:780px;">
+        Ogni creator ha un codice. In cassa il cliente lo inserisce: tu decidi se gli dai uno sconto e quanto <strong>percentuale sull'acquisto</strong> va al creator. Usi e guadagni si aggiornano da soli dagli ordini.
+      </p>
+      <div class="dash-layout">
+        <div class="dash-form-card">
+          <h3>Nuovo codice creatore</h3>
+          <form id="creator-form">
+            <div class="field">
+              <label for="cr-code">Codice</label>
+              <div style="display:flex;gap:10px;">
+                <input type="text" id="cr-code" placeholder="es. MARCO" style="text-transform:uppercase;" required maxlength="24">
+                <button type="button" id="cr-generate" class="btn btn--outline" style="flex-shrink:0;padding:10px 16px;font-size:13px;">Genera</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="cr-name">Nome creator</label>
+              <input type="text" id="cr-name" required placeholder="es. Marco">
+            </div>
+            <div class="field">
+              <label for="cr-email">Email / PayPal (solo interno)</label>
+              <input type="text" id="cr-email" placeholder="es. marco@email.com">
+            </div>
+            <div class="field">
+              <label for="cr-commission">Commissione creator (%)</label>
+              <input type="number" id="cr-commission" min="0" max="100" step="0.1" value="10" required>
+            </div>
+            <div class="field">
+              <label for="cr-discount">Sconto al cliente (%) — 0 se nessuno</label>
+              <input type="number" id="cr-discount" min="0" max="100" step="0.1" value="0">
+            </div>
+            <div class="field">
+              <label for="cr-notes">Note</label>
+              <textarea id="cr-notes" placeholder="es. Partnership TikTok 2026"></textarea>
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="cr-active" checked style="width:auto;">
+              <label for="cr-active" style="margin:0;">Attivo in cassa</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva codice</button>
+              <button type="button" id="creator-cancel-edit" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h3 style="margin-bottom:20px;">Creator attivi</h3>
+          <input type="search" id="creator-search" class="dash-search" placeholder="Cerca codice o nome...">
+          <div class="admin-list" id="admin-creator-list">
+            <p class="empty-hint">Caricamento…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== NOVITÀ ==================== -->
     <div class="dash-panel" id="panel-news">
       <div class="dash-layout">
@@ -1122,6 +1179,6 @@
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
 <script type="module" src="js/auth.js?v=20260919m"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
-<script type="module" src="js/dashboard.js?v=20260920ao"></script>
+<script type="module" src="js/dashboard.js?v=20260920ap"></script>
 </body>
 </html>
