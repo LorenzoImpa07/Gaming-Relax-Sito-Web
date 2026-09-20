@@ -34,15 +34,7 @@ html {
   background: #05070e;
   color-scheme: dark;
 }
-@view-transition { navigation: auto; }
-::view-transition-old(root) {
-  animation: gr-fade-out .18s ease both;
-}
-::view-transition-new(root) {
-  animation: gr-fade-in .22s ease both;
-}
-@keyframes gr-fade-out { from { opacity: 1; } to { opacity: 0; } }
-@keyframes gr-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@view-transition { navigation: none; }
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
   html { scroll-behavior: auto; }
@@ -76,6 +68,7 @@ body.has-page-bg > *:not(.page-bg):not(.site-header):not(.art-lightbox):not(.pro
   overflow: hidden;
   pointer-events: none;
   background: #05070e;
+  view-transition-name: none;
 }
 .page-bg__layer {
   position: absolute;
@@ -97,6 +90,12 @@ body.has-page-bg > *:not(.page-bg):not(.site-header):not(.art-lightbox):not(.pro
   background-repeat: no-repeat;
   filter: none;
 }
+.page-bg__photo--in {
+  opacity: 0;
+  z-index: 1;
+  transition: opacity .45s ease;
+}
+.page-bg__photo--in.is-on { opacity: 1; }
 .page-bg__photo-img {
   position: absolute;
   inset: 0;
@@ -266,7 +265,7 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   backdrop-filter: blur(18px) saturate(1.25);
   -webkit-backdrop-filter: blur(18px) saturate(1.25);
   border-bottom: 1px solid rgba(255,255,255,.08);
-  view-transition-name: site-header;
+  view-transition-name: none;
 }
 .site-header .container {
   display: grid;

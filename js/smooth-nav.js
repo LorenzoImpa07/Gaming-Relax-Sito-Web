@@ -1,4 +1,4 @@
-// Navigazione fluida: niente ricarica visibile tra le pagine del sito.
+// Navigazione fluida: lo sfondo resta fisso, cambia solo il contenuto.
 (function () {
   const GLOBAL = [
     "js/script.js",
@@ -14,7 +14,9 @@
     "js/user-card.js"
   ];
   const HARD = ["dashboard.html"];
+  const KEEP_SEL = ["#page-bg", ".cookie-banner", ".floating-discord", ".promo-banner"];
   let busy = false;
+  const cache = new Map();
 
   function sameOrigin(href) {
     try {
@@ -40,9 +42,9 @@
   }
 
   function shouldIntercept(a, e) {
-    if (!a || e.defaultPrevented) return false;
-    if (e.button !== 0) return false;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+    if (!a || (e && e.defaultPrevented)) return false;
+    if (e && e.button !== 0) return false;
+    if (e && (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) return false;
     if (a.target && a.target !== "" && a.target !== "_self") return false;
     if (a.hasAttribute("download")) return false;
     const href = a.getAttribute("href");
@@ -50,8 +52,44 @@
     if (!sameOrigin(href)) return false;
     if (isHard(href)) return false;
     const u = new URL(href, location.href);
-    if (u.pathname === location.pathname && u.search === location.search && u.hash) return false;
+    if (e && u.pathname === location.pathname && u.search === location.search && u.hash) return false;
     return true;
+  }
+
+  function pinBackground() {
+    const bg = document.getElementById("page-bg");
+    if (bg && bg.parentElement !== document.documentElement) {
+      document.documentElement.prepend(bg);
+    }
+  }
+
+  function takeKeepers() {
+    pinBackground();
+    const list = [];
+    KEEP_SEL.forEach((sel) => {
+      document.querySelectorAll(sel).forEach((el) => list.push(el));
+    });
+    return list;
+  }
+
+  async function loadHtml(url) {
+    if (cache.has(url)) return cache.get(url);
+    const p = fetch(url, { credentials: "same-origin", headers: { "X-GR-Nav": "1" } })
+      .then((res) => {
+        if (!res.ok) throw new Error("nav");
+        return res.text();
+      })
+      .catch((err) => {
+        cache.delete(url);
+        throw err;
+      });
+    cache.set(url, p);
+    return p;
+  }
+
+  function prefetch(url) {
+    if (cache.has(url)) return;
+    loadHtml(url).catch(() => {});
   }
 
   async function swapTo(url, push) {
@@ -59,12 +97,7 @@
     busy = true;
     document.documentElement.classList.add("gr-nav");
     try {
-      const res = await fetch(url, { credentials: "same-origin", headers: { "X-GR-Nav": "1" } });
-      if (!res.ok) {
-        location.href = url;
-        return;
-      }
-      const html = await res.text();
+      const html = await loadHtml(url);
       const next = new DOMParser().parseFromString(html, "text/html");
       const pageScripts = [...next.querySelectorAll("script")].map((s) => ({
         src: s.getAttribute("src"),
@@ -76,25 +109,26 @@
         window.__grCleanups.splice(0).forEach((fn) => { try { fn(); } catch (_) {} });
       }
 
-      const apply = () => {
-        document.title = next.title || document.title;
-        const page = next.body.getAttribute("data-page");
-        if (page) document.body.setAttribute("data-page", page);
-        else document.body.removeAttribute("data-page");
-        [...document.body.attributes].forEach((a) => {
-          if (a.name !== "data-page" && a.name.startsWith("data-") === false && a.name !== "class") return;
-        });
-        document.body.className = next.body.className;
-        document.body.innerHTML = next.body.innerHTML;
-        document.body.querySelectorAll("script").forEach((s) => s.remove());
-        window.scrollTo(0, 0);
-      };
+      const keepers = takeKeepers();
+      next.querySelectorAll("#page-bg, .cookie-banner, .floating-discord").forEach((el) => el.remove());
 
-      if (document.startViewTransition) {
-        await document.startViewTransition(apply).finished.catch(() => {});
-      } else {
-        apply();
-      }
+      document.title = next.title || document.title;
+      const page = next.body.getAttribute("data-page");
+      if (page) document.body.setAttribute("data-page", page);
+      else document.body.removeAttribute("data-page");
+      document.body.className = next.body.className;
+      document.body.classList.add("has-page-bg");
+      document.documentElement.classList.add("has-page-bg");
+
+      document.body.innerHTML = next.body.innerHTML;
+      document.body.querySelectorAll("script").forEach((s) => s.remove());
+
+      keepers.forEach((el) => {
+        if (el.id === "page-bg") document.documentElement.prepend(el);
+        else if (!el.isConnected) document.body.appendChild(el);
+      });
+      pinBackground();
+      window.scrollTo(0, 0);
 
       if (push) history.pushState({ gr: 1 }, "", url);
 
@@ -129,6 +163,15 @@
     swapTo(next.href, true);
   }, true);
 
+  document.addEventListener("pointerover", (e) => {
+    const a = e.target.closest && e.target.closest("a[href]");
+    if (!a || a.target === "_blank") return;
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("#") || href.startsWith("mailto:")) return;
+    if (!sameOrigin(href) || isHard(href)) return;
+    prefetch(new URL(href, location.href).href);
+  }, true);
+
   window.addEventListener("popstate", () => {
     swapTo(location.href, false);
   });
@@ -136,4 +179,6 @@
   if (!history.state || !history.state.gr) {
     history.replaceState({ gr: 1 }, "", location.href);
   }
+
+  pinBackground();
 })();

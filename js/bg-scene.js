@@ -58,8 +58,14 @@ function directUrl(raw = "") {
 }
 
 function mountShell() {
-  if (document.getElementById("page-bg")) return document.getElementById("page-bg");
-  const el = document.createElement("div");
+  let el = document.getElementById("page-bg");
+  if (el) {
+    if (el.parentElement !== document.documentElement) document.documentElement.prepend(el);
+    document.body.classList.add("has-page-bg");
+    document.documentElement.classList.add("has-page-bg");
+    return el;
+  }
+  el = document.createElement("div");
   el.id = "page-bg";
   el.className = "page-bg";
   el.setAttribute("aria-hidden", "true");
@@ -70,18 +76,22 @@ function mountShell() {
     <div class="page-bg__overlay"></div>
     <div class="page-bg__vignette"></div>
   `;
-  document.body.prepend(el);
+  document.documentElement.prepend(el);
   document.body.classList.add("has-page-bg");
+  document.documentElement.classList.add("has-page-bg");
   return el;
 }
 
 function renderMedia(layer, cfg) {
-  layer.innerHTML = "";
   const videoUrl = directUrl(cfg.bgVideoUrl);
   const imageUrl = directUrl(cfg.bgImageUrl);
+  const nextKey = videoUrl + "|" + imageUrl;
+  if (layer.dataset.key === nextKey && layer.children.length) return true;
 
   if (videoUrl) {
     const yt = youtubeId(videoUrl);
+    layer.innerHTML = "";
+    layer.dataset.key = nextKey;
     if (yt) {
       const wrap = document.createElement("div");
       wrap.className = "page-bg__yt";
@@ -109,29 +119,46 @@ function renderMedia(layer, cfg) {
       const tryPlay = () => v.play().catch(() => {});
       v.addEventListener("canplay", tryPlay, { once: true });
       tryPlay();
-      if (!isVideoFile(videoUrl) && imageUrl) {
-        /* keep going to also show image if video url is not a file */
-      } else {
-        return true;
-      }
+      if (isVideoFile(videoUrl) || !imageUrl) return true;
     }
   }
 
   if (imageUrl) {
-    const img = document.createElement("div");
-    img.className = "page-bg__photo";
-    img.style.backgroundImage = "url(\"" + imageUrl.replace(/\\/g, "/").replace(/"/g, "%22") + "\")";
+    const incoming = document.createElement("div");
+    incoming.className = "page-bg__photo page-bg__photo--in";
+    incoming.style.backgroundImage = "url(\"" + imageUrl.replace(/\\/g, "/").replace(/"/g, "%22") + "\")";
     const pic = document.createElement("img");
     pic.className = "page-bg__photo-img";
     pic.alt = "";
     pic.src = imageUrl;
     pic.decoding = "async";
     pic.referrerPolicy = "no-referrer";
-    pic.addEventListener("error", () => { pic.style.display = "none"; });
-    img.appendChild(pic);
-    layer.appendChild(img);
+    incoming.appendChild(pic);
+    layer.appendChild(incoming);
+    const reveal = () => {
+      incoming.classList.add("is-on");
+      layer.dataset.key = nextKey;
+      window.setTimeout(() => {
+        [...layer.children].forEach((ch) => { if (ch !== incoming) ch.remove(); });
+        incoming.classList.remove("page-bg__photo--in");
+      }, 480);
+    };
+    if (pic.complete && pic.naturalWidth) reveal();
+    else {
+      pic.addEventListener("load", reveal, { once: true });
+      pic.addEventListener("error", reveal, { once: true });
+    }
+    try {
+      document.documentElement.style.backgroundImage = "url(\"" + imageUrl.replace(/"/g, "%22") + "\")";
+      document.documentElement.style.backgroundSize = "cover";
+      document.documentElement.style.backgroundPosition = "center";
+      document.documentElement.style.backgroundAttachment = "fixed";
+    } catch (_) {}
     return true;
   }
+
+  if (!layer.children.length) layer.innerHTML = "";
+  layer.dataset.key = nextKey;
   return false;
 }
 
