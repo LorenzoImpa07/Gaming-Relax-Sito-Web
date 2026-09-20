@@ -2215,10 +2215,14 @@ body.art-lb-open { overflow: hidden; }
 }
 .forum-board-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr);
   border-top: 1px solid var(--border);
 }
+.forum-board-row.has-last {
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
+}
 .forum-board-row:first-child { border-top: none; }
+.forum-group__body { padding: 0; margin: 0; }
 .forum-board-row__hit {
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr) 150px;

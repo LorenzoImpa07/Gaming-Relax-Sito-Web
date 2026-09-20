@@ -142,9 +142,8 @@ function renderIndex() {
   const groups = categoriesOrdered.map((cat) => {
     if (cat.private && !currentUser && !staff) return "";
     const boards = boardsOrdered.filter((b) => b.categoryId === cat.id);
-    const rows = boards.length
-      ? boards.map((b) => boardRow(b, cat)).join("")
-      : `<div class="forum-board-row forum-board-row--empty">Nessuna pagina in questa categoria. Creala da Dashboard → Forum → Pagine / sezioni.</div>`;
+    if (!boards.length) return "";
+    const rows = boards.map((b) => boardRow(b, cat)).join("");
 
     return `
       <section class="forum-group">
@@ -174,10 +173,10 @@ function boardRow(b, cat) {
     ? `<a class="forum-board-row__last" href="forum-topic.html?id=${last.id}">
         <span class="forum-board-row__last-meta">${prefixChip(last)}${formatDate(last.createdAt || last.lastActivityAt)}</span>
       </a>`
-    : `<div class="forum-board-row__last"></div>`;
+    : "";
 
   return `
-    <div class="forum-board-row">
+    <div class="forum-board-row${last ? " has-last" : ""}">
       <a class="forum-board-row__hit" href="forum-board.html?id=${b.id}">
         <div class="forum-board-row__icon" style="color:${escapeHtml(cat.color || "#ff4dad")}">${escapeHtml(b.icon || (isRead ? "📄" : (priv ? "🔒" : "💬")))}</div>
         <div class="forum-board-row__main">
