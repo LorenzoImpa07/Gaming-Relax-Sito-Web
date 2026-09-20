@@ -2044,7 +2044,7 @@ function initForumBoards() {
         <span style="font-size:22px;">${escapeHtml(b.icon || "💬")}</span>
         <div class="admin-row__info">
           <strong>${escapeHtml(b.name)}</strong>
-          <span>${escapeHtml(catName)} · ${typeLabel} · ordine ${b.order ?? 0}${b.private ? " · 🔒 privata" : ""}</span>
+          <span>${escapeHtml(catName)} · ${typeLabel} · ordine ${b.order ?? 0}${b.private ? " · 🔒 privata" : ""}${b.link ? " · ↗ link" : ""}</span>
         </div>
         <div class="admin-row__actions">
           <button type="button" class="btn btn--outline btn-edit" data-id="${docSnap.id}">Modifica</button>
@@ -2069,6 +2069,8 @@ function initForumBoards() {
         form.querySelector("#fb-name").value = b.name || "";
         form.querySelector("#fb-icon").value = b.icon || "";
         form.querySelector("#fb-desc").value = b.description || "";
+        const linkEl = form.querySelector("#fb-link");
+        if (linkEl) linkEl.value = b.link || "";
         typeSelect.value = b.type || "discussion";
         form.querySelector("#fb-content").value = b.content || "";
         form.querySelector("#fb-order").value = b.order ?? 10;
@@ -2091,6 +2093,7 @@ function initForumBoards() {
       name: form.querySelector("#fb-name").value.trim(),
       icon: form.querySelector("#fb-icon").value.trim(),
       description: form.querySelector("#fb-desc").value.trim(),
+      link: (form.querySelector("#fb-link")?.value || "").trim(),
       type: typeSelect.value,
       content: form.querySelector("#fb-content").value,
       order: Number(form.querySelector("#fb-order").value) || 0,

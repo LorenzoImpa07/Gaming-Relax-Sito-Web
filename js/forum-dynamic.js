@@ -165,7 +165,13 @@ function renderIndex() {
   el.innerHTML = groups + extra;
 }
 
-function boardRow(b, cat) {
+function pageLink(raw) {
+  const s = String(raw || "").trim();
+  if (!s || /^javascript:/i.test(s)) return "";
+  if (/^https?:\/\//i.test(s) || s.startsWith("/") || s.startsWith("mailto:")) return s;
+  if (/^[a-z0-9._-]+\.html(\?.*)?$/i.test(s)) return s;
+  return "https://" + s;
+}
   const { discussions, messages, last } = statsForBoard(b.id);
   const isRead = b.type === "readonly";
   const priv = areaIsPrivate(cat, b);
@@ -175,12 +181,16 @@ function boardRow(b, cat) {
       </a>`
     : "";
 
+  const href = pageLink(b.link) || `forum-board.html?id=${b.id}`;
+  const ext = /^https?:\/\//i.test(href);
+  const extra = ext ? ` target="_blank" rel="noopener"` : "";
+
   return `
     <div class="forum-board-row${last ? " has-last" : ""}">
-      <a class="forum-board-row__hit" href="forum-board.html?id=${b.id}">
+      <a class="forum-board-row__hit" href="${escapeHtml(href)}"${extra}>
         <div class="forum-board-row__icon" style="color:${escapeHtml(cat.color || "#ff4dad")}">${escapeHtml(b.icon || (isRead ? "📄" : (priv ? "🔒" : "💬")))}</div>
         <div class="forum-board-row__main">
-          <div class="forum-board-row__title">${escapeHtml(b.name)}</div>
+          <div class="forum-board-row__title">${escapeHtml(b.name)}${b.link ? " ↗" : ""}</div>
           <p>${escapeHtml(b.description || (priv ? "Solo tu e lo staff vedete le vostre conversazioni." : ""))}</p>
         </div>
         <div class="forum-board-row__stats">

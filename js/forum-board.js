@@ -97,6 +97,14 @@ async function loadBoard() {
       return;
     }
     board = { id: snap.id, ...snap.data() };
+    const boardLink = String(board.link || "").trim();
+    if (boardLink && !/^javascript:/i.test(boardLink)) {
+      const url = /^https?:\/\//i.test(boardLink) || boardLink.startsWith("/") || boardLink.startsWith("mailto:") || /^[a-z0-9._-]+\.html(\?.*)?$/i.test(boardLink)
+        ? boardLink
+        : "https://" + boardLink;
+      window.location.replace(url);
+      return;
+    }
     if (board.categoryId) {
       const catSnap = await getDoc(doc(db, "forumCategories", board.categoryId));
       category = catSnap.exists() ? { id: catSnap.id, ...catSnap.data() } : null;
