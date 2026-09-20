@@ -106,9 +106,11 @@ function applyPageContent(d = {}) {
       img.src = url;
       if (wrap) wrap.hidden = false;
       img.closest("section")?.classList.add("has-side");
-    } else {
-      if (wrap) wrap.hidden = true;
-      img.closest("section")?.classList.remove("has-side");
+    } else if (img.getAttribute("src")) {
+      if (wrap) wrap.hidden = false;
+      img.closest("section")?.classList.add("has-side");
+    } else if (wrap && wrap.hasAttribute("hidden")) {
+      wrap.hidden = true;
     }
   });
 }

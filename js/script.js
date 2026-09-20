@@ -98,6 +98,45 @@ function bindPageChrome() {
 document.addEventListener('DOMContentLoaded', bindPageChrome);
 window.addEventListener('gr:navigated', bindPageChrome);
 
+function bindHeaderScroll() {
+  const h = document.querySelector('.site-header');
+  if (!h) return;
+  const onHome = document.body.dataset.page === 'home';
+  function sync() {
+    if (!onHome || window.scrollY > 20) h.classList.add('is-scrolled');
+    else h.classList.remove('is-scrolled');
+  }
+  sync();
+  if (!window.__grHeaderScroll) {
+    window.__grHeaderScroll = true;
+    window.addEventListener('scroll', () => {
+      const head = document.querySelector('.site-header');
+      if (!head) return;
+      if (document.body.dataset.page !== 'home' || window.scrollY > 20) head.classList.add('is-scrolled');
+      else head.classList.remove('is-scrolled');
+    }, { passive: true });
+  }
+}
+document.addEventListener('DOMContentLoaded', bindHeaderScroll);
+window.addEventListener('gr:navigated', bindHeaderScroll);
+
+function bindHomeCursor() {
+  document.querySelectorAll('.gr-cursor').forEach((el) => el.remove());
+  if (document.body.dataset.page !== 'home') return;
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cur = document.createElement('div');
+  cur.className = 'gr-cursor';
+  cur.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(cur);
+  document.body.classList.add('has-gr-cursor');
+  window.addEventListener('pointermove', (e) => {
+    cur.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+  }, { passive: true });
+}
+document.addEventListener('DOMContentLoaded', bindHomeCursor);
+window.addEventListener('gr:navigated', bindHomeCursor);
+
 function bindReveal() {
   const nodes = document.querySelectorAll('.reveal');
   if (!nodes.length) return;
