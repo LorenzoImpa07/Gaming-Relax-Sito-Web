@@ -3162,10 +3162,11 @@ body.art-lb-open { overflow: hidden; }
 .co-check { display: flex; gap: 8px; align-items: center; color: var(--text-dim); font-size: 14px; margin: 8px 0 16px; }
 .co-check input { width: auto; margin: 0; }
 .co-hint { font-size: 13px; }
-.co-tips { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
+.co-tips { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; position: relative; z-index: 4; }
 .co-tips button {
-  border: 1px solid var(--border); background: rgba(20,24,40,.7); color: var(--text);
+  border: 1px solid var(--border); background: rgba(20,24,40,.85); color: var(--text);
   border-radius: 10px; padding: 12px 8px; cursor: pointer; font-weight: 700;
+  pointer-events: auto; position: relative; z-index: 4;
 }
 .co-tips button.is-on { border-color: var(--lime); color: var(--lime); }
 .co-methods { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }

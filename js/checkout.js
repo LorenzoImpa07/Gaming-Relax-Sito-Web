@@ -44,7 +44,6 @@ onAuthStateChanged(auth, (u) => {
     if (el) { el.value = currentUser.email; el.readOnly = true; }
   }
 });
-});
 
 function subtotal() {
   return readCart().reduce((s, i) => s + (parsePrice(i.price) || 0) * i.qty, 0);
@@ -209,13 +208,20 @@ async function loadCfg() {
   loadStripe().catch(() => {});
 }
 
-document.getElementById("co-tips")?.addEventListener("click", (e) => {
-  const b = e.target.closest("[data-tip]");
-  if (!b) return;
-  tipPct = Number(b.dataset.tip) || 0;
-  document.querySelectorAll("#co-tips [data-tip]").forEach((x) => x.classList.toggle("is-on", x === b));
-  renderSum();
-});
+function bindTips() {
+  const box = document.getElementById("co-tips");
+  if (!box) return;
+  box.querySelectorAll("[data-tip]").forEach((b) => {
+    b.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      tipPct = Number(b.dataset.tip) || 0;
+      box.querySelectorAll("[data-tip]").forEach((x) => x.classList.toggle("is-on", x === b));
+      renderSum();
+    });
+  });
+}
+bindTips();
 
 document.getElementById("co-country")?.addEventListener("change", (e) => loadStates(e.target.value));
 
