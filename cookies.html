@@ -78,12 +78,11 @@
     <p>I cookie di sessione scadono quando chiudi il browser. Quelli di preferenza restano finché non li cancelli o non cambi scelta da questa pagina.</p>
 
     <h2>5. Contatti</h2>
-    <p>Per domande sul trattamento: <a href="mailto:gamingrelaxofficials@gmail.com">gamingrelaxofficials@gmail.com</a>. Vedi anche la <a href="privacy.html">Privacy Policy</a>
-        <a href="cookies.html">Cookies</a>.</p>
+    <p>Per domande sul trattamento: <a href="mailto:gamingrelaxofficials@gmail.com">gamingrelaxofficials@gmail.com</a>. Vedi anche la <a href="privacy.html">Privacy Policy</a>.</p>
 
     <p style="margin-top:40px;font-size:13px;">Questo testo è indicativo. Fallo revisionare da un professionista legale (privacy/GDPR) prima della pubblicazione definitiva.</p>
-
-  
+  </div>
+</section>
 
 <footer class="site-footer">
   <div class="container">
@@ -96,7 +95,8 @@
         <h4>Link utili</h4>
         <a href="faq.html">FAQ (Domande Frequenti)</a>
         <a href="termini.html">Termini e Condizioni</a>
-        <a href="cookies.html">Cookie Policy</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="cookies.html">Cookies</a>
         <a href="chi-siamo.html">Chi siamo</a>
         
       </div>
@@ -144,10 +144,14 @@ document.addEventListener("DOMContentLoaded", function(){
     if (el) el.textContent = "Scelta attuale: " + (v === "accepted" ? "Accettati" : v === "rejected" ? "Rifiutati" : "non ancora espressa");
   }
   document.getElementById("cookie-reset-accept")?.addEventListener("click", function(){
-    localStorage.setItem("gr_cookie_consent","accepted"); show();
+    localStorage.setItem("gr_cookie_consent","accepted");
+    document.querySelector(".cookie-banner")?.remove();
+    show();
   });
   document.getElementById("cookie-reset-reject")?.addEventListener("click", function(){
-    localStorage.setItem("gr_cookie_consent","rejected"); show();
+    localStorage.setItem("gr_cookie_consent","rejected");
+    document.querySelector(".cookie-banner")?.remove();
+    show();
   });
   show();
 });
