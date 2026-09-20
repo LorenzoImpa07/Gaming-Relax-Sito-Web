@@ -128,16 +128,18 @@ function render() {
 
   body.innerHTML = items.map((i) => `
     <article class="cart-item">
-      <a class="cart-item__img" href="prodotto.html?id=${encodeURIComponent(i.id)}" style="background:${i.imageUrl ? `url('${escapeHtml(i.imageUrl)}') center/cover` : "linear-gradient(135deg,#1a2030,#0a0d16)"};"></a>
+      <a class="cart-item__img" href="prodotto.html?id=${encodeURIComponent(i.id)}">${i.imageUrl ? `<img src="${escapeHtml(i.imageUrl)}" alt="">` : ""}</a>
       <div class="cart-item__info">
         <a class="cart-item__name" href="prodotto.html?id=${encodeURIComponent(i.id)}">${escapeHtml(i.name)}</a>
         <span class="cart-item__price">${escapeHtml(i.price || "")}</span>
-        <div class="cart-qty">
-          <button type="button" data-qty="-1" data-key="${cartKey(i)}">−</button>
-          <span>${i.qty}</span>
-          <button type="button" data-qty="1" data-key="${cartKey(i)}">+</button>
+        <div class="cart-item__row">
+          <div class="cart-qty">
+            <button type="button" data-qty="-1" data-key="${cartKey(i)}">−</button>
+            <span>${i.qty}</span>
+            <button type="button" data-qty="1" data-key="${cartKey(i)}">+</button>
+          </div>
+          <a class="cart-item__open" href="prodotto.html?id=${encodeURIComponent(i.id)}">Vedi prodotto →</a>
         </div>
-        <a class="cart-item__open" href="prodotto.html?id=${encodeURIComponent(i.id)}">Vedi prodotto →</a>
       </div>
       <button type="button" class="cart-item__del" data-del="${cartKey(i)}" aria-label="Rimuovi">✕</button>
     </article>`).join("");
