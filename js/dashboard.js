@@ -4,7 +4,7 @@
 // (la protezione vera è nelle regole di Firestore, questa è solo l'interfaccia)
 // ==========================================================================
 import { auth, db, ADMIN_EMAIL, authReady } from "./firebase-init.js?v=20260919ae";
-import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260919ae";
+import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260920d";
 import { bindEmailFields } from "./email-check.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {

@@ -7,7 +7,7 @@ import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
-import { uploadFile } from "./upload.js?v=20260919ae";
+import { uploadFile } from "./upload.js?v=20260920d";
 
 function escapeHtml(str = "") {
   const map = {
