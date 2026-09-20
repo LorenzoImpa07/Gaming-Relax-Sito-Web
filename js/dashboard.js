@@ -48,6 +48,7 @@ onAuthStateChanged(auth, (user) => {
   initTeam();
   initPartners();
   initGallery();
+  initCustomStudio();
   initRichieste();
   initOrders();
   initCheckoutCfg();
@@ -1560,6 +1561,127 @@ function initCheckoutCfg() {
   });
 }
 
+function initCustomStudio() {
+  const packForm = document.getElementById("cpack-form");
+  const buildForm = document.getElementById("cbuild-form");
+  const wizForm = document.getElementById("cwiz-form");
+  if (!packForm) return;
+  bindUploader({ fileId: "cp-image-file", hiddenId: "cp-image", previewId: "cp-image-preview", statusId: "cp-image-status", folder: "custom" });
+  bindUploader({ fileId: "cb-image-file", hiddenId: "cb-image", previewId: "cb-image-preview", statusId: "cb-image-status", folder: "custom" });
+
+  function bindCrud(form, listId, colName, cancelId, fill, toData) {
+    const list = document.getElementById(listId);
+    const cancel = document.getElementById(cancelId);
+    const colRef = collection(db, colName);
+    onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
+      if (!list) return;
+      if (snap.empty) {
+        list.innerHTML = '<p class="empty-hint">Nessun elemento.</p>';
+        return;
+      }
+      list.innerHTML = "";
+      snap.forEach((d) => {
+        const x = d.data();
+        const row = document.createElement("div");
+        row.className = "admin-row";
+        row.innerHTML = `
+          ${x.imageUrl ? `<img class="admin-row__thumb" src="${escapeHtml(x.imageUrl)}" alt="">` : ""}
+          <div class="admin-row__info">
+            <strong>${escapeHtml(x.name || x.title || "—")}</strong>
+            <span>${escapeHtml(x.caption || x.time || (x.fromPrice != null ? "da " + x.fromPrice + " €" : ""))}</span>
+          </div>
+          <div class="admin-row__actions">
+            <button type="button" class="btn btn--outline btn-edit" data-id="${d.id}">Modifica</button>
+            <button type="button" class="btn btn--outline btn-delete" data-id="${d.id}">Elimina</button>
+          </div>`;
+        list.appendChild(row);
+      });
+      list.querySelectorAll(".btn-delete").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (confirm("Eliminare?")) await deleteDoc(doc(db, colName, btn.dataset.id));
+        });
+      });
+      list.querySelectorAll(".btn-edit").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const s = await getDoc(doc(db, colName, btn.dataset.id));
+          fill(s.data() || {});
+          form.dataset.editId = btn.dataset.id;
+          form.querySelector("button[type=submit]").textContent = "Salva modifiche";
+          if (cancel) cancel.style.display = "inline-flex";
+        });
+      });
+    });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = toData();
+      if (form.dataset.editId) await updateDoc(doc(db, colName, form.dataset.editId), data);
+      else { data.createdAt = serverTimestamp(); await addDoc(colRef, data); }
+      form.reset();
+      delete form.dataset.editId;
+      form.querySelector("button[type=submit]").textContent = colName === "customPackages" ? "Salva pacchetto" : "Salva lavoro";
+      if (cancel) cancel.style.display = "none";
+      ["cp-image", "cb-image"].forEach((id) => { const el = document.getElementById(id); if (el) el.value = ""; });
+      ["cp-image-preview", "cb-image-preview"].forEach((id) => { const el = document.getElementById(id); if (el) { el.removeAttribute("src"); el.style.display = "none"; } });
+    });
+    cancel?.addEventListener("click", () => {
+      form.reset();
+      delete form.dataset.editId;
+      cancel.style.display = "none";
+    });
+  }
+
+  bindCrud(packForm, "admin-cpack-list", "customPackages", "cpack-cancel", (x) => {
+    packForm.querySelector("#cp-name").value = x.name || "";
+    packForm.querySelector("#cp-price").value = x.fromPrice ?? "";
+    packForm.querySelector("#cp-time").value = x.time || "";
+    packForm.querySelector("#cp-features").value = x.features || "";
+    packForm.querySelector("#cp-image").value = x.imageUrl || "";
+    packForm.querySelector("#cp-order").value = x.order || 1;
+    packForm.querySelector("#cp-hot").checked = !!x.hot;
+    setPreview(document.getElementById("cp-image-preview"), x.imageUrl || "");
+  }, () => ({
+    name: packForm.querySelector("#cp-name").value.trim(),
+    fromPrice: parseFloat(packForm.querySelector("#cp-price").value) || 0,
+    time: packForm.querySelector("#cp-time").value.trim(),
+    features: packForm.querySelector("#cp-features").value.trim(),
+    imageUrl: packForm.querySelector("#cp-image").value.trim(),
+    order: parseInt(packForm.querySelector("#cp-order").value, 10) || 1,
+    hot: packForm.querySelector("#cp-hot").checked
+  }));
+
+  bindCrud(buildForm, "admin-cbuild-list", "customBuilds", "cbuild-cancel", (x) => {
+    buildForm.querySelector("#cb-title").value = x.title || "";
+    buildForm.querySelector("#cb-caption").value = x.caption || "";
+    buildForm.querySelector("#cb-image").value = x.imageUrl || "";
+    setPreview(document.getElementById("cb-image-preview"), x.imageUrl || "");
+  }, () => ({
+    title: buildForm.querySelector("#cb-title").value.trim(),
+    caption: buildForm.querySelector("#cb-caption").value.trim(),
+    imageUrl: buildForm.querySelector("#cb-image").value.trim()
+  }));
+
+  const wizRef = doc(db, "siteContent", "customWizard");
+  getDoc(wizRef).then((s) => {
+    if (!s.exists()) return;
+    const d = s.data();
+    if (d.services) wizForm.querySelector("#cw-services").value = d.services;
+    if (d.layouts) wizForm.querySelector("#cw-layouts").value = d.layouts;
+    if (d.switches) wizForm.querySelector("#cw-switches").value = d.switches;
+    if (d.extras) wizForm.querySelector("#cw-extras").value = d.extras;
+  });
+  wizForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await setDoc(wizRef, {
+      services: wizForm.querySelector("#cw-services").value,
+      layouts: wizForm.querySelector("#cw-layouts").value,
+      switches: wizForm.querySelector("#cw-switches").value,
+      extras: wizForm.querySelector("#cw-extras").value
+    }, { merge: true });
+    const msg = document.getElementById("cwiz-status");
+    if (msg) { msg.textContent = "Salvato."; msg.classList.add("visible"); setTimeout(() => msg.classList.remove("visible"), 2500); }
+  });
+}
+
 function initRichieste() {
   const list = document.getElementById("admin-richieste-list");
   const colRef = collection(db, "richieste");
@@ -1614,6 +1736,7 @@ function initRichieste() {
           <span>✉️ <strong>${escapeHtml(r.email || "—")}</strong></span>
           ${r.discord ? `<span>💬 <strong>${escapeHtml(r.discord)}</strong></span>` : ""}
           <span>🏷️ <strong>${escapeHtml(SERVIZIO_LABELS[r.servizio] || r.servizio || "—")}</strong></span>
+          ${r.source === "configuratore" ? "<span>🛠️ Configuratore</span>" : ""}
           <span>🕒 ${formatDate(r.createdAt)}</span>
         </div>
         <div class="richiesta-card__body">${escapeHtml(r.progetto || "")}</div>

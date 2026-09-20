@@ -86,6 +86,7 @@
           <button class="dash-tab" data-panel="panel-store-nav"><span>📂</span> Categorie Store</button>
           <button class="dash-tab" data-panel="panel-team"><span>👥</span> Team</button>
           <button class="dash-tab" data-panel="panel-gallery"><span>🖼️</span> Galleria Art</button>
+          <button class="dash-tab" data-panel="panel-custom"><span>🛠️</span> Custom studio</button>
           <button class="dash-tab" data-panel="panel-partners"><span>🤝</span> Partner</button>
         </div>
         <div class="dash-sidebar__group">
@@ -427,6 +428,111 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- ==================== CUSTOM STUDIO ==================== -->
+    <div class="dash-panel" id="panel-custom">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:22px;max-width:780px;">Pacchetti, lavori fatti e opzioni del configuratore sulla pagina Custom. Le richieste del wizard arrivano in <strong>Richieste</strong>.</p>
+
+      <h3 style="margin-bottom:14px;">Pacchetti</h3>
+      <div class="dash-layout">
+        <div class="dash-form-card">
+          <form id="cpack-form">
+            <div class="field">
+              <label for="cp-name">Nome</label>
+              <input type="text" id="cp-name" required placeholder="es. Pro">
+            </div>
+            <div class="field">
+              <label for="cp-price">Prezzo da (€)</label>
+              <input type="number" id="cp-price" min="0" step="1" placeholder="149">
+            </div>
+            <div class="field">
+              <label for="cp-time">Tempi</label>
+              <input type="text" id="cp-time" placeholder="es. 10–14 giorni">
+            </div>
+            <div class="field">
+              <label for="cp-features">Cosa include (una riga ciascuno)</label>
+              <textarea id="cp-features" rows="5" placeholder="Lube switch&#10;Foam case&#10;Test audio"></textarea>
+            </div>
+            <div class="field">
+              <label for="cp-image-file">Immagine (opzionale)</label>
+              <input type="file" id="cp-image-file" accept="image/*,image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
+              <input type="hidden" id="cp-image">
+              <img id="cp-image-preview" class="file-preview" alt="">
+              <p class="file-status" id="cp-image-status"></p>
+            </div>
+            <div class="field">
+              <label for="cp-order">Ordine</label>
+              <input type="number" id="cp-order" min="1" value="1">
+            </div>
+            <div class="field" style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="cp-hot" style="width:auto;">
+              <label for="cp-hot" style="margin:0;">In evidenza</label>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva pacchetto</button>
+              <button type="button" id="cpack-cancel" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <div class="admin-list" id="admin-cpack-list"><p class="empty-hint">Caricamento…</p></div>
+        </div>
+      </div>
+
+      <h3 style="margin:32px 0 14px;">Lavori fatti</h3>
+      <div class="dash-layout">
+        <div class="dash-form-card">
+          <form id="cbuild-form">
+            <div class="field">
+              <label for="cb-title">Titolo</label>
+              <input type="text" id="cb-title" required placeholder="es. Galaxy 75%">
+            </div>
+            <div class="field">
+              <label for="cb-caption">Didascalia</label>
+              <input type="text" id="cb-caption" placeholder="es. Linear + keycaps custom">
+            </div>
+            <div class="field">
+              <label for="cb-image-file">Foto</label>
+              <input type="file" id="cb-image-file" accept="image/*,image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
+              <input type="hidden" id="cb-image">
+              <img id="cb-image-preview" class="file-preview" alt="">
+              <p class="file-status" id="cb-image-status"></p>
+            </div>
+            <div style="display:flex;gap:12px;">
+              <button type="submit" class="btn btn--lime">Salva lavoro</button>
+              <button type="button" id="cbuild-cancel" class="btn btn--outline" style="display:none;">Annulla</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <div class="admin-list" id="admin-cbuild-list"><p class="empty-hint">Caricamento…</p></div>
+        </div>
+      </div>
+
+      <h3 style="margin:32px 0 14px;">Opzioni del configuratore</h3>
+      <div class="dash-form-card" style="max-width:640px;">
+        <form id="cwiz-form">
+          <div class="field">
+            <label for="cw-services">Servizi (una riga)</label>
+            <textarea id="cw-services" rows="5" placeholder="Tastiera custom&#10;Art / keycaps"></textarea>
+          </div>
+          <div class="field">
+            <label for="cw-layouts">Layout (una riga)</label>
+            <textarea id="cw-layouts" rows="5"></textarea>
+          </div>
+          <div class="field">
+            <label for="cw-switches">Switch (una riga)</label>
+            <textarea id="cw-switches" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label for="cw-extras">Extra (una riga)</label>
+            <textarea id="cw-extras" rows="5"></textarea>
+          </div>
+          <button type="submit" class="btn btn--lime">Salva opzioni</button>
+          <p class="dash-save-msg" id="cwiz-status"></p>
+        </form>
       </div>
     </div>
 
@@ -1181,6 +1287,6 @@
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
 <script type="module" src="js/auth.js?v=20260920aq"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
-<script type="module" src="js/dashboard.js?v=20260920aq"></script>
+<script type="module" src="js/dashboard.js?v=20260920ar"></script>
 </body>
 </html>
