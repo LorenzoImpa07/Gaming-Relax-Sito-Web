@@ -178,6 +178,11 @@ function renderTopics() {
 function renderNewTopic() {
   if (!newTopicEl || !board || board.type === "readonly") return;
 
+  if (board.staffOnly && !viewerIsStaff()) {
+    newTopicEl.innerHTML = '<div class="forum-login-prompt">In questa sezione solo lo staff può aprire nuove conversazioni. Puoi comunque leggere e rispondere.</div>';
+    return;
+  }
+
   if (!currentUser) {
     const priv = areaIsPrivate(category, board);
     newTopicEl.innerHTML = priv

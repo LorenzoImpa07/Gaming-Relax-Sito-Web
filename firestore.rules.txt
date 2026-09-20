@@ -179,6 +179,11 @@ service cloud.firestore {
       );
     }
 
+    function topicBoardStaffOnly(boardId) {
+      let bPath = /databases/$(database)/documents/forumBoards/$(boardId);
+      return exists(bPath) && get(bPath).data.get('staffOnly', false) == true;
+    }
+
     // Forum — argomenti pubblici: tutti. Privati: solo staff + autore.
     match /forumTopics/{topicId} {
       allow read: if canReadTopic(resource.data);
@@ -186,7 +191,8 @@ service cloud.firestore {
                     && request.resource.data.authorEmail == request.auth.token.email
                     && request.resource.data.keys().hasAll(['title', 'categoryId', 'boardId', 'authorEmail', 'authorName', 'createdAt', 'lastActivityAt', 'replyCount', 'status', 'locked', 'pinned', 'private'])
                     && request.resource.data.private is bool
-                    && request.resource.data.private == topicBoardIsPrivate(request.resource.data.boardId);
+                    && request.resource.data.private == topicBoardIsPrivate(request.resource.data.boardId)
+                    && (!topicBoardStaffOnly(request.resource.data.boardId) || isStaff());
       allow update: if isAdmin()
                     || (isStaff()
                         && request.resource.data.diff(resource.data).affectedKeys()

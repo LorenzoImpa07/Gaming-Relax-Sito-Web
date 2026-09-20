@@ -182,7 +182,7 @@ function boardRow(b, cat) {
       <a class="forum-board-row__hit" href="forum-board.html?id=${b.id}">
         <div class="forum-board-row__icon" style="color:${escapeHtml(cat.color || "#ff4dad")}">${escapeHtml(b.icon || (isRead ? "📄" : (priv ? "🔒" : "💬")))}</div>
         <div class="forum-board-row__main">
-          <div class="forum-board-row__title">${escapeHtml(b.name)}${priv ? ' <span class="forum-lock-pill">Privata</span>' : ""}</div>
+          <div class="forum-board-row__title">${escapeHtml(b.name)}${priv ? ' <span class="forum-lock-pill">Privata</span>' : ""}${b.staffOnly ? ' <span class="forum-lock-pill">Solo staff</span>' : ""}</div>
           <p>${escapeHtml(b.description || (priv ? "Solo tu e lo staff vedete le vostre conversazioni." : ""))}</p>
         </div>
         <div class="forum-board-row__stats">
