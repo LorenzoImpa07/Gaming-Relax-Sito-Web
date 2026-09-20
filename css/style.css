@@ -2367,6 +2367,11 @@ body.art-lb-open { overflow: hidden; }
 .forum-share a:hover,
 .forum-share button:hover { color: var(--lime); border-color: var(--lime-dim); }
 .forum-share button.is-copied { color: var(--lime); }
+.forum-share-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--lime);
+}
 .forum-side-msg {
   display: block;
   padding: 10px 0;

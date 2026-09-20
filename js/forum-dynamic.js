@@ -243,35 +243,43 @@ function renderSide() {
       <p class="forum-side-card__kicker">Condividi questa pagina</p>
       <div class="forum-share">
         <a href="https://www.facebook.com/sharer/sharer.php?u=${pageUrl}" target="_blank" rel="noopener" aria-label="Facebook">${shareIco("fb")}</a>
-        <a href="https://twitter.com/intent/tweet?url=${pageUrl}&text=${pageTitle}" target="_blank" rel="noopener" aria-label="X">${shareIco("x")}</a>
-        <a href="https://www.reddit.com/submit?url=${pageUrl}&title=${pageTitle}" target="_blank" rel="noopener" aria-label="Reddit">${shareIco("rd")}</a>
-        <a href="https://pinterest.com/pin/create/button/?url=${pageUrl}&description=${pageTitle}" target="_blank" rel="noopener" aria-label="Pinterest">${shareIco("pin")}</a>
-        <a href="https://www.tumblr.com/widgets/share/tool?canonicalUrl=${pageUrl}&title=${pageTitle}" target="_blank" rel="noopener" aria-label="Tumblr">${shareIco("tb")}</a>
         <a href="https://wa.me/?text=${pageTitle}%20${pageUrl}" target="_blank" rel="noopener" aria-label="WhatsApp">${shareIco("wa")}</a>
-        <a href="mailto:?subject=${pageTitle}&body=${pageUrl}" aria-label="Email">${shareIco("mail")}</a>
+        <button type="button" class="forum-share-app" data-app="ig" aria-label="Instagram">${shareIco("ig")}</button>
+        <button type="button" class="forum-share-app" data-app="dc" aria-label="Discord">${shareIco("dc")}</button>
         <button type="button" id="forum-copy-link" aria-label="Copia link">${shareIco("link")}</button>
       </div>
+      <p class="forum-share-hint" id="forum-share-hint" hidden>Link copiato, incollalo dove vuoi.</p>
     </div>`;
 
-  document.getElementById("forum-copy-link")?.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(location.href.split("#")[0]);
-      const btn = document.getElementById("forum-copy-link");
-      if (btn) btn.classList.add("is-copied");
-      setTimeout(() => btn?.classList.remove("is-copied"), 1200);
-    } catch (_) {}
+  const copyUrl = location.href.split("#")[0];
+  const hint = document.getElementById("forum-share-hint");
+  async function copyPageLink() {
+    try { await navigator.clipboard.writeText(copyUrl); } catch (_) {}
+    if (hint) {
+      hint.hidden = false;
+      setTimeout(() => { hint.hidden = true; }, 1800);
+    }
+  }
+  document.getElementById("forum-copy-link")?.addEventListener("click", copyPageLink);
+  const apps = {
+    ig: "https://www.instagram.com/gamingrelaxofficials/",
+    dc: "https://discord.gg/5MxfYT7C5f"
+  };
+  document.querySelectorAll(".forum-share-app").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      await copyPageLink();
+      const dest = apps[btn.dataset.app];
+      if (dest) window.open(dest, "_blank", "noopener");
+    });
   });
 }
 
 function shareIco(name) {
   const p = {
     fb: "M15 8h-3V6c0-.8.2-1 1-1h2V2h-3a4 4 0 0 0-4 4v2H6v3h2v9h3v-9h2.5L15 8z",
-    x: "M3 4h5.2l4 5.4L16.8 4H21l-6.6 8.2L21 20h-5.2l-4.4-5.8L6.2 20H2l7-8.6L3 4z",
-    rd: "M14.5 9.2a1.2 1.2 0 1 1 0 2.4 2.8 2.8 0 0 1-2.5 1.5 2.8 2.8 0 0 1-2.5-1.5 1.2 1.2 0 1 1 0-2.4 4 4 0 0 1 5 0zM12 4c3.6 0 6.6 2.2 7.6 5.3a2.3 2.3 0 1 1-1.4 4.3A6.6 6.6 0 0 1 12 16a6.6 6.6 0 0 1-6.2-2.4 2.3 2.3 0 1 1-1.4-4.3C5.4 6.2 8.4 4 12 4zm-2.1 7.8a.7.7 0 1 0 0-1.4.7.7 0 0 0 0 1.4zm4.2 0a.7.7 0 1 0 0-1.4.7.7 0 0 0 0 1.4z",
-    pin: "M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l2.4-10.1s-.6-1.2-.6-3 1-2.1 2.2-2.1 1.6 1 1.6 2.2-.6 3.4-.9 5.1c-.3 1.6.6 2.9 2.2 2.9 2.6 0 4.4-3.3 4.4-7.2 0-3-2.1-5.3-6-5.3-4.4 0-7.1 3.3-7.1 6.9 0 1.2.4 2.6 1 3.3a.5.5 0 0 0 .6.1c.2-.1.3-.4.2-.6l-.4-1.6c-.1-.3-.2-1.1-.2-1.5 0-1.5 1.1-3 3.2-3 2.5 0 3.8 1.8 3.8 4.2 0 2.8-1.4 4.8-3.2 4.8-1.1 0-1.9-.9-1.6-2l.6-2.3c.2-.8-.1-1.5-.9-1.5-.7 0-1.3.8-1.3 1.8 0 .6.2 1.1.2 1.1L8 19.2A10 10 0 1 0 12 2z",
-    tb: "M16 4v3h-2c-.7 0-1 .4-1 1.2V10h3l-.4 3H13v7h-3v-7H8v-3h2V7.6C10 5.2 11.4 4 14 4h2z",
     wa: "M12 2a10 10 0 0 0-8.7 15L2 22l5.2-1.3A10 10 0 1 0 12 2zm5.7 14.3c-.2.7-1.2 1.2-2 1.4-.5.1-1.2.2-3.5-.7-2.9-1.2-4.8-4.2-4.9-4.4-.2-.2-1.3-1.7-1.3-3.3 0-1.5.8-2.3 1.1-2.6.3-.3.7-.4 1-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.7c-.1.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l.9-1.2c.2-.2.4-.2.7-.1l2.3 1.1c.3.1.5.2.6.4.1.4 0 1.1-.2 1.8z",
-    mail: "M3 6h18v12H3V6zm9 6.5L5 8v2l7 4.5L19 10V8l-7 4.5z",
+    ig: "M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.8 6.2a1 1 0 1 1-1 1 1 1 0 0 1 1-1z",
+    dc: "M19.54 5.16A16.9 16.9 0 0 0 15.26 4c-.2.36-.43.85-.59 1.23a15.4 15.4 0 0 0-5.34 0A10.6 10.6 0 0 0 8.74 4 16.9 16.9 0 0 0 4.46 5.16C1.73 9.3.96 13.32 1.33 17.24c2.18 1.61 4.3 2.58 6.37 3.21l.81-1.4a12.4 12.4 0 0 1-1.96-.94l.38-.3c3.92 1.82 8.17 1.82 12.04 0l.39.3c-.62.37-1.28.68-1.96.94l.81 1.4c2.07-.63 4.19-1.6 6.37-3.21.44-4.54-.73-8.52-3.48-12.08zM8.68 14.72c-1.04 0-1.9-.96-1.9-2.13s.84-2.14 1.9-2.14 1.91.96 1.9 2.14c0 1.17-.84 2.13-1.9 2.13zm6.64 0c-1.04 0-1.9-.96-1.9-2.13s.84-2.14 1.9-2.14 1.91.96 1.9 2.14c0 1.17-.83 2.13-1.9 2.13z",
     link: "M10.5 13.5a4 4 0 0 1 0-5.6l2-2a4 4 0 1 1 5.6 5.6l-1.2 1.2-1.4-1.4 1.2-1.2a2 2 0 1 0-2.8-2.8l-2 2a2 2 0 0 0 0 2.8l-1.4 1.4zm3 3a4 4 0 0 1 0-5.6l1.4 1.4a2 2 0 0 0 0 2.8l-2 2a2 2 0 1 1-2.8-2.8l1.2-1.2-1.4-1.4-1.2 1.2a4 4 0 1 0 5.6 5.6l2-2-1.4-1.4-2 2a2 2 0 0 1-2.8 0z"
   };
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${p[name]}"/></svg>`;
