@@ -6,7 +6,7 @@ import { db } from "./firebase-init.js";
 import { doc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const DEFAULTS = {
-  home: { bgStyle: "aurora", bgOverlay: 28, bgMotion: true },
+  home: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/home-bg.jpg" },
   store: { bgStyle: "grid", bgOverlay: 32, bgMotion: true },
   custom: { bgStyle: "cinematic", bgOverlay: 30, bgMotion: true },
   art: { bgStyle: "particles", bgOverlay: 30, bgMotion: true },
@@ -302,9 +302,13 @@ function listenPageBg() {
   unsubPageBg();
   unsubPageBg = onSnapshot(doc(db, "siteContent", pageKey), (snap) => {
   const d = snap.exists() ? snap.data() : {};
-  const image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
-  const video = (d.bgVideoUrl || "").trim();
-  if (!snap.exists() && !image && !video) return;
+  let image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
+  let video = (d.bgVideoUrl || "").trim();
+  if (!image && !video) {
+    image = fallback.bgImageUrl || "";
+    video = fallback.bgVideoUrl || "";
+    if (!image && !video && !snap.exists()) return;
+  }
   const cfg = {
     bgImageUrl: image,
     bgVideoUrl: video,
