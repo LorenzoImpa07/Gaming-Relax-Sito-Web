@@ -5,7 +5,7 @@ import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=2026
 import { doc, getDoc, collection, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
+import { userNickHtml, userBadgesHtml, bumpMessageCount, userAvatarHtml, onUsersChange } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
 import { prefixChip, prefixSelectHtml, prefixPatch } from "./forum-tags.js";
 import { uploadFile } from "./upload.js?v=20260920n";
@@ -23,7 +23,13 @@ function escapeHtml(str = "") {
 
 function formatDate(ts) {
   if (!ts || typeof ts.toDate !== "function") return "";
-  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function compactNum(n) {
+  const x = Number(n) || 0;
+  if (x >= 1000) return (x / 1000).toFixed(x >= 10000 ? 0 : 1).replace(".0", "") + "K";
+  return String(x);
 }
 
 function textColorFor(hex) {
@@ -71,6 +77,10 @@ function badgeFor(email) {
 onAuthStateChanged(auth, (user) => {
   currentUser = verifiedOrNull(user);
   renderNewTopic();
+});
+
+onUsersChange(() => {
+  if (board && board.type !== "readonly") renderTopics();
 });
 
 if (!boardId) {
@@ -135,23 +145,34 @@ function renderTopics() {
     bodyEl.innerHTML = `<p style="text-align:center;color:var(--text-dim);padding:24px 0;">${msg}</p>`;
     return;
   }
-  bodyEl.innerHTML = docs.map((t) => {
-    const pinnedIcon = t.pinned ? `<span class="pin-icon">📌</span>` : "";
-    const lockedIcon = t.locked ? `<span class="lock-icon">🔒</span>` : "";
-    return `
-      <a href="forum-topic.html?id=${t.id}" class="topic-row ${t.pinned ? "topic-row--pinned" : ""}">
-        <div class="topic-row__top">
-          ${pinnedIcon}
-          <div class="topic-row__title">${prefixChip(t)}${escapeHtml(t.title)}</div>
-          ${lockedIcon}
+  bodyEl.innerHTML = `
+    <div class="xf-topiclist">
+      ${docs.map((t) => {
+        const lastName = t.lastPosterName || t.authorName || "Utente";
+        const lastEmail = t.lastPosterEmail || t.authorEmail;
+        const flags = `${t.locked ? '<span class="xf-flag" title="Chiuso">🔒</span>' : ""}${t.pinned ? '<span class="xf-flag" title="Fissato">📌</span>' : ""}`;
+        return `
+      <a href="forum-topic.html?id=${t.id}" class="xf-topic ${t.pinned ? "is-pinned" : ""}">
+        ${userAvatarHtml(t.authorEmail, t.authorName || "Utente", "xf-avatar--sm")}
+        <div class="xf-topic__main">
+          <div class="xf-topic__title">${prefixChip(t)}${escapeHtml(t.title)}</div>
+          <div class="xf-topic__by">${userNickHtml(t.authorEmail, t.authorName || "Utente")} · ${formatDate(t.createdAt)}</div>
         </div>
-        <div class="topic-row__meta">
-          <span>di ${userNickHtml(t.authorEmail, t.authorName || "Utente")}${badgeFor(t.authorEmail)}</span>
-          <span>💬 ${t.replyCount || 0} risposte</span>
-          <span>Ultima attività: ${formatDate(t.lastActivityAt)}</span>
+        <div class="xf-topic__stats">
+          <span class="xf-topic__flags">${flags}</span>
+          <span>Risposte: <strong>${compactNum(t.replyCount || 0)}</strong></span>
+          <span>Visualizzazioni: <strong>${compactNum(t.viewCount || 0)}</strong></span>
+        </div>
+        <div class="xf-topic__last">
+          <div>
+            <strong>${formatDate(t.lastActivityAt || t.createdAt)}</strong>
+            <span>${userNickHtml(lastEmail, lastName)}</span>
+          </div>
+          ${userAvatarHtml(lastEmail, lastName, "xf-avatar--sm")}
         </div>
       </a>`;
-  }).join("");
+      }).join("")}
+    </div>`;
 }
 
 function renderNewTopic() {
@@ -217,7 +238,10 @@ function renderNewTopic() {
         locked: extra.locked === true,
         pinned: false,
         private: areaIsPrivate(category, board),
-        prefix: extra.prefix || ""
+        prefix: extra.prefix || "",
+        lastPosterEmail: currentUser.email,
+        lastPosterName: authorName,
+        viewCount: 0
       });
       const post = {
         authorEmail: currentUser.email,

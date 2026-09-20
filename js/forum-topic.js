@@ -114,6 +114,7 @@ async function loadTopic() {
     currentTopicData = snap.data();
     document.title = `${currentTopicData.title} — Forum Gaming Relax`;
     renderTopicHeader(currentTopicData);
+    try { await updateDoc(doc(db, "forumTopics", topicId), { viewCount: increment(1) }); } catch (_) {}
   } catch (err) {
     const denied = String(err?.code || err?.message || "").includes("permission");
     headerEl.innerHTML = denied
@@ -320,7 +321,9 @@ function renderReplyForm() {
       await bumpMessageCount(currentUser.uid);
       await updateDoc(doc(db, "forumTopics", topicId), {
         lastActivityAt: serverTimestamp(),
-        replyCount: increment(1)
+        replyCount: increment(1),
+        lastPosterEmail: currentUser.email,
+        lastPosterName: authorName
       });
       document.getElementById("reply-form").reset();
     } catch {
