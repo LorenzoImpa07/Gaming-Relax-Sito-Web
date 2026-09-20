@@ -667,25 +667,49 @@ section { padding: 80px 0; }
 .store-hero .eyebrow { color: var(--purple); }
 .store-hero h1 { font-size: clamp(34px, 6vw, 58px); }
 .trust-bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px 8px;
-  margin-top: 30px;
-  padding-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px 28px;
+  margin-top: 36px;
+  padding: 26px 4px;
   border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
 }
-.trust-bar span {
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 600;
-  letter-spacing: .02em;
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
 }
-.trust-bar span:not(:last-child)::after {
-  content: "·";
-  margin-left: 14px;
-  color: var(--text-dim);
+.trust-item__ico {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  margin-top: 2px;
+  color: var(--lime);
+}
+.trust-item strong {
+  display: block;
+  font-size: 15px;
   font-weight: 700;
+  color: #fff;
+  letter-spacing: .01em;
+}
+.trust-item span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-dim);
+  letter-spacing: 0;
+}
+.trust-item span::after { content: none; }
+@media (max-width: 900px) {
+  .trust-bar { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .trust-bar { grid-template-columns: 1fr; }
 }
 
 .product-flags {

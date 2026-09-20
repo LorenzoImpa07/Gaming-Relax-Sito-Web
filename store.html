@@ -22,7 +22,7 @@
 <meta name="description" content="Sfoglia tastiere custom, keycaps, switch e accessori per il tuo desk setup.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260920q">
+<link rel="stylesheet" href="css/style.css?v=20260920r">
 <script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){var L=d.limeColor,H=String(L).replace("#","");var r=parseInt(H.slice(0,2),16),g=parseInt(H.slice(2,4),16),b=parseInt(H.slice(4,6),16);if(!H|| (g>170&&b<90&&r>120))L="#ff4dad";s.setProperty("--lime",L);s.setProperty("--lime-dim",L+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 <script src="js/smooth-nav.js?v=20260919w" defer></script>
 </head>
@@ -60,10 +60,34 @@
     <h1 data-edit="title">Hardware &amp; Accessori</h1>
     <p class="lede" style="margin:18px auto 0;" data-edit="subtitle">Sfoglia tastiere, keycaps, switch e accessori per il tuo desk setup. Ogni prodotto ha un link di pagamento sicuro per l'acquisto immediato, oppure puoi richiedere un preventivo su misura.</p>
     <div class="trust-bar">
-      <span>Pagamento sicuro</span>
-      <span>Spedizione tracciata</span>
-      <span>Supporto Discord</span>
-      <span>Basati in Italia · spediamo in UE</span>
+      <article class="trust-item">
+        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 4h13v9h-2.2a3 3 0 0 0-5.6 0H6v-2H3V4zm0 9h1.2a3 3 0 0 0 5.6 0h3.4a3 3 0 0 0 5.6 0H21v3a1 1 0 0 1-1 1h-1.2a3 3 0 0 1-5.6 0H11a3 3 0 0 1-5.6 0H3a1 1 0 0 1-1-1v-3h1zm16-7h2.6L24 9.4V13h-2.2a3 3 0 0 0-5.6 0H16V6h3zM7 16.5A1.5 1.5 0 1 0 7 19a1.5 1.5 0 0 0 0-2.5zm10 0A1.5 1.5 0 1 0 17 19a1.5 1.5 0 0 0 0-2.5z"/></svg>
+        <div>
+          <strong>Spedizione rapida</strong>
+          <span>Tracciata in Italia e UE</span>
+        </div>
+      </article>
+      <article class="trust-item">
+        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5.2 3.4 10 8 11 4.6-1 8-5.8 8-11V5l-8-3zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.5-4.5 1.4 1.4-5.9 5.9z"/></svg>
+        <div>
+          <strong>Pagamenti sicuri</strong>
+          <span>Stripe e PayPal, IVA inclusa</span>
+        </div>
+      </article>
+      <article class="trust-item">
+        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.5-4.5 1.4 1.4z"/></svg>
+        <div>
+          <strong>Handmade</strong>
+          <span>Assemblate e testate a mano</span>
+        </div>
+      </article>
+      <article class="trust-item">
+        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8l-4 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6v2h10V9H7z"/></svg>
+        <div>
+          <strong>Supporto diretto</strong>
+          <span>Discord e email, risposta in 24h</span>
+        </div>
+      </article>
     </div>
   </div>
 </section>
