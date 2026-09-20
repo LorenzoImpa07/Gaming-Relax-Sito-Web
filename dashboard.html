@@ -102,6 +102,7 @@
           <button class="dash-tab" data-panel="panel-orders"><span>🛒</span> Ordini carrello</button>
           <button class="dash-tab" data-panel="panel-checkout"><span>💳</span> Cassa e pagamenti</button>
           <button class="dash-tab" data-panel="panel-restock"><span>🔔</span> Avvisi Restock</button>
+          <button class="dash-tab" data-panel="panel-newsletter"><span>✉️</span> Newsletter</button>
           <button class="dash-tab" data-panel="panel-vouchers"><span>🎟️</span> Voucher</button>
           <button class="dash-tab" data-panel="panel-forum"><span>💬</span> Forum</button>
           <button class="dash-tab" data-panel="panel-users"><span>👤</span> Utenti</button>
@@ -846,6 +847,15 @@
       </div>
     </div>
 
+    <div class="dash-panel" id="panel-newsletter">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;max-width:800px;">
+        Iscrizioni da <strong>Restiamo in contatto</strong> nello Store. Qui vedi email e data: puoi copiarle o toglierle dalla lista.
+      </p>
+      <input type="search" id="nl-search" class="dash-search" placeholder="Cerca email...">
+      <div class="admin-list" id="admin-newsletter-list">
+        <p class="empty-hint">Caricamento…</p>
+      </div>
+    </div>
 
     <!-- ==================== UTENTI REGISTRATI ==================== -->
     <div class="dash-panel" id="panel-users">
@@ -1100,6 +1110,6 @@
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
 <script type="module" src="js/auth.js?v=20260919m"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
-<script type="module" src="js/dashboard.js?v=20260920n"></script>
+<script type="module" src="js/dashboard.js?v=20260920t"></script>
 </body>
 </html>

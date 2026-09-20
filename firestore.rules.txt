@@ -109,6 +109,15 @@ service cloud.firestore {
                                    && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
     }
 
+    match /newsletter/{subId} {
+      allow create: if request.resource.data.keys().hasOnly(['email', 'createdAt', 'source'])
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() > 3
+                    && request.resource.data.source is string;
+      allow read, update, delete: if request.auth != null
+                                   && request.auth.token.email == 'gamingrelaxadmin@gmail.com';
+    }
+
     match /orders/{orderId} {
       allow create: if request.resource.data.keys().hasAll(['items', 'email', 'status', 'createdAt'])
                     && request.resource.data.status == 'nuova';

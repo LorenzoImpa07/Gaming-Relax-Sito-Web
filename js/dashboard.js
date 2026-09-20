@@ -60,6 +60,7 @@ onAuthStateChanged(auth, (user) => {
   initNews();
   initReviews();
   initRestock();
+  initNewsletter();
   initBanner();
   initStaffTags();
   initForumCategories();
@@ -1722,6 +1723,57 @@ function initRestock() {
   });
 
   document.getElementById("restock-search")?.addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    list.querySelectorAll(".admin-row").forEach((row) => {
+      row.style.display = row.dataset.searchName?.includes(q) ? "" : "none";
+    });
+  });
+}
+
+function initNewsletter() {
+  const list = document.getElementById("admin-newsletter-list");
+  if (!list) return;
+  const colRef = collection(db, "newsletter");
+
+  function formatDate(ts) {
+    if (!ts || typeof ts.toDate !== "function") return "—";
+    return ts.toDate().toLocaleString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+
+  onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
+    if (snap.empty) {
+      list.innerHTML = '<p class="empty-hint">Nessuna iscrizione ancora.</p>';
+      return;
+    }
+    list.innerHTML = "";
+    snap.forEach((docSnap) => {
+      const r = docSnap.data();
+      const row = document.createElement("div");
+      row.className = "admin-row";
+      row.dataset.searchName = String(r.email || "").toLowerCase();
+      row.innerHTML = `
+        <div class="admin-row__info">
+          <strong>${escapeHtml(r.email || "")}</strong>
+          <span>${escapeHtml(r.source || "store")} · ${formatDate(r.createdAt)}</span>
+        </div>
+        <div class="admin-row__actions">
+          <a class="btn btn--outline" href="mailto:${encodeURIComponent(r.email || "")}">Scrivi</a>
+          <button type="button" class="btn btn--outline btn-delete-nl" data-id="${docSnap.id}">Elimina</button>
+        </div>`;
+      list.appendChild(row);
+    });
+    list.querySelectorAll(".btn-delete-nl").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (confirm("Eliminare questa iscrizione?")) {
+          await deleteDoc(doc(db, "newsletter", btn.dataset.id));
+        }
+      });
+    });
+  }, () => {
+    list.innerHTML = '<p class="empty-hint">Impossibile caricare le iscrizioni. Pubblica le regole Firestore aggiornate.</p>';
+  });
+
+  document.getElementById("nl-search")?.addEventListener("input", (e) => {
     const q = e.target.value.trim().toLowerCase();
     list.querySelectorAll(".admin-row").forEach((row) => {
       row.style.display = row.dataset.searchName?.includes(q) ? "" : "none";
