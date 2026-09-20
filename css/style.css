@@ -1824,6 +1824,7 @@ body.art-lb-open { overflow: hidden; }
 .cookie-banner p { margin: 0; font-size: 13px; color: var(--text-dim); max-width: 640px; }
 .cookie-banner p a { color: var(--lime); font-weight: 600; }
 .cookie-banner .btn { padding: 10px 24px; font-size: 13px; flex-shrink: 0; }
+.cookie-banner__btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 
 /* ==========================================================================
    Richieste (form Contatti) nella Dashboard

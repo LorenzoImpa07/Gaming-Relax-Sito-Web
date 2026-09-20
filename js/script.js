@@ -80,18 +80,26 @@ function bindPageChrome() {
     document.body.appendChild(discordBtn);
   }
 
-  if (!localStorage.getItem('gr_cookie_notice_seen') && !document.querySelector('.cookie-banner')) {
+  const consent = localStorage.getItem('gr_cookie_consent');
+  document.querySelectorAll('.cookie-banner').forEach((el) => el.remove());
+  if (!consent) {
     const banner = document.createElement('div');
     banner.className = 'cookie-banner';
     banner.innerHTML = `
-      <p>Questo sito usa solo cookie tecnici necessari al suo funzionamento (es. mantenere la sessione di accesso). Nessun cookie di profilazione pubblicitaria. <a href="privacy.html">Privacy Policy</a></p>
-      <button type="button" class="btn btn--lime" id="cookie-ok">Ho capito</button>
+      <p>Usiamo cookie tecnici per login e carrello. Puoi accettare o rifiutare quelli non necessari. <a href="cookies.html">Cookie Policy</a></p>
+      <div class="cookie-banner__btns">
+        <button type="button" class="btn btn--outline" id="cookie-no">Rifiuta</button>
+        <button type="button" class="btn btn--lime" id="cookie-ok">Accetta</button>
+      </div>
     `;
     document.body.appendChild(banner);
-    document.getElementById('cookie-ok').addEventListener('click', () => {
-      localStorage.setItem('gr_cookie_notice_seen', '1');
+    const save = (val) => {
+      localStorage.setItem('gr_cookie_consent', val);
+      localStorage.removeItem('gr_cookie_notice_seen');
       banner.remove();
-    });
+    };
+    document.getElementById('cookie-ok').addEventListener('click', () => save('accepted'));
+    document.getElementById('cookie-no').addEventListener('click', () => save('rejected'));
   }
 }
 
