@@ -7,22 +7,22 @@ import { doc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/fi
 
 const DEFAULTS = {
   home: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/home-bg.jpg" },
-  store: { bgStyle: "grid", bgOverlay: 32, bgMotion: true },
-  custom: { bgStyle: "cinematic", bgOverlay: 30, bgMotion: true },
-  art: { bgStyle: "particles", bgOverlay: 30, bgMotion: true },
-  novita: { bgStyle: "aurora", bgOverlay: 32, bgMotion: true },
-  forum: { bgStyle: "grid", bgOverlay: 36, bgMotion: true },
-  team: { bgStyle: "cinematic", bgOverlay: 32, bgMotion: true },
-  recensioni: { bgStyle: "aurora", bgOverlay: 32, bgMotion: true },
-  contatti: { bgStyle: "cinematic", bgOverlay: 32, bgMotion: true },
-  faq: { bgStyle: "grid", bgOverlay: 36, bgMotion: true },
-  login: { bgStyle: "aurora", bgOverlay: 36, bgMotion: true },
-  register: { bgStyle: "aurora", bgOverlay: 36, bgMotion: true },
-  dashboard: { bgStyle: "grid", bgOverlay: 55, bgMotion: false },
-  privacy: { bgStyle: "cinematic", bgOverlay: 36, bgMotion: true },
-  termini: { bgStyle: "cinematic", bgOverlay: 36, bgMotion: true },
-  grazie: { bgStyle: "aurora", bgOverlay: 30, bgMotion: true },
-  "chi-siamo": { bgStyle: "aurora", bgOverlay: 30, bgMotion: true }
+  store: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  custom: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" },
+  art: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-art.jpg" },
+  novita: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  forum: { bgStyle: "none", bgOverlay: 24, bgMotion: true, bgImageUrl: "images/bg-art.jpg" },
+  team: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" },
+  recensioni: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  contatti: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" },
+  faq: { bgStyle: "none", bgOverlay: 26, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  login: { bgStyle: "none", bgOverlay: 28, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  register: { bgStyle: "none", bgOverlay: 28, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  dashboard: { bgStyle: "none", bgOverlay: 40, bgMotion: false, bgImageUrl: "images/bg-quiet.jpg" },
+  privacy: { bgStyle: "none", bgOverlay: 26, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  termini: { bgStyle: "none", bgOverlay: 26, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  grazie: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  "chi-siamo": { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" }
 };
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
