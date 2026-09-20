@@ -5,7 +5,7 @@ import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=2026
 import { doc, getDoc, collection, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
+import { userNickHtml, userBadgesHtml, bumpMessageCount, userAvatarHtml } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
 import { uploadFile } from "./upload.js?v=20260920n";
 
@@ -22,7 +22,13 @@ function escapeHtml(str = "") {
 
 function formatDate(ts) {
   if (!ts || typeof ts.toDate !== "function") return "";
-  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function compactNum(n) {
+  const x = Number(n) || 0;
+  if (x >= 1000) return (x / 1000).toFixed(x >= 10000 ? 0 : 1).replace(".0", "") + "K";
+  return String(x);
 }
 
 function textColorFor(hex) {
@@ -36,13 +42,16 @@ const STATUS_META = {
   open:     { label: "Aperto",     color: "#22c55e", bg: "rgba(34,197,94,0.18)" },
   closed:   { label: "Chiuso",     color: "#94a3b8", bg: "rgba(148,163,184,0.18)" },
   onhold:   { label: "In attesa",  color: "#f59e0b", bg: "rgba(245,158,11,0.18)" },
-  approved: { label: "Approvato",  color: "#06b6d4", bg: "rgba(6,182,212,0.18)" },
+  approved: { label: "Risolto",    color: "#22c55e", bg: "rgba(34,197,94,0.18)" },
   rejected: { label: "Respinto",   color: "#ef4444", bg: "rgba(239,68,68,0.18)" }
 };
 
-function statusBadge(status) {
+function statusBadge(status, pinned) {
+  if (pinned) return `<span class="xf-chip xf-chip--annuncio">Annuncio</span>`;
   const s = STATUS_META[status] || STATUS_META.open;
-  return `<span class="status-badge" style="color:${s.color};background:${s.bg};border:1px solid ${s.color}33;">${s.label}</span>`;
+  if (status === "open") return "";
+  const cls = status === "approved" ? "xf-chip--ok" : status === "rejected" ? "xf-chip--no" : status === "onhold" ? "xf-chip--wait" : "xf-chip--mute";
+  return `<span class="xf-chip ${cls}">${s.label}</span>`;
 }
 
 const params = new URLSearchParams(window.location.search);
@@ -96,7 +105,7 @@ async function loadBoard() {
       <div class="board-hero">
         <div class="board-hero__icon">${escapeHtml(board.icon || (board.type === "readonly" ? "📄" : (priv ? "🔒" : "💬")))}</div>
         <div>
-          <p class="board-hero__type">${board.type === "readonly" ? "Pagina in sola lettura" : (priv ? "Sezione privata — solo tu e lo staff" : "Sezione conversazioni")}${priv ? ' <span class="forum-lock-pill">Privata</span>' : ""}</p>
+          <p class="forum-crumb"><a href="forum.html">Forum</a> <span>/</span> ${escapeHtml(category?.name || "Sezione")}</p>
           <h1>${escapeHtml(board.name)}</h1>
           <p class="lede" style="margin:0;">${escapeHtml(board.description || "")}</p>
         </div>
@@ -134,24 +143,34 @@ function renderTopics() {
     bodyEl.innerHTML = `<p style="text-align:center;color:var(--text-dim);padding:24px 0;">${msg}</p>`;
     return;
   }
-  bodyEl.innerHTML = docs.map((t) => {
-    const pinnedIcon = t.pinned ? `<span class="pin-icon">📌</span>` : "";
-    const lockedIcon = t.locked ? `<span class="lock-icon">🔒</span>` : "";
-    return `
-      <a href="forum-topic.html?id=${t.id}" class="topic-row ${t.pinned ? "topic-row--pinned" : ""}">
-        <div class="topic-row__top">
-          ${pinnedIcon}
-          <div class="topic-row__title">${escapeHtml(t.title)}</div>
-          ${statusBadge(t.status || "open")}
-          ${lockedIcon}
+  bodyEl.innerHTML = `
+    <div class="xf-topiclist">
+      <div class="xf-topiclist__bar"><span>Discussioni</span><span>Filtri</span></div>
+      ${docs.map((t) => {
+        const lastName = t.lastPosterName || t.authorName || "Utente";
+        const lastEmail = t.lastPosterEmail || t.authorEmail;
+        const flags = `${t.pinned ? '<span class="xf-flag" title="Fissato">📌</span>' : ""}${t.locked ? '<span class="xf-flag" title="Chiuso">🔒</span>' : ""}`;
+        return `
+      <a href="forum-topic.html?id=${t.id}" class="xf-topic ${t.pinned ? "is-pinned" : ""}">
+        ${userAvatarHtml(t.authorEmail, t.authorName || "Utente", "xf-avatar--sm")}
+        <div class="xf-topic__main">
+          <div class="xf-topic__title">${statusBadge(t.status || "open", t.pinned)}${escapeHtml(t.title)} ${flags}</div>
+          <div class="xf-topic__by">${userNickHtml(t.authorEmail, t.authorName || "Utente")} · ${formatDate(t.createdAt)}</div>
         </div>
-        <div class="topic-row__meta">
-          <span>di ${userNickHtml(t.authorEmail, t.authorName || "Utente")}${badgeFor(t.authorEmail)}</span>
-          <span>💬 ${t.replyCount || 0} risposte</span>
-          <span>Ultima attività: ${formatDate(t.lastActivityAt)}</span>
+        <div class="xf-topic__stats">
+          <span>Risposte: <strong>${compactNum(t.replyCount || 0)}</strong></span>
+          <span>Visualizzazioni: <strong>${compactNum(t.viewCount || 0)}</strong></span>
+        </div>
+        <div class="xf-topic__last">
+          <div>
+            <strong>${formatDate(t.lastActivityAt)}</strong>
+            <span>${userNickHtml(lastEmail, lastName)}</span>
+          </div>
+          ${userAvatarHtml(lastEmail, lastName, "xf-avatar--sm")}
         </div>
       </a>`;
-  }).join("");
+      }).join("")}
+    </div>`;
 }
 
 function renderNewTopic() {
@@ -211,7 +230,10 @@ function renderNewTopic() {
         status: "open",
         locked: false,
         pinned: false,
-        private: areaIsPrivate(category, board)
+        private: areaIsPrivate(category, board),
+        lastPosterEmail: currentUser.email,
+        lastPosterName: authorName,
+        viewCount: 0,
       });
       const post = {
         authorEmail: currentUser.email,

@@ -104,9 +104,31 @@ export function userBadgesHtml(email) {
   }).join("");
 }
 
-export function userNickHtml(email, name) {
-  const n = name || "Utente";
-  return `<span class="user-nick" data-email="${escapeHtml(email || "")}" data-name="${escapeHtml(n)}">${escapeHtml(n)}</span>`;
+export function userProfile(email) {
+  const u = userByEmail(email);
+  return {
+    photo: u?.photoURL || "",
+    messages: u?.messageCount || 0,
+    bio: u?.bio || "",
+    nickname: u?.nickname || ""
+  };
+}
+
+export function userAvatarHtml(email, name, extraClass = "") {
+  const u = userByEmail(email);
+  const n = name || u?.nickname || "Utente";
+  const initial = (n || "U").charAt(0).toUpperCase();
+  const photo = u?.photoURL || "";
+  return `<div class="xf-avatar ${extraClass}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : `<span>${escapeHtml(initial)}</span>`}</div>`;
+}
+
+export function userRoleBoxesHtml(email) {
+  return badgesFor(email)
+    .filter((r) => !r.isDefault)
+    .map((r) => {
+      const bg = r.color || "#8b3dff";
+      return `<span class="xf-rolebox" style="background:${escapeHtml(bg)};color:${textColorFor(bg)};border-color:${escapeHtml(bg)}">${escapeHtml(r.label)}</span>`;
+    }).join("");
 }
 
 export async function bumpMessageCount(uid) {

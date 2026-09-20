@@ -6,7 +6,7 @@ import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260920n";
 import { doc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange } from "./user-card.js";
+import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange, userAvatarHtml, userRoleBoxesHtml, userProfile } from "./user-card.js";
 import { viewerIsStaff } from "./forum-privacy.js";
 import { uploadFile } from "./upload.js?v=20260920n";
 
@@ -16,7 +16,7 @@ function escapeHtml(str = "") {
 
 function formatDate(ts) {
   if (!ts || typeof ts.toDate !== "function") return "";
-  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 }
 
 function textColorFor(hex) {
@@ -28,16 +28,18 @@ function textColorFor(hex) {
 }
 
 const STATUS_META = {
-  open:     { label: "Aperto",     color: "#22c55e", bg: "rgba(34,197,94,0.18)" },
-  closed:   { label: "Chiuso",     color: "#94a3b8", bg: "rgba(148,163,184,0.18)" },
-  onhold:   { label: "In attesa",  color: "#f59e0b", bg: "rgba(245,158,11,0.18)" },
-  approved: { label: "Approvato",  color: "#06b6d4", bg: "rgba(6,182,212,0.18)" },
-  rejected: { label: "Respinto",   color: "#ef4444", bg: "rgba(239,68,68,0.18)" }
+  open:     { label: "Aperto",     color: "#22c55e" },
+  closed:   { label: "Chiuso",     color: "#94a3b8" },
+  onhold:   { label: "In attesa",  color: "#f59e0b" },
+  approved: { label: "Risolto",    color: "#22c55e" },
+  rejected: { label: "Respinto",   color: "#ef4444" }
 };
 
 function statusBadge(status) {
   const s = STATUS_META[status] || STATUS_META.open;
-  return `<span class="status-badge" style="color:${s.color};background:${s.bg};border:1px solid ${s.color}33;">${s.label}</span>`;
+  if (status === "open") return "";
+  const cls = status === "approved" ? "xf-chip--ok" : status === "rejected" ? "xf-chip--no" : status === "onhold" ? "xf-chip--wait" : "xf-chip--mute";
+  return `<span class="xf-chip ${cls}">${s.label}</span>`;
 }
 
 let staffTags = {};
@@ -80,6 +82,7 @@ const replyAreaEl = document.getElementById("reply-area");
 
 let currentUser = null;
 let currentTopicData = null;
+let lastPostsSnap = null;
 
 function canModerate() {
   return viewerIsStaff();
@@ -97,6 +100,7 @@ if (!topicId) {
   });
   onUsersChange(() => {
     if (currentTopicData) renderTopicHeader(currentTopicData);
+    if (lastPostsSnap) paintPosts(lastPostsSnap);
     renderReplyForm();
   });
 }
@@ -111,6 +115,9 @@ async function loadTopic() {
     currentTopicData = snap.data();
     document.title = `${currentTopicData.title} — Forum Gaming Relax`;
     renderTopicHeader(currentTopicData);
+    try {
+      await updateDoc(doc(db, "forumTopics", topicId), { viewCount: increment(1) });
+    } catch (_) {}
   } catch (err) {
     const denied = String(err?.code || err?.message || "").includes("permission");
     headerEl.innerHTML = denied
@@ -153,11 +160,17 @@ function renderTopicHeader(t) {
       </div>`;
   }
 
+  const lockedBanner = (t.locked || t.status === "closed")
+    ? `<div class="xf-locked"><span>🔒</span> Discussione chiusa ad ulteriori risposte.</div>`
+    : "";
+
   headerEl.innerHTML = `
+    ${lockedBanner}
     <div class="topic-header-card">
       <div class="topic-header-card__badges">
         ${categoryBadge(t.categoryId)}
-        ${statusBadge(status)}${pinnedIcon}${lockedIcon}${t.private ? ' <span class="forum-lock-pill">Privata</span>' : ""}
+        ${t.pinned ? '<span class="xf-chip xf-chip--annuncio">Annuncio</span>' : ""}
+        ${statusBadge(status)}${t.private ? ' <span class="forum-lock-pill">Privata</span>' : ""}
       </div>
       <h1 class="topic-header-card__title">${escapeHtml(t.title)}</h1>
       <p class="topic-header-card__meta">
@@ -200,29 +213,45 @@ function renderTopicHeader(t) {
 
 function loadPosts() {
   onSnapshot(query(collection(db, "forumTopics", topicId, "posts"), orderBy("createdAt", "asc")), (snap) => {
+    lastPostsSnap = snap;
+    paintPosts(snap);
+  }, () => {
+    postsEl.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Messaggi non visibili: discussione privata o errore di caricamento.</p>';
+  });
+}
+
+function paintPosts(snap) {
     if (snap.empty) {
       postsEl.innerHTML = "";
       return;
     }
-    postsEl.innerHTML = snap.docs.map((d) => {
+    postsEl.innerHTML = snap.docs.map((d, i) => {
       const p = d.data();
       const canDelete = currentUser && (currentUser.email === p.authorEmail || canModerate());
-      const initial = (p.authorName || "U").charAt(0).toUpperCase();
+      const prof = userProfile(p.authorEmail);
+      const roles = userRoleBoxesHtml(p.authorEmail);
+      const n = p.authorName || "Utente";
 
       return `
-        <div class="forum-post">
-          <div class="forum-post__avatar">${initial}</div>
-          <div class="forum-post__body">
-            <div class="forum-post__head">
-              ${userNickHtml(p.authorEmail, p.authorName || "Utente")}
-              ${badgeFor(p.authorEmail)}
-              <span class="forum-post__date">${formatDate(p.createdAt)}</span>
+        <article class="xf-post">
+          <aside class="xf-post__user">
+            ${userAvatarHtml(p.authorEmail, n, "xf-avatar--lg")}
+            <div class="xf-post__name">${userNickHtml(p.authorEmail, n)}</div>
+            <div class="xf-post__roles">${roles || '<span class="xf-rolebox xf-rolebox--member">Membro</span>'}</div>
+            <div class="xf-post__ustats">
+              <span>Messaggi <strong>${prof.messages || 0}</strong></span>
             </div>
-            <div class="forum-post__text">${escapeHtml(p.text)}</div>
+          </aside>
+          <div class="xf-post__body">
+            <div class="xf-post__meta">
+              <span>${formatDate(p.createdAt)}</span>
+              <span class="xf-post__num">#${i + 1}</span>
+            </div>
+            <div class="xf-post__text">${escapeHtml(p.text)}</div>
             ${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" alt="" class="forum-post__img" loading="lazy">` : ""}
             ${canDelete ? `<button type="button" class="forum-post__delete" data-id="${d.id}">Elimina</button>` : ""}
           </div>
-        </div>`;
+        </article>`;
     }).join("");
 
     postsEl.querySelectorAll(".forum-post__delete").forEach((btn) => {
@@ -232,9 +261,6 @@ function loadPosts() {
         }
       });
     });
-  }, () => {
-    postsEl.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Messaggi non visibili: discussione privata o errore di caricamento.</p>';
-  });
 }
 
 function renderReplyForm() {
@@ -290,7 +316,9 @@ function renderReplyForm() {
       await bumpMessageCount(currentUser.uid);
       await updateDoc(doc(db, "forumTopics", topicId), {
         lastActivityAt: serverTimestamp(),
-        replyCount: increment(1)
+        replyCount: increment(1),
+        lastPosterEmail: currentUser.email,
+        lastPosterName: authorName
       });
       document.getElementById("reply-form").reset();
     } catch {
