@@ -2322,7 +2322,46 @@ body.art-lb-open { overflow: hidden; }
   text-transform: uppercase;
   color: var(--lime);
   margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--lime);
+  width: fit-content;
 }
+.forum-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.forum-stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.forum-stats strong { color: var(--text); font-weight: 700; }
+.forum-share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.forum-share a,
+.forum-share button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.forum-share svg { width: 16px; height: 16px; }
+.forum-share a:hover,
+.forum-share button:hover { color: var(--lime); border-color: var(--lime-dim); }
+.forum-share button.is-copied { color: var(--lime); }
 .forum-side-msg {
   display: block;
   padding: 10px 0;

@@ -74,6 +74,20 @@ export function onUsersChange(fn) {
   if (usersReady) fn();
 }
 
+export function userStats() {
+  const list = Object.values(usersByUid);
+  let last = null;
+  list.forEach((u) => {
+    const t = u.createdAt?.toMillis?.() || 0;
+    const lt = last?.createdAt?.toMillis?.() || 0;
+    if (!last || t > lt) last = u;
+  });
+  return {
+    count: list.length,
+    lastName: last?.nickname || last?.displayName || (last?.email ? String(last.email).split("@")[0] : "—")
+  };
+}
+
 export function isStaffByUid(uid) {
   if (!uid) return false;
   const ids = usersByUid[uid]?.roleIds;
