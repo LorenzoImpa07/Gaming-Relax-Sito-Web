@@ -150,7 +150,7 @@ window.addEventListener('gr:navigated', bindReveal);
 
 (function galaxyHover() {
   const SEL = 'button, a.btn, .btn, .icon-btn, .filter-pill, .nav-toggle, .wish-btn';
-  const SKIP = '.gx-layer, input, textarea, select, .promo-banner, .cookie-banner, .art-lightbox, .co-tips, .co-card-box';
+  const SKIP = '.gx-layer, input, textarea, select, .promo-banner, .cookie-banner, .art-lightbox, .co-tips, .co-card-box, .co-form, .co-methods';
   const layer = document.createElement('div');
   layer.className = 'gx-layer';
   layer.setAttribute('aria-hidden', 'true');

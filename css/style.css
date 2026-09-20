@@ -3151,10 +3151,15 @@ body.art-lb-open { overflow: hidden; }
 .co-exp-btn:nth-child(1) { background: #5a31f4; }
 .co-exp-btn:nth-child(2) { background: #ffc439; color: #003087; }
 .co-exp-btn:nth-child(3) { background: #fff; color: #111; }
-.co-form input, .co-form select {
+.co-form input, .co-form select, .co-form textarea {
   width: 100%; margin: 0 0 10px; padding: 12px 14px; border-radius: 10px;
-  border: 1px solid var(--border); background: #fff; color: #111; font: inherit;
+  border: 1px solid #d0d5dd; background: #fff; color: #111; font: inherit;
+  color-scheme: light;
+  pointer-events: auto;
+  position: relative;
+  z-index: 3;
 }
+.co-form option { color: #111; background: #fff; }
 .co-2, .co-3 { display: grid; gap: 10px; }
 .co-2 { grid-template-columns: 1fr 1fr; }
 .co-3 { grid-template-columns: 1.2fr 1.2fr .8fr; }

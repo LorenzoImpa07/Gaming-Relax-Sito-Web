@@ -87,7 +87,12 @@ function renderSum() {
 function fillCountries() {
   const sel = document.getElementById("co-country");
   if (!sel) return;
-  sel.innerHTML = COUNTRIES.map((c) => `<option value="${escapeHtml(c)}"${c === "Italy" ? " selected" : ""}>${escapeHtml(c)}</option>`).join("");
+  const keep = sel.value || "Italy";
+  sel.innerHTML = COUNTRIES.map((c) => {
+    const label = c === "Italy" ? "Italia" : c;
+    return `<option value="${escapeHtml(c)}"${c === keep ? " selected" : ""}>${escapeHtml(label)}</option>`;
+  }).join("");
+  if (!sel.value) sel.value = "Italy";
 }
 
 function fillProvinces(list, keep) {
@@ -159,10 +164,11 @@ async function loadStripe() {
 function renderMethods() {
   const wrap = document.getElementById("co-methods");
   const express = document.getElementById("co-express");
-  const methods = cfg.methods.length ? cfg.methods : [
-    { name: "PayPal", type: "paypal", url: "" },
-    { name: "Carta / Stripe", type: "stripe", url: "" }
-  ];
+  const methods = (cfg.methods && cfg.methods.length) ? cfg.methods.slice() : [];
+  if (!methods.some((m) => m.type === "paypal")) methods.unshift({ name: "PayPal", type: "paypal", url: "" });
+  if (!methods.some((m) => m.type === "stripe" || /carta|card|stripe|credit/i.test(m.name || ""))) {
+    methods.push({ name: "Carta di credito", type: "stripe", url: "" });
+  }
   cfg.methods = methods;
   wrap.innerHTML = methods.map((m, i) => `
     <label class="co-method">
@@ -210,7 +216,8 @@ async function loadCfg() {
 
 function bindTips() {
   const box = document.getElementById("co-tips");
-  if (!box) return;
+  if (!box || box.dataset.bound === "1") return;
+  box.dataset.bound = "1";
   box.querySelectorAll("[data-tip]").forEach((b) => {
     b.addEventListener("click", (e) => {
       e.preventDefault();
@@ -221,7 +228,6 @@ function bindTips() {
     });
   });
 }
-bindTips();
 
 document.getElementById("co-country")?.addEventListener("change", (e) => loadStates(e.target.value));
 
@@ -372,7 +378,12 @@ if (!readCart().length) {
   const f = document.getElementById("co-form");
   if (f) f.insertAdjacentHTML("afterbegin", '<p class="cart-status err">Il carrello e vuoto. <a href="store.html">Vai allo Store</a></p>');
 }
-fillCountries();
-loadStates("Italy");
-loadCfg();
-renderSum();
+function bootCheckout() {
+  try { fillCountries(); } catch (_) {}
+  try { loadStates(document.getElementById("co-country")?.value || "Italy"); } catch (_) {}
+  try { loadCfg(); } catch (_) { try { renderMethods(); } catch (_) {} }
+  try { renderSum(); } catch (_) {}
+  try { bindTips(); } catch (_) {}
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootCheckout);
+else bootCheckout();
