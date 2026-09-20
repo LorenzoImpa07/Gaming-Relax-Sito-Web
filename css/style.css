@@ -287,7 +287,13 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   font-size: 20px;
   flex-shrink: 0;
 }
-.brand__name { white-space: nowrap; }
+.brand__name {
+  white-space: nowrap;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .brand__logo {
   width: 40px;
   height: 40px;
