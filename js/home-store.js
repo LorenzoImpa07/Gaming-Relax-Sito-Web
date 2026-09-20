@@ -57,14 +57,14 @@ function renderHomeStore(products) {
       ? `<span class="product-card__price is-sale"><s class="price-old">${escapeHtml(withEuro(sale.listStr))}</s><strong class="price-now">${escapeHtml(withEuro(sale.saleStr))}</strong></span>`
       : `<span class="product-card__price">${escapeHtml(withEuro(p.price))}</span>`;
     return `
-    <a class="home-store-card" href="prodotto.html?id=${encodeURIComponent(p.id)}">
+    <a class="home-store-card is-photo" href="prodotto.html?id=${encodeURIComponent(p.id)}">
       <div class="home-store-card__img" style="${img ? `background-image:url('${escapeHtml(img)}')` : ""}">
         ${sale.onSale ? '<span class="badge-sale">In offerta</span>' : ""}
-      </div>
-      <div class="home-store-card__body">
-        <h3>${escapeHtml(p.name)}</h3>
-        ${price}
-        <span class="home-store-card__cta">Vedi prodotto →</span>
+        <div class="home-store-card__body">
+          <h3>${escapeHtml(p.name)}</h3>
+          ${price}
+          <span class="home-store-card__cta">Vedi prodotto →</span>
+        </div>
       </div>
     </a>`;
   }).join("");

@@ -671,6 +671,7 @@ function initFaq() {
 // ==========================================================================
 const PAGE_FIELDS = {
   home: [
+    { key: "heroKicker", label: "Riga piccola sopra il titolo (es. Custom keyboards · Italia)", type: "input", placeholder: "Custom keyboards · Italia" },
     { key: "heroTitleLine1", label: "Titolo hero — riga 1", type: "input", placeholder: "La tua tastiera." },
     { key: "heroTitleLine2", label: "Titolo hero — riga 2", type: "input", placeholder: "Il tuo pezzo" },
     { key: "heroAccent", label: "Titolo hero — parola evidenziata", type: "input", placeholder: "unico." },

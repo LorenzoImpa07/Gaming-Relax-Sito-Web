@@ -98,6 +98,26 @@ function bindPageChrome() {
 document.addEventListener('DOMContentLoaded', bindPageChrome);
 window.addEventListener('gr:navigated', bindPageChrome);
 
+function bindReveal() {
+  const nodes = document.querySelectorAll('.reveal');
+  if (!nodes.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    nodes.forEach((el) => el.classList.add('is-in'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  nodes.forEach((el) => io.observe(el));
+}
+document.addEventListener('DOMContentLoaded', bindReveal);
+window.addEventListener('gr:navigated', bindReveal);
+
 (function galaxyHover() {
   const SEL = 'button, a.btn, .btn, .icon-btn, .filter-pill, .nav-toggle, .wish-btn';
   const SKIP = '.gx-layer, input, textarea, select, .promo-banner, .cookie-banner, .art-lightbox';

@@ -205,24 +205,25 @@ function renderProducts(products) {
     const flags = productFlags(p);
     const priceN = sale.saleNum;
     const hiddenByPrice = priceN != null && priceN > maxPrice;
+    const img = p.imageUrl || (String(p.galleryUrls || "").split(/\s+/).filter(Boolean)[0] || "");
     return `
-    <div class="product-card" data-product-id="${p.id}" data-product-category="${p.category}" style="${hiddenByCategory || hiddenByWishlist || hiddenBySale || hiddenByStock || hiddenByPrice ? "display:none;" : ""}">
+    <div class="product-card${img ? " is-photo" : ""}" data-product-id="${p.id}" data-product-category="${p.category}" style="${hiddenByCategory || hiddenByWishlist || hiddenBySale || hiddenByStock || hiddenByPrice ? "display:none;" : ""}">
       ${sale.onSale ? '<span class="badge-sale">In offerta</span>' : ""}
       ${isRecent(p.createdAt) ? '<span class="badge-new">Novità</span>' : ""}
       ${p.inStock === false ? '<span class="badge-oos">Esaurito</span>' : ""}
       <a href="prodotto.html?id=${p.id}" class="product-card__hit">
-        <div class="product-card__brand">
+        ${img ? `<div class="product-card__media" style="background-image:url('${escapeHtml(img)}')"></div>` : `<div class="product-card__brand">
           <img src="images/logo.png" alt="Gaming Relax">
           <div class="product-card__brand-text">
             <strong>GAMING RELAX</strong>
             <span>Custom Keyboards & Digital Craftsmanship</span>
           </div>
           <span class="product-card__accent" aria-hidden="true"></span>
-        </div>
+        </div>`}
         <div class="product-card__body">
           <span class="product-card__cat">${escapeHtml((storeNavGroups.find((x) => x.id === p.category)?.label) || CATEGORY_LABELS[p.category] || p.category || "")}</span>
           <h3>${escapeHtml(p.name)}</h3>
-          ${p.description ? `<p class="product-card__desc">${escapeHtml(p.description)}</p>` : ""}
+          ${!img && p.description ? `<p class="product-card__desc">${escapeHtml(p.description)}</p>` : ""}
           <div class="product-flags">
             ${flags.handmade ? '<span class="flag-chip">Fatto a mano</span>' : ""}
             ${flags.quote ? '<span class="flag-chip flag-chip--quote">Su preventivo</span>' : ""}
