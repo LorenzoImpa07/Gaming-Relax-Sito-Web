@@ -805,8 +805,10 @@
               <input type="text" id="cr-name" required placeholder="es. Marco">
             </div>
             <div class="field">
-              <label for="cr-email">Email / PayPal (solo interno)</label>
-              <input type="text" id="cr-email" placeholder="es. marco@email.com">
+              <label for="cr-email">Email account sul sito (obbligatoria per l'Area Creator)</label>
+              <input type="email" id="cr-email" list="cr-user-list" placeholder="email con cui il creator si registra sul sito">
+              <datalist id="cr-user-list"></datalist>
+              <p style="font-size:12px;color:var(--text-dim);margin:6px 0 0;">Scegli un utente già registrato. Solo quel login vedrà il menu Area Creator.</p>
             </div>
             <div class="field">
               <label for="cr-commission">Commissione creator (%)</label>
@@ -1177,8 +1179,8 @@
 <script type="module" src="js/firebase-init.js?v=20260920n"></script>
 <script type="module" src="js/cart.js?v=20260920al"></script>
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
-<script type="module" src="js/auth.js?v=20260919m"></script>
+<script type="module" src="js/auth.js?v=20260920aq"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
-<script type="module" src="js/dashboard.js?v=20260920ap"></script>
+<script type="module" src="js/dashboard.js?v=20260920aq"></script>
 </body>
 </html>

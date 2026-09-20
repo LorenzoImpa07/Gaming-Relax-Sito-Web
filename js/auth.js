@@ -9,7 +9,9 @@ import {
   onAuthStateChanged,
   updateProfile,
   sendPasswordResetEmail,
-  sendEmailVerification
+  sendEmailVerification,
+  confirmPasswordReset,
+  verifyPasswordResetCode
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import "./partners-dynamic.js";
@@ -69,7 +71,7 @@ async function isBanned(user) {
   }
 }
 
-function renderAuthArea(user) {
+function renderAuthArea(user, extra = {}) {
   const area = document.getElementById("auth-area");
   if (!area) return;
 
@@ -85,6 +87,7 @@ function renderAuthArea(user) {
           <span class="auth-menu__email">${nickname}</span>
           <span class="auth-menu__sub">${user.email}</span>
           <a href="profilo.html">Il mio profilo</a>
+          ${extra.creator ? '<a class="auth-menu__dash" href="creator.html">Area Creator</a>' : ""}
           ${isAdmin ? '<a class="auth-menu__dash" href="dashboard.html">Vai alla Dashboard</a>' : ""}
           <button type="button" data-action="logout">Esci</button>
         </div>
@@ -109,10 +112,51 @@ function renderAuthArea(user) {
   }
 }
 
+async function loadCreatorPortal(user) {
+  if (!user?.email) return null;
+  const key = String(user.email).trim().toLowerCase();
+  try {
+    const cached = JSON.parse(sessionStorage.getItem("gr_creator") || "null");
+    if (cached && cached.email === key && cached.active !== false) return cached;
+  } catch (_) {}
+  try {
+    const snap = await getDoc(doc(db, "creatorPortals", key));
+    if (!snap.exists()) {
+      try { sessionStorage.removeItem("gr_creator"); } catch (_) {}
+      return null;
+    }
+    const d = { ...snap.data(), email: key };
+    if (d.active === false) {
+      try { sessionStorage.removeItem("gr_creator"); } catch (_) {}
+      return null;
+    }
+    try { sessionStorage.setItem("gr_creator", JSON.stringify(d)); } catch (_) {}
+    return d;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function refreshAuthMenu(user) {
+  if (!user) {
+    renderAuthArea(null);
+    return;
+  }
+  let creator = null;
+  try {
+    const cached = JSON.parse(sessionStorage.getItem("gr_creator") || "null");
+    if (cached && cached.email === String(user.email || "").toLowerCase()) creator = cached;
+  } catch (_) {}
+  renderAuthArea(user, { creator: !!creator });
+  const live = await loadCreatorPortal(user);
+  if (!!live !== !!creator) renderAuthArea(user, { creator: !!live });
+}
+
 const VERIFY_URL = { url: "https://gamingrelaxofficials.it/login.html", handleCodeInApp: false };
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
+    try { sessionStorage.removeItem("gr_creator"); } catch (_) {}
     renderAuthArea(null);
     return;
   }
@@ -127,13 +171,13 @@ onAuthStateChanged(auth, async (user) => {
     renderAuthArea(null);
     return;
   }
-  renderAuthArea(user);
+  await refreshAuthMenu(user);
   getDoc(doc(db, "users", user.uid)).then((snap) => {
     if (!snap.exists()) return;
     const d = snap.data();
     if (d.photoURL) localStorage.setItem("gr_avatar_" + user.uid, d.photoURL);
     if (d.nickname) localStorage.setItem("gr_nick_" + user.uid, d.nickname);
-    renderAuthArea(user);
+    refreshAuthMenu(user);
   }).catch(() => {});
 });
 
@@ -250,14 +294,17 @@ if (forgotForm) {
     }
     btn.disabled = true;
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email, {
+        url: "https://gamingrelaxofficials.it/login.html",
+        handleCodeInApp: false
+      });
       msgEl.className = "auth-ok visible";
-      msgEl.textContent = "Se l'email è registrata, riceverai un messaggio con il link per reimpostare la password. Controlla anche lo spam.";
+      msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Apri il messaggio e usa il link per scegliere una nuova password. Controlla anche Spam.";
       forgotForm.reset();
     } catch (err) {
       if (err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
         msgEl.className = "auth-ok visible";
-        msgEl.textContent = "Se l'email è registrata, riceverai un messaggio con il link per reimpostare la password. Controlla anche lo spam.";
+        msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Controlla anche Spam.";
       } else {
         msgEl.className = "auth-error visible";
         msgEl.textContent = messageFromError(err);
@@ -267,11 +314,60 @@ if (forgotForm) {
     }
   });
 }
+
+const resetForm = document.getElementById("reset-form");
+if (resetForm && resetForm.dataset.bound !== "1") {
+  resetForm.dataset.bound = "1";
+  const params = new URLSearchParams(location.search);
+  const oobCode = params.get("oobCode") || "";
+  const msgEl = document.getElementById("reset-msg");
+  const emailEl = document.getElementById("reset-email-hint");
+  if (!oobCode) {
+    if (msgEl) {
+      msgEl.className = "auth-error visible";
+      msgEl.textContent = "Link non valido. Richiedi di nuovo il reset da Accedi → Password dimenticata.";
+    }
+    resetForm.querySelectorAll("input,button").forEach((el) => { el.disabled = true; });
+  } else {
+    verifyPasswordResetCode(auth, oobCode).then((mail) => {
+      if (emailEl) emailEl.textContent = "Account: " + mail;
+    }).catch(() => {
+      if (msgEl) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = "Link scaduto o già usato. Richiedi un nuovo reset.";
+      }
+    });
+    resetForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const p1 = document.getElementById("reset-pass")?.value || "";
+      const p2 = document.getElementById("reset-pass2")?.value || "";
+      if (p1.length < 6) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = "La password deve avere almeno 6 caratteri.";
+        return;
+      }
+      if (p1 !== p2) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = "Le due password non coincidono.";
+        return;
+      }
+      try {
+        await confirmPasswordReset(auth, oobCode, p1);
+        msgEl.className = "auth-ok visible";
+        msgEl.textContent = "Password aggiornata. Ora puoi accedere.";
+        setTimeout(() => { location.href = "login.html"; }, 1200);
+      } catch (err) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = messageFromError(err);
+      }
+    });
+  }
+}
 }
 
 bindAuthForms();
 window.addEventListener("gr:navigated", () => {
   const u = auth.currentUser;
-  renderAuthArea(u && isVerifiedUser(u) ? u : null);
+  refreshAuthMenu(u && isVerifiedUser(u) ? u : null);
   bindAuthForms();
 });

@@ -13,7 +13,7 @@
     "js/live.js",
     "js/user-card.js"
   ];
-  const HARD = ["dashboard.html", "checkout.html", "carrello.html"];
+  const HARD = ["dashboard.html", "checkout.html", "carrello.html", "reset.html", "creator.html"];
   const KEEP_SEL = ["#page-bg", ".cookie-banner", ".floating-discord", ".promo-banner"];
   let busy = false;
   const cache = new Map();

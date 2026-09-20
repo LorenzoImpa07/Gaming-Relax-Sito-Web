@@ -4,28 +4,28 @@
 <meta charset="UTF-8">
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registrati — Gaming Relax</title>
+<title>Nuova password — Gaming Relax</title>
 <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gaming Relax">
-<meta property="og:title" content="Registrati — Gaming Relax">
-<meta property="og:description" content="Crea il tuo account Gaming Relax.">
+<meta property="og:title" content="Accedi — Gaming Relax">
+<meta property="og:description" content="Accedi al tuo account Gaming Relax.">
 <meta property="og:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
-<meta property="og:url" content="https://gamingrelaxofficials.it/register.html">
+<meta property="og:url" content="https://gamingrelaxofficials.it/login.html">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Registrati — Gaming Relax">
-<meta name="twitter:description" content="Crea il tuo account Gaming Relax.">
+<meta name="twitter:title" content="Accedi — Gaming Relax">
+<meta name="twitter:description" content="Accedi al tuo account Gaming Relax.">
 <meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260920s">
+<link rel="stylesheet" href="css/style.css?v=20260920aq">
 <script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){var L=d.limeColor,H=String(L).replace("#","");var r=parseInt(H.slice(0,2),16),g=parseInt(H.slice(2,4),16),b=parseInt(H.slice(4,6),16);if(!H|| (g>170&&b<90&&r>120))L="#ff4dad";s.setProperty("--lime",L);s.setProperty("--lime-dim",L+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 <script src="js/smooth-nav.js?v=20260920an" defer></script>
 </head>
-<body data-page="register">
+<body data-page="login">
 
 <header class="site-header">
   <div class="container">
@@ -55,30 +55,22 @@
 
 <div class="auth-page">
   <div class="auth-card">
-    <h1>Crea account</h1>
-    <p class="lede">Registrati per seguire i tuoi ordini e le tue richieste.</p>
-
-    <p class="auth-error" id="register-error"></p>
-    <p class="auth-ok" id="register-ok"></p>
-
-    <form id="register-form">
+    <h1>Nuova password</h1>
+    <p class="lede">Scegli la nuova password del tuo account.</p>
+    <p id="reset-email-hint" class="lede" style="margin-top:0;"></p>
+    <p id="reset-msg"></p>
+    <form id="reset-form">
       <div class="field">
-        <label for="register-nickname">Nickname <span style="color:var(--text-dim);font-weight:400;">(verrà mostrato nel forum e sul sito)</span></label>
-        <input type="text" id="register-nickname" name="nickname" required autocomplete="username" minlength="2" maxlength="24" placeholder="Es. DarkKnight92">
+        <label for="reset-pass">Nuova password</label>
+        <input type="password" id="reset-pass" required minlength="6" autocomplete="new-password">
       </div>
       <div class="field">
-        <label for="register-email">Email</label>
-        <input type="email" id="register-email" name="email" required autocomplete="email" placeholder="es. mario@gmail.com">
-        <p style="font-size:12px;color:var(--text-dim);margin:8px 0 0;">Ti inviamo un link di conferma. Senza conferma l'account non si attiva: così nessuno può registrarsi con un'email a caso.</p>
+        <label for="reset-pass2">Ripeti password</label>
+        <input type="password" id="reset-pass2" required minlength="6" autocomplete="new-password">
       </div>
-      <div class="field">
-        <label for="register-password">Password</label>
-        <input type="password" id="register-password" name="password" required autocomplete="new-password" minlength="6">
-      </div>
-      <button type="submit" class="btn btn--lime">Registrati</button>
+      <button type="submit" class="btn btn--lime" style="width:100%;justify-content:center;">Salva password</button>
     </form>
-
-    <p class="auth-switch">Hai già un account? <a href="login.html">Accedi</a></p>
+    <p class="auth-switch"><a href="login.html">Torna al login</a></p>
   </div>
 </div>
 

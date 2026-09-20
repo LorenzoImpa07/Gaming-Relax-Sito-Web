@@ -3797,3 +3797,19 @@ body:not([data-page="home"]) .site-header {
   .nl-bar__form { max-width: none; margin-left: 0; width: 100%; }
   .nl-bar__status { text-align: left; }
 }
+
+.creator-box { margin-top: 8px; }
+.creator-k { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 8px; }
+.creator-code {
+  font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: .08em;
+  padding: 16px; border-radius: 14px; text-align: center;
+  background: linear-gradient(135deg, rgba(139,61,255,.25), rgba(255,77,173,.2));
+  border: 1px solid var(--border);
+}
+.creator-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.creator-stats div {
+  border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+  background: rgba(12,14,22,.55);
+}
+.creator-stats span { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+.creator-stats strong { font-size: 20px; }

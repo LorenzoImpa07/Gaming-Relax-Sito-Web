@@ -1,0 +1,26 @@
+EMAIL DI RESET PASSWORD — mittente gamingrelaxofficials@gmail.com
+================================================================
+
+Firebase di default manda da noreply@....firebaseapp.com.
+Per far arrivare le email da gamingrelaxofficials@gmail.com:
+
+1. Google Account gamingrelaxofficials@gmail.com
+   → Sicurezza → Verifica in 2 passaggi (attiva)
+   → Password per le app → genera una password per "Firebase"
+2. Firebase Console → Authentication → Templates (Modelli)
+   → SMTP / "Personalizza SMTP"
+   Host: smtp.gmail.com
+   Porta: 587
+   Utente: gamingrelaxofficials@gmail.com
+   Password: la password per le app (NON la password Gmail normale)
+   Mittente: gamingrelaxofficials@gmail.com
+   Nome mittente: Gaming Relax
+3. Sempre in Authentication → Templates
+   → Password reset: testo in italiano, link resta quello di Firebase
+4. Authentication → Settings → Authorized domains
+   aggiungi: gamingrelaxofficials.it
+5. Authentication → Templates → personalizza URL azione
+   https://gamingrelaxofficials.it/reset.html
+
+Poi Pubblica / Salva. Le email di reset partono da Gmail.
+Copia anche firestore.rules.txt in Firestore → Regole → Pubblica.

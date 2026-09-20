@@ -1308,12 +1308,24 @@ function initCreators() {
   function syncPublic(listDocs) {
     const codes = {};
     listDocs.forEach((c) => {
-      if (!c.code || c.active === false) return;
-      codes[String(c.code).toUpperCase()] = {
+      const mail = String(c.email || "").trim().toLowerCase();
+      const payload = {
+        code: String(c.code || "").toUpperCase(),
         name: c.name || "",
         commission: Number(c.commission) || 0,
-        discount: Number(c.discount) || 0
+        discount: Number(c.discount) || 0,
+        active: !!(c.code && c.active !== false),
+        uses: statsFor(c.code).uses,
+        earned: statsFor(c.code).earned
       };
+      if (c.code && c.active !== false) {
+        codes[payload.code] = {
+          name: payload.name,
+          commission: payload.commission,
+          discount: payload.discount
+        };
+      }
+      if (mail) setDoc(doc(db, "creatorPortals", mail), payload, { merge: true }).catch(() => {});
     });
     setDoc(doc(db, "siteContent", "publicCreators"), { codes }, { merge: false }).catch(() => {});
   }
@@ -1361,7 +1373,16 @@ function initCreators() {
     cancelBtn.style.display = "none";
     form.querySelector("#cr-active").checked = true;
   });
-  document.getElementById("creator-search")?.addEventListener("input", render);
+  onSnapshot(query(collection(db, "users")), (snap) => {
+    const dl = document.getElementById("cr-user-list");
+    if (!dl) return;
+    dl.innerHTML = snap.docs.map((d) => {
+      const u = d.data();
+      const em = u.email || "";
+      if (!em) return "";
+      return `<option value="${escapeHtml(em)}">${escapeHtml(u.nickname || em)}</option>`;
+    }).join("");
+  });
 }
 
 // ==========================================================================
