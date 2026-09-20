@@ -7,6 +7,7 @@ import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
+import { prefixChip } from "./forum-tags.js";
 
 function escapeHtml(str = "") {
   const map = {
@@ -170,7 +171,7 @@ function boardRow(b, cat) {
   const priv = areaIsPrivate(cat, b);
   const lastHtml = last
     ? `<a class="forum-board-row__last" href="forum-topic.html?id=${last.id}">
-        <span class="forum-board-row__last-title">${escapeHtml(last.title)}</span>
+        <span class="forum-board-row__last-title">${prefixChip(last)}${escapeHtml(last.title)}</span>
         <span>${formatDate(last.lastActivityAt)} · ${userNickHtml(last.authorEmail, last.authorName || "Utente")}${badgeFor(last.authorEmail)}</span>
       </a>`
     : `<div class="forum-board-row__last"><span>${isRead ? "Solo lettura" : (priv ? "Conversazioni private" : "Nessuna discussione")}</span></div>`;

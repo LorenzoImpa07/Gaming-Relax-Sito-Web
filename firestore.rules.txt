@@ -190,7 +190,7 @@ service cloud.firestore {
       allow update: if isAdmin()
                     || (isStaff()
                         && request.resource.data.diff(resource.data).affectedKeys()
-                             .hasOnly(['status', 'locked', 'pinned', 'lastActivityAt', 'replyCount', 'lastPosterEmail', 'lastPosterName', 'viewCount']))
+                             .hasOnly(['status', 'locked', 'pinned', 'prefix', 'lastActivityAt', 'replyCount', 'lastPosterEmail', 'lastPosterName', 'viewCount']))
                     || (request.auth != null
                         && request.resource.data.diff(resource.data).affectedKeys()
                              .hasOnly(['lastActivityAt', 'replyCount', 'lastPosterEmail', 'lastPosterName', 'viewCount']))

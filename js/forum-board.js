@@ -7,6 +7,7 @@ import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
+import { prefixChip, prefixSelectHtml, prefixPatch } from "./forum-tags.js";
 import { uploadFile } from "./upload.js?v=20260920n";
 
 function escapeHtml(str = "") {
@@ -141,8 +142,7 @@ function renderTopics() {
       <a href="forum-topic.html?id=${t.id}" class="topic-row ${t.pinned ? "topic-row--pinned" : ""}">
         <div class="topic-row__top">
           ${pinnedIcon}
-          <div class="topic-row__title">${escapeHtml(t.title)}</div>
-          ${statusBadge(t.status || "open")}
+          <div class="topic-row__title">${prefixChip(t)}${escapeHtml(t.title)}</div>
           ${lockedIcon}
         </div>
         <div class="topic-row__meta">
@@ -174,6 +174,10 @@ function renderNewTopic() {
           <input type="text" id="nt-title" required maxlength="120">
         </div>
         <div class="field">
+          <label for="nt-prefix">Tag</label>
+          ${prefixSelectHtml("", "nt-prefix")}
+        </div>
+        <div class="field">
           <label for="nt-text">Messaggio</label>
           <textarea id="nt-text" required rows="5"></textarea>
         </div>
@@ -199,6 +203,7 @@ function renderNewTopic() {
       const topicRef = doc(collection(db, "forumTopics"));
       const imageFile = document.getElementById("nt-image").files?.[0];
       const imageUrl = imageFile ? await uploadFile(imageFile, "forum") : "";
+      const extra = prefixPatch(document.getElementById("nt-prefix")?.value || "");
       await setDoc(topicRef, {
         title: document.getElementById("nt-title").value.trim(),
         categoryId: board.categoryId || "",
@@ -208,10 +213,11 @@ function renderNewTopic() {
         createdAt: serverTimestamp(),
         lastActivityAt: serverTimestamp(),
         replyCount: 0,
-        status: "open",
-        locked: false,
+        status: extra.status || "open",
+        locked: extra.locked === true,
         pinned: false,
-        private: areaIsPrivate(category, board)
+        private: areaIsPrivate(category, board),
+        prefix: extra.prefix || ""
       });
       const post = {
         authorEmail: currentUser.email,

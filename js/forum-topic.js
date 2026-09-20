@@ -8,6 +8,7 @@ import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange } from "./user-card.js";
 import { viewerIsStaff } from "./forum-privacy.js";
+import { prefixChip, prefixSelectHtml, prefixPatch, resolvePrefix } from "./forum-tags.js";
 import { uploadFile } from "./upload.js?v=20260920n";
 
 function escapeHtml(str = "") {
@@ -146,6 +147,7 @@ function renderTopicHeader(t) {
             <option value="rejected" ${status === "rejected" ? "selected" : ""}>Respinto</option>
             <option value="closed" ${status === "closed" ? "selected" : ""}>Chiuso</option>
           </select>
+          ${prefixSelectHtml(resolvePrefix(t), "mod-prefix")}
           <button type="button" class="btn btn--outline btn-sm" id="mod-lock">${t.locked ? "Sblocca risposte" : "Blocca risposte"}</button>
           <button type="button" class="btn btn--outline btn-sm" id="mod-pin">${t.pinned ? "Togli pin" : "Fissa in cima"}</button>
           <button type="button" class="btn btn--outline btn-sm" id="mod-delete-topic" style="color:#ff8080;border-color:#ff808055;">Elimina argomento</button>
@@ -157,7 +159,7 @@ function renderTopicHeader(t) {
     <div class="topic-header-card">
       <div class="topic-header-card__badges">
         ${categoryBadge(t.categoryId)}
-        ${statusBadge(status)}${pinnedIcon}${lockedIcon}${t.private ? ' <span class="forum-lock-pill">Privata</span>' : ""}
+        ${prefixChip(t)}${pinnedIcon}${lockedIcon}${t.private ? ' <span class="forum-lock-pill">Privata</span>' : ""}
       </div>
       <h1 class="topic-header-card__title">${escapeHtml(t.title)}</h1>
       <p class="topic-header-card__meta">
@@ -170,9 +172,21 @@ function renderTopicHeader(t) {
   if (canModerate()) {
     document.getElementById("mod-status")?.addEventListener("change", async (e) => {
       const newStatus = e.target.value;
-      await updateDoc(doc(db, "forumTopics", topicId), { status: newStatus });
-      currentTopicData.status = newStatus;
+      const map = { onhold: "inattesa", approved: "risolto", rejected: "respinto", closed: "chiuso", open: "" };
+      const patch = { status: newStatus };
+      if (map[newStatus] !== undefined) patch.prefix = map[newStatus];
+      if (newStatus === "closed" || newStatus === "rejected") patch.locked = true;
+      await updateDoc(doc(db, "forumTopics", topicId), patch);
+      Object.assign(currentTopicData, patch);
       renderTopicHeader(currentTopicData);
+      renderReplyForm();
+    });
+    document.getElementById("mod-prefix")?.addEventListener("change", async (e) => {
+      const patch = prefixPatch(e.target.value);
+      await updateDoc(doc(db, "forumTopics", topicId), patch);
+      Object.assign(currentTopicData, patch);
+      renderTopicHeader(currentTopicData);
+      renderReplyForm();
     });
 
     document.getElementById("mod-lock")?.addEventListener("click", async () => {
