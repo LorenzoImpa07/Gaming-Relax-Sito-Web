@@ -123,6 +123,35 @@ export function userNickHtml(email, name) {
   return `<span class="user-nick" data-email="${escapeHtml(email || "")}" data-name="${escapeHtml(n)}">${escapeHtml(n)}</span>`;
 }
 
+export function userProfile(email) {
+  const u = userByEmail(email);
+  return {
+    photo: u?.photoURL || "",
+    messages: u?.messageCount || 0,
+    bio: u?.bio || "",
+    nickname: u?.nickname || ""
+  };
+}
+
+export function userAvatarHtml(email, name, extraClass = "") {
+  const u = userByEmail(email);
+  const n = name || u?.nickname || "Utente";
+  const initial = (n || "U").charAt(0).toUpperCase();
+  const photo = u?.photoURL || "";
+  return `<div class="xf-avatar ${extraClass}">${photo ? `<img src="${escapeHtml(photo)}" alt="">` : `<span>${escapeHtml(initial)}</span>`}</div>`;
+}
+
+export function userRoleBoxesHtml(email) {
+  const extras = badgesFor(email).filter((r) => !r.isDefault);
+  if (!extras.length) {
+    return `<span class="xf-rolebox xf-rolebox--member">Membro</span>`;
+  }
+  return extras.map((r) => {
+    const bg = r.color || "#8b3dff";
+    return `<span class="xf-rolebox" style="background:${escapeHtml(bg)};color:${textColorFor(bg)};border-color:${escapeHtml(bg)}">${escapeHtml(r.label)}</span>`;
+  }).join("");
+}
+
 export async function bumpMessageCount(uid) {
   if (!uid) return;
   try {

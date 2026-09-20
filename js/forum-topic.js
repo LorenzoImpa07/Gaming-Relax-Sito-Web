@@ -6,7 +6,7 @@ import { db, auth, verifiedOrNull } from "./firebase-init.js?v=20260920n";
 import { doc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange } from "./user-card.js";
+import { userNickHtml, userBadgesHtml, bumpMessageCount, onUsersChange, userAvatarHtml, userRoleBoxesHtml, userProfile } from "./user-card.js";
 import { viewerIsStaff } from "./forum-privacy.js";
 import { prefixChip, prefixSelectHtml, prefixPatch, resolvePrefix } from "./forum-tags.js";
 import { uploadFile } from "./upload.js?v=20260920n";
@@ -17,7 +17,7 @@ function escapeHtml(str = "") {
 
 function formatDate(ts) {
   if (!ts || typeof ts.toDate !== "function") return "";
-  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 }
 
 function textColorFor(hex) {
@@ -81,6 +81,7 @@ const replyAreaEl = document.getElementById("reply-area");
 
 let currentUser = null;
 let currentTopicData = null;
+let lastPostsSnap = null;
 
 function canModerate() {
   return viewerIsStaff();
@@ -98,6 +99,7 @@ if (!topicId) {
   });
   onUsersChange(() => {
     if (currentTopicData) renderTopicHeader(currentTopicData);
+    if (lastPostsSnap) paintPosts(lastPostsSnap);
     renderReplyForm();
   });
 }
@@ -214,40 +216,54 @@ function renderTopicHeader(t) {
 
 function loadPosts() {
   onSnapshot(query(collection(db, "forumTopics", topicId, "posts"), orderBy("createdAt", "asc")), (snap) => {
-    if (snap.empty) {
-      postsEl.innerHTML = "";
-      return;
-    }
-    postsEl.innerHTML = snap.docs.map((d) => {
-      const p = d.data();
-      const canDelete = currentUser && (currentUser.email === p.authorEmail || canModerate());
-      const initial = (p.authorName || "U").charAt(0).toUpperCase();
-
-      return `
-        <div class="forum-post">
-          <div class="forum-post__avatar">${initial}</div>
-          <div class="forum-post__body">
-            <div class="forum-post__head">
-              ${userNickHtml(p.authorEmail, p.authorName || "Utente")}
-              ${badgeFor(p.authorEmail)}
-              <span class="forum-post__date">${formatDate(p.createdAt)}</span>
-            </div>
-            <div class="forum-post__text">${escapeHtml(p.text)}</div>
-            ${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" alt="" class="forum-post__img" loading="lazy">` : ""}
-            ${canDelete ? `<button type="button" class="forum-post__delete" data-id="${d.id}">Elimina</button>` : ""}
-          </div>
-        </div>`;
-    }).join("");
-
-    postsEl.querySelectorAll(".forum-post__delete").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        if (confirm("Eliminare questo messaggio?")) {
-          await deleteDoc(doc(db, "forumTopics", topicId, "posts", btn.dataset.id));
-        }
-      });
-    });
+    lastPostsSnap = snap;
+    paintPosts(snap);
   }, () => {
     postsEl.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Messaggi non visibili: discussione privata o errore di caricamento.</p>';
+  });
+}
+
+function paintPosts(snap) {
+  if (!postsEl) return;
+  if (snap.empty) {
+    postsEl.innerHTML = "";
+    return;
+  }
+  postsEl.innerHTML = snap.docs.map((d, i) => {
+    const p = d.data();
+    const canDelete = currentUser && (currentUser.email === p.authorEmail || canModerate());
+    const n = p.authorName || "Utente";
+    const prof = userProfile(p.authorEmail);
+    const roles = userRoleBoxesHtml(p.authorEmail);
+
+    return `
+      <article class="xf-post">
+        <aside class="xf-post__user">
+          ${userAvatarHtml(p.authorEmail, n, "xf-avatar--lg")}
+          <div class="xf-post__name">${userNickHtml(p.authorEmail, n)}</div>
+          <div class="xf-post__roles">${roles}</div>
+          <div class="xf-post__ustats">
+            <span>Messaggi <strong>${prof.messages || 0}</strong></span>
+          </div>
+        </aside>
+        <div class="xf-post__body">
+          <div class="xf-post__meta">
+            <span>${formatDate(p.createdAt)}</span>
+            <span class="xf-post__num">#${i + 1}</span>
+          </div>
+          <div class="xf-post__text">${escapeHtml(p.text)}</div>
+          ${p.imageUrl ? `<img src="${escapeHtml(p.imageUrl)}" alt="" class="forum-post__img" loading="lazy">` : ""}
+          ${canDelete ? `<button type="button" class="forum-post__delete" data-id="${d.id}">Elimina</button>` : ""}
+        </div>
+      </article>`;
+  }).join("");
+
+  postsEl.querySelectorAll(".forum-post__delete").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (confirm("Eliminare questo messaggio?")) {
+        await deleteDoc(doc(db, "forumTopics", topicId, "posts", btn.dataset.id));
+      }
+    });
   });
 }
 
