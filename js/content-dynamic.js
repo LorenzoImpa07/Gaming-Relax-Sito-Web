@@ -97,6 +97,10 @@ function applyGeneral(d = {}) {
   setText('[data-about="footer"]', d.aboutFooter);
   setText('[data-general="replyTime"]', d.replyTime);
   setText('[data-general="studioLocation"]', d.studioLocation);
+  setText('[data-footer="copy"]', d.footerCopy);
+  if (d.footerCopy) {
+    try { localStorage.setItem("gr_footer_copy", d.footerCopy); } catch (_) {}
+  }
   if (d.aboutBody) {
     document.querySelectorAll('[data-about="body"]').forEach((el) => {
       el.innerHTML = String(d.aboutBody).replace(/\n/g, "<br>");
@@ -144,6 +148,10 @@ try {
 } catch (_) {
   applySocials({});
 }
+try {
+  const fc = localStorage.getItem("gr_footer_copy");
+  if (fc) document.querySelectorAll('[data-footer="copy"]').forEach((el) => { el.textContent = fc; });
+} catch (_) {}
 
 onSnapshot(doc(db, "siteContent", "design"), (snap) => {
   if (snap.exists()) applyDesign(snap.data());

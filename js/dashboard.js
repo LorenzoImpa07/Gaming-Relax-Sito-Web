@@ -970,6 +970,7 @@ function initGeneral() {
     telegramUrl: document.getElementById("g-telegram"),
     replyTime: document.getElementById("g-reply"),
     studioLocation: document.getElementById("g-location"),
+    footerCopy: document.getElementById("g-footer-copy"),
     aboutTitle: document.getElementById("g-about-title"),
     aboutFooter: document.getElementById("g-about-footer"),
     aboutBody: document.getElementById("g-about-body")
