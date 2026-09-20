@@ -2,7 +2,7 @@
 // Store dinamico — legge i prodotti da Firestore (aggiunti dalla Dashboard)
 // e gestisce i Preferiti (salvati nel browser, sincronizzati online se loggati)
 // ==========================================================================
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
 import { collection, query, orderBy, doc, getDoc, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

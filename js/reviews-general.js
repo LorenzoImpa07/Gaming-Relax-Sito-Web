@@ -2,8 +2,8 @@
 // Pagina Recensioni generale — mostra tutte le recensioni approvate
 // (di qualsiasi prodotto) e permette di lasciarne una nuova
 // ==========================================================================
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
-import { uploadFile } from "./upload.js?v=20260920d";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
+import { uploadFile } from "./upload.js?v=20260920n";
 import { collection, query, where, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

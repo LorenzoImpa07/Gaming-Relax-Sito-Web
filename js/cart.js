@@ -1,7 +1,7 @@
 // ==========================================================================
 // Carrello — locale, drawer, ordine su Firestore, pagamento Stripe/PayPal
 // ==========================================================================
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
 import { addDoc, collection, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";

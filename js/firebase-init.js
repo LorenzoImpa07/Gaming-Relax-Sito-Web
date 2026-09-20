@@ -15,7 +15,8 @@ auth.languageCode = "it";
 export const authReady = setPersistence(auth, browserLocalPersistence);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export { ADMIN_EMAIL };
+export const storageAlt = getStorage(app, "gs://gaming-relax.appspot.com");
+export { ADMIN_EMAIL, app };
 
 export function isAdminEmail(email) {
   return String(email || "").trim().toLowerCase() === String(ADMIN_EMAIL).toLowerCase();

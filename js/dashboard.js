@@ -3,8 +3,8 @@
 // Protetta: solo l'account con email === ADMIN_EMAIL può vederla e scrivere
 // (la protezione vera è nelle regole di Firestore, questa è solo l'interfaccia)
 // ==========================================================================
-import { auth, db, ADMIN_EMAIL, authReady } from "./firebase-init.js?v=20260919ae";
-import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260920d";
+import { auth, db, ADMIN_EMAIL, authReady } from "./firebase-init.js?v=20260920n";
+import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260920n";
 import { bindEmailFields } from "./email-check.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -741,7 +741,7 @@ function initPageContent() {
       if (f.type === "image") {
         return `<div class="field">
           <label>${f.label}</label>
-          <input type="file" id="pf-${f.key}-file" accept="image/*">
+          <input type="file" id="pf-${f.key}-file" accept="image/*,image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
           <input type="hidden" id="pf-${f.key}">
           <img id="pf-${f.key}-preview" class="file-preview" alt="">
           <p class="file-status" id="pf-${f.key}-status"></p>

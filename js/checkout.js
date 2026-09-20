@@ -1,4 +1,4 @@
-import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260919ae";
+import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
 import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { COUNTRIES, ITALY_PROVINCES } from "./geo.js";

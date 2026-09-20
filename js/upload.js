@@ -1,13 +1,27 @@
-import { storage, auth, authReady } from "./firebase-init.js?v=20260919ae";
-import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import { storage, storageAlt, auth, authReady } from "./firebase-init.js?v=20260920n";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 function safeName(file) {
-  const raw = String(file?.name || "file").replace(/[^\w.\-]+/g, "_");
-  return (raw || "file").slice(0, 80);
+  const raw = String(file?.name || "foto.jpg").replace(/[^\w.\-]+/g, "_");
+  return (raw || "foto.jpg").slice(0, 80);
 }
 
-function waitUser(ms = 8000) {
+function looksLikeImage(file) {
+  const t = String(file?.type || "").toLowerCase();
+  const n = String(file?.name || "").toLowerCase();
+  if (t.startsWith("image/")) return true;
+  if (/\.(jpe?g|png|webp|gif|bmp|heic|heif|avif)$/i.test(n)) return true;
+  return !t;
+}
+
+function isHeic(file) {
+  const t = String(file?.type || "").toLowerCase();
+  const n = String(file?.name || "").toLowerCase();
+  return t.includes("heic") || t.includes("heif") || /\.hei[cf]$/i.test(n);
+}
+
+function waitUser(ms = 5000) {
   return new Promise((resolve) => {
     if (auth.currentUser) return resolve(auth.currentUser);
     const t = setTimeout(() => {
@@ -22,98 +36,147 @@ function waitUser(ms = 8000) {
   });
 }
 
-function loadImage(file) {
+function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("img")); };
-    img.src = url;
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ""));
+    r.onerror = () => reject(new Error("read"));
+    r.readAsDataURL(file);
   });
 }
 
-async function compressToBlob(file, maxSide = 1800, quality = 0.86) {
-  if (!file.type || !file.type.startsWith("image/") || /svg/i.test(file.type)) return file;
-  try {
-    const img = await loadImage(file);
-    let w = img.width;
-    let h = img.height;
-    if (w > maxSide || h > maxSide) {
-      if (w > h) { h = Math.round(h * maxSide / w); w = maxSide; }
-      else { w = Math.round(w * maxSide / h); h = maxSide; }
-    }
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
-    return blob || file;
-  } catch {
-    return file;
-  }
+function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("img"));
+    img.src = src;
+  });
 }
 
-async function compressToDataUrl(file, maxSide = 1200, maxChars = 700000) {
-  const img = await loadImage(file);
-  let w = img.width;
-  let h = img.height;
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+function canvasToJpeg(img, maxSide, quality) {
+  let w = img.naturalWidth || img.width;
+  let h = img.naturalHeight || img.height;
+  if (!w || !h) throw new Error("size");
   if (w > maxSide || h > maxSide) {
     if (w > h) { h = Math.round(h * maxSide / w); w = maxSide; }
     else { w = Math.round(w * maxSide / h); h = maxSide; }
   }
+  const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
-  ctx.drawImage(img, 0, 0, w, h);
-  let q = 0.8;
-  let data = canvas.toDataURL("image/jpeg", q);
-  while (data.length > maxChars && q > 0.4) {
-    q -= 0.1;
-    data = canvas.toDataURL("image/jpeg", q);
-  }
-  if (data.length > maxChars && maxSide > 700) {
-    return compressToDataUrl(file, Math.round(maxSide * 0.75), maxChars);
-  }
-  return data;
+  canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("blob"))), "image/jpeg", quality);
+  });
 }
 
-function uploadToStorage(blob, folder, name, onProgress) {
-  const path = (folder || "uploads") + "/" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + name;
-  const fileRef = ref(storage, path);
-  const task = uploadBytesResumable(fileRef, blob, { contentType: blob.type || "image/jpeg" });
-  return new Promise((resolve, reject) => {
-    const killer = setTimeout(() => {
-      try { task.cancel(); } catch (_) {}
-      reject(new Error("timeout"));
-    }, 20000);
-    task.on("state_changed", (snap) => {
-      if (onProgress && snap.totalBytes) {
-        onProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100));
-      }
-    }, (err) => {
-      clearTimeout(killer);
-      reject(err);
-    }, async () => {
-      clearTimeout(killer);
-      try { resolve(await getDownloadURL(task.snapshot.ref)); }
-      catch (e) { reject(e); }
-    });
+async function heicToJpeg(file) {
+  const mod = await import("https://esm.sh/heic2any@0.0.4");
+  const fn = mod.default || mod;
+  const out = await fn({ blob: file, toType: "image/jpeg", quality: 0.86 });
+  return Array.isArray(out) ? out[0] : out;
+}
+
+async function toJpegBlob(file) {
+  let src = file;
+  if (isHeic(file)) {
+    try { src = await heicToJpeg(file); }
+    catch (_) { src = file; }
+  }
+  try {
+    if (typeof createImageBitmap === "function") {
+      const bmp = await createImageBitmap(src);
+      const blob = await canvasToJpeg(bmp, 1800, 0.86);
+      try { bmp.close(); } catch (_) {}
+      return blob;
+    }
+  } catch (_) {}
+  const data = await readAsDataURL(src);
+  const img = await loadImg(data);
+  return canvasToJpeg(img, 1800, 0.86);
+}
+
+async function blobToDataUrl(blob, maxChars = 700000) {
+  let q = 0.82;
+  let side = 1400;
+  let img;
+  try {
+    const data = await readAsDataURL(blob);
+    img = await loadImg(data);
+  } catch {
+    return readAsDataURL(blob);
+  }
+  let out = await new Promise((resolve) => {
+    const c = document.createElement("canvas");
+    let w = img.naturalWidth || img.width;
+    let h = img.naturalHeight || img.height;
+    if (w > side || h > side) {
+      if (w > h) { h = Math.round(h * side / w); w = side; }
+      else { w = Math.round(w * side / h); h = side; }
+    }
+    c.width = w;
+    c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, w, h);
+    resolve(c.toDataURL("image/jpeg", q));
   });
+  while (out.length > maxChars && q > 0.4) {
+    q -= 0.12;
+    const c = document.createElement("canvas");
+    let w = img.naturalWidth || img.width;
+    let h = img.naturalHeight || img.height;
+    const m = Math.round(side * q / 0.82);
+    if (w > m || h > m) {
+      if (w > h) { h = Math.round(h * m / w); w = m; }
+      else { w = Math.round(w * m / h); h = m; }
+    }
+    c.width = w;
+    c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, w, h);
+    out = c.toDataURL("image/jpeg", q);
+  }
+  return out;
+}
+
+async function putStorage(store, blob, path) {
+  const fileRef = ref(store, path);
+  const work = uploadBytes(fileRef, blob, { contentType: blob.type || "image/jpeg" }).then(() => getDownloadURL(fileRef));
+  const boom = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 16000));
+  return Promise.race([work, boom]);
 }
 
 export async function uploadFile(file, folder = "uploads", onProgress) {
   if (!file) return "";
   await authReady.catch(() => {});
   await waitUser();
-  const ready = file.type && file.type.startsWith("image/") ? await compressToBlob(file) : file;
+  const image = looksLikeImage(file);
+  let jpeg = null;
+  if (image) {
+    if (onProgress) onProgress(8);
+    try { jpeg = await toJpegBlob(file); } catch (_) { jpeg = null; }
+  }
+  const payload = jpeg || file;
+  const name = safeName(file).replace(/\.(heic|heif)$/i, ".jpg");
+  const path = (folder || "uploads") + "/" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + name;
+  if (onProgress) onProgress(20);
   try {
-    return await uploadToStorage(ready, folder, safeName(file), onProgress);
+    const url = await putStorage(storage, payload, path);
+    if (onProgress) onProgress(100);
+    return url;
   } catch (_) {
-    if (file.type && file.type.startsWith("image/")) {
-      return compressToDataUrl(file);
+    try {
+      const url = await putStorage(storageAlt, payload, path);
+      if (onProgress) onProgress(100);
+      return url;
+    } catch (e2) {
+      if (image) {
+        if (onProgress) onProgress(70);
+        if (jpeg) return blobToDataUrl(jpeg);
+        try { return await blobToDataUrl(payload); } catch (_) {}
+        try { return await readAsDataURL(file); } catch (_) {}
+      }
+      throw e2;
     }
-    throw _;
   }
 }
 
@@ -130,14 +193,17 @@ export function setPreview(el, url) {
 
 function failMessage(err) {
   const code = String(err && (err.code || err.message) || "");
-  if (/not-auth|unauthenticated/i.test(code)) return "Devi essere connesso in Dashboard per caricare file.";
+  if (/heic|img|read/i.test(code)) {
+    return "Questa foto della galleria non è supportata così com'è. Su iPhone: Impostazioni → Fotocamera → Formati → più compatibile, oppure invia la foto in JPEG.";
+  }
+  if (/not-auth|unauthenticated/i.test(code)) return "Devi essere connesso per caricare file.";
   if (/storage\/unauthorized|permission/i.test(code)) {
     return "Accesso negato a Storage. Console Firebase → Storage → Regole → pubblica storage.rules.txt.";
   }
   if (/timeout|storage\/retry-limit|storage\/unknown|404|not found|bucket/i.test(code)) {
-    return "Storage non risponde. Attiva Firebase Storage (Console → Storage → Inizia). Intanto riprova: useremo una copia ottimizzata.";
+    return "Storage non attivo. Console Firebase → Storage → Inizia. Poi riprova.";
   }
-  return "Caricamento non riuscito. Riprova.";
+  return "Caricamento non riuscito. Riprova con un JPEG o PNG.";
 }
 
 export function bindUploader(opts) {
@@ -146,7 +212,10 @@ export function bindUploader(opts) {
   const preview = opts.previewId ? document.getElementById(opts.previewId) : null;
   const status = opts.statusId ? document.getElementById(opts.statusId) : null;
   if (!fileEl || !hidden) return;
+  fileEl.setAttribute("accept", "image/*,image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif");
   if (hidden.value) setPreview(preview, hidden.value);
+  if (fileEl.dataset.uploadBound === "1") return;
+  fileEl.dataset.uploadBound = "1";
   fileEl.addEventListener("change", async () => {
     const file = fileEl.files?.[0];
     if (!file) return;
@@ -158,8 +227,9 @@ export function bindUploader(opts) {
       const url = await uploadFile(file, opts.folder || "uploads", (pct) => {
         if (status) status.textContent = "Caricamento " + pct + "%…";
       });
+      if (!url) throw new Error("empty");
       hidden.value = url;
-      if (url.startsWith("data:") || (file.type && file.type.startsWith("image/"))) setPreview(preview, url);
+      setPreview(preview, url);
       if (status) {
         status.textContent = "Foto pronta. Premi Salva per pubblicarla.";
         status.style.color = "var(--lime)";
@@ -178,6 +248,9 @@ export function bindMultiUploader(opts) {
   const hidden = document.getElementById(opts.hiddenId);
   const status = opts.statusId ? document.getElementById(opts.statusId) : null;
   if (!fileEl || !hidden) return;
+  fileEl.setAttribute("accept", "image/*,image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif");
+  if (fileEl.dataset.uploadBound === "1") return;
+  fileEl.dataset.uploadBound = "1";
   fileEl.addEventListener("change", async () => {
     const files = [...(fileEl.files || [])];
     if (!files.length) return;
@@ -187,7 +260,11 @@ export function bindMultiUploader(opts) {
     }
     try {
       const urls = [];
-      for (const f of files) urls.push(await uploadFile(f, opts.folder || "uploads"));
+      for (const f of files) {
+        const u = await uploadFile(f, opts.folder || "uploads");
+        if (u) urls.push(u);
+      }
+      if (!urls.length) throw new Error("empty");
       const prev = hidden.value.split("\n").map((s) => s.trim()).filter(Boolean);
       hidden.value = [...prev, ...urls].join("\n");
       if (status) {

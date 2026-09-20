@@ -1,13 +1,13 @@
 // ==========================================================================
 // Forum — pagina sezione: contenuto in sola lettura OPPURE elenco conversazioni
 // ==========================================================================
-import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=20260919ae";
+import { db, auth, ADMIN_EMAIL, verifiedOrNull } from "./firebase-init.js?v=20260920n";
 import { doc, getDoc, collection, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { userNickHtml, userBadgesHtml, bumpMessageCount } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
-import { uploadFile } from "./upload.js?v=20260920d";
+import { uploadFile } from "./upload.js?v=20260920n";
 
 function escapeHtml(str = "") {
   const map = {
@@ -179,7 +179,7 @@ function renderNewTopic() {
         </div>
         <div class="field">
           <label for="nt-image">Immagine (opzionale)</label>
-          <input type="file" id="nt-image" accept="image/*">
+          <input type="file" id="nt-image" accept="image/*,image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif">
         </div>
         <button type="submit" class="btn btn--lime">Pubblica</button>
       </form>

@@ -2,7 +2,7 @@
 // Banner promozionale — mostrato in cima a ogni pagina se attivo,
 // gestito dalla Dashboard (tab "Banner")
 // ==========================================================================
-import { db } from "./firebase-init.js?v=20260919ae";
+import { db } from "./firebase-init.js?v=20260920n";
 import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 
