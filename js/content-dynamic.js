@@ -11,20 +11,37 @@ const DESIGN_VARS = {
   cardColor: "--card-solid"
 };
 
+function isYellowish(hex) {
+  const h = String(hex || "").replace("#", "");
+  if (h.length < 6) return false;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  if (![r, g, b].every(Number.isFinite)) return false;
+  return g > 170 && b < 90 && r > 120;
+}
+
 function applyDesign(d) {
   if (!d) return;
-  Object.entries(DESIGN_VARS).forEach(([key, cssVar]) => {
-    if (d[key]) document.documentElement.style.setProperty(cssVar, d[key]);
-  });
-  if (d.limeColor) document.documentElement.style.setProperty("--lime-dim", d.limeColor + "33");
-  if (d.purpleColor) document.documentElement.style.setProperty("--purple-dim", d.purpleColor + "33");
+  let lime = d.limeColor;
+  const purple = d.purpleColor || "#8b3dff";
+  if (!lime || isYellowish(lime) || String(lime).toLowerCase() === String(purple).toLowerCase()) {
+    lime = "#ff4dad";
+  }
+  document.documentElement.style.setProperty("--lime", lime);
+  document.documentElement.style.setProperty("--lime-dim", lime + "33");
+  document.documentElement.style.setProperty("--purple", purple);
+  document.documentElement.style.setProperty("--purple-dim", purple + "33");
+  if (d.bgColor) document.documentElement.style.setProperty("--bg", d.bgColor);
+  if (d.bgAltColor) document.documentElement.style.setProperty("--bg-alt", d.bgAltColor);
+  if (d.cardColor) document.documentElement.style.setProperty("--card-solid", d.cardColor);
   if (d.logoUrl) {
     document.querySelectorAll(".brand__logo img").forEach((img) => { img.src = d.logoUrl; });
   }
   try {
     localStorage.setItem("gr_design", JSON.stringify({
-      limeColor: d.limeColor || "",
-      purpleColor: d.purpleColor || "",
+      limeColor: lime,
+      purpleColor: purple,
       bgColor: d.bgColor || "",
       bgAltColor: d.bgAltColor || "",
       cardColor: d.cardColor || "",

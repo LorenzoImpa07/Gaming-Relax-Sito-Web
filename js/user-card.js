@@ -92,7 +92,7 @@ function badgesFor(email) {
   });
   const tag = staffTags[email];
   if (tag && !list.some((r) => r.label.toLowerCase() === String(tag.label || "").toLowerCase())) {
-    list.push({ id: "tag", label: tag.label, color: tag.color || "#c6ff1a" });
+    list.push({ id: "tag", label: tag.label, color: tag.color || "#ff4dad" });
   }
   return list;
 }

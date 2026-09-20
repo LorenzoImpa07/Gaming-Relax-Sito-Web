@@ -147,7 +147,7 @@ function renderIndex() {
     return `
       <section class="forum-group">
         <header class="forum-group__head">
-          <span class="forum-group__mark" style="background:${escapeHtml(cat.color || "#c6ff1a")}"></span>
+          <span class="forum-group__mark" style="background:${escapeHtml(cat.color || "#ff4dad")}"></span>
           <h2>${escapeHtml(categoryIcon(cat))} ${escapeHtml(cat.name)} ${lock}</h2>
         </header>
         <div class="forum-group__body">${rows}</div>
@@ -178,7 +178,7 @@ function boardRow(b, cat) {
   return `
     <div class="forum-board-row">
       <a class="forum-board-row__hit" href="forum-board.html?id=${b.id}">
-        <div class="forum-board-row__icon" style="color:${escapeHtml(cat.color || "#c6ff1a")}">${escapeHtml(b.icon || (isRead ? "📄" : (priv ? "🔒" : "💬")))}</div>
+        <div class="forum-board-row__icon" style="color:${escapeHtml(cat.color || "#ff4dad")}">${escapeHtml(b.icon || (isRead ? "📄" : (priv ? "🔒" : "💬")))}</div>
         <div class="forum-board-row__main">
           <div class="forum-board-row__title">${escapeHtml(b.name)}${priv ? ' <span class="forum-lock-pill">Privata</span>' : ""}</div>
           <p>${escapeHtml(b.description || (priv ? "Solo tu e lo staff vedete le vostre conversazioni." : ""))}</p>

@@ -69,7 +69,7 @@ function badgeFor(email) {
 function categoryBadge(catId) {
   const cat = categories[catId];
   if (!cat) return "";
-  return `<span class="cat-badge" style="color:${escapeHtml(cat.color || "#c6ff1a")};background:${escapeHtml(cat.color || "#c6ff1a")}18;border:1px solid ${escapeHtml(cat.color || "#c6ff1a")}44;">${escapeHtml(cat.name)}</span>`;
+  return `<span class="cat-badge" style="color:${escapeHtml(cat.color || "#ff4dad")};background:${escapeHtml(cat.color || "#ff4dad")}18;border:1px solid ${escapeHtml(cat.color || "#ff4dad")}44;">${escapeHtml(cat.name)}</span>`;
 }
 
 const params = new URLSearchParams(window.location.search);

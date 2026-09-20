@@ -10,10 +10,12 @@
   --border: #ffffff1a;
   --text: #f2f3f5;
   --text-dim: #9aa0ac;
-  --lime: #c6ff1a;
-  --lime-dim: #c6ff1a33;
-  --purple: #9b3dff;
-  --purple-dim: #9b3dff33;
+  --lime: #ff4dad;
+  --lime-dim: #ff4dad33;
+  --purple: #8b3dff;
+  --purple-dim: #8b3dff33;
+  --grad: linear-gradient(135deg, var(--purple) 0%, var(--lime) 100%);
+  --grad-soft: linear-gradient(160deg, color-mix(in srgb, var(--purple) 22%, #14182a) 0%, color-mix(in srgb, var(--lime) 14%, #10141f) 100%);
   --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
   --font-body: 'Inter', 'Segoe UI', sans-serif;
   --radius: 14px;
@@ -21,8 +23,8 @@
 }
 
 * { box-sizing: border-box; }
-::selection { background: var(--lime); color: #0a0d16; }
-::-moz-selection { background: var(--lime); color: #0a0d16; }
+::selection { background: var(--lime); color: #fff; }
+::-moz-selection { background: var(--lime); color: #fff; }
 button, a, .btn, .filter-pill, .main-nav a, input, textarea, select {
   -webkit-tap-highlight-color: transparent;
 }
@@ -221,12 +223,17 @@ p { color: var(--text-dim); margin: 0 0 16px; }
 .btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 .btn:active { transform: translateY(0); }
 
-.btn--lime { background: var(--lime); color: #0a0d16; }
+.btn--lime {
+  background: var(--grad);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--purple) 38%, transparent);
+}
 .btn--lime:hover,
 .btn--lime:focus,
 .btn--lime:active {
-  background: var(--lime);
-  color: #0a0d16;
+  background: var(--grad);
+  color: #fff;
   filter: brightness(1.08);
 }
 
@@ -235,10 +242,20 @@ p { color: var(--text-dim); margin: 0 0 16px; }
 .btn--outline:focus,
 .btn--outline:active { border-color: var(--lime); color: var(--lime); }
 
-.btn--ghost-lime { background: transparent; color: var(--lime); border: 1px solid var(--lime-dim); }
+.btn--ghost-lime {
+  background: transparent;
+  color: #fff;
+  border: 1px solid transparent;
+  background-image: linear-gradient(#0a0d16, #0a0d16), var(--grad);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
 .btn--ghost-lime:hover,
 .btn--ghost-lime:focus,
-.btn--ghost-lime:active { background: var(--lime-dim); color: var(--lime); }
+.btn--ghost-lime:active {
+  background-image: var(--grad), var(--grad);
+  color: #fff;
+}
 
 /* ---------------- Header ---------------- */
 .site-header {
@@ -367,7 +384,7 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   right: 12px;
   bottom: 5px;
   height: 2px;
-  background: var(--lime);
+  background: var(--grad);
   border-radius: 2px;
 }
 
@@ -432,7 +449,12 @@ p { color: var(--text-dim); margin: 0 0 16px; }
   border: 0;
   box-shadow: none;
 }
-.hero h1 .accent { color: var(--lime); }
+.hero h1 .accent {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .hero .lede {
   max-width: 440px;
   margin: 22px 0 28px;
@@ -517,8 +539,8 @@ section { padding: 80px 0; }
 .feature-card {
   position: relative;
   border-radius: var(--radius);
-  border: 1px solid rgba(255,255,255,.1);
-  background: linear-gradient(160deg, rgba(23,28,41,.82), rgba(13,16,25,.78));
+  border: 1px solid color-mix(in srgb, var(--purple) 32%, transparent);
+  background: var(--grad-soft);
   backdrop-filter: blur(14px);
   padding: 32px 28px;
   min-height: 230px;
@@ -527,6 +549,14 @@ section { padding: 80px 0; }
   justify-content: flex-end;
   overflow: hidden;
   transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grad);
+  opacity: 0.08;
+  pointer-events: none;
 }
 .feature-card:hover {
   transform: translateY(-4px);
@@ -562,11 +592,12 @@ section { padding: 80px 0; }
 
 /* ---------------- CTA banner ---------------- */
 .cta-banner {
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
   border-radius: 24px;
-  background: #12151f;
+  background: var(--grad-soft);
   padding: 70px 32px;
   text-align: center;
+  box-shadow: 0 24px 60px -30px color-mix(in srgb, var(--purple) 50%, transparent);
 }
 .cta-banner h2 { font-size: clamp(28px, 5vw, 46px); text-transform: none; letter-spacing: -0.03em; max-width: 760px; margin: 0 auto 30px; }
 
@@ -592,7 +623,7 @@ section { padding: 80px 0; }
   color: var(--text);
   transition: all .2s ease;
 }
-.filter-pill.active, .filter-pill:hover { background: var(--lime); color: #0a0d16; border-color: var(--lime); }
+.filter-pill.active, .filter-pill:hover { background: var(--grad); color: #fff; border-color: transparent; }
 
 .team-grid {
   display: grid;
@@ -852,8 +883,8 @@ section { padding: 80px 0; }
   position: relative;
   border-radius: 22px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, #161a27 0%, #10141f 100%);
+  border: 1px solid color-mix(in srgb, var(--purple) 28%, transparent);
+  background: var(--grad-soft);
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -1177,9 +1208,9 @@ body.art-lb-open { overflow: hidden; }
 .process-hero h1 { font-size: clamp(32px, 6vw, 54px); color: #fff; text-transform: none; letter-spacing: -0.03em; }
 .process-list { display: flex; flex-direction: column; gap: 18px; max-width: 760px; margin: 0 auto; }
 .process-step {
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--purple) 30%, transparent);
   border-radius: var(--radius);
-  background: var(--card-solid);
+  background: var(--grad-soft);
   padding: 36px 32px 28px;
   position: relative;
   overflow: hidden;
@@ -1542,10 +1573,10 @@ body.art-lb-open { overflow: hidden; }
 .dash-stat {
   flex: 1;
   min-width: 160px;
-  border: 1px solid var(--border);
-  border-top: 2px solid var(--lime-dim);
+  border: 1px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  border-top: 2px solid var(--lime);
   border-radius: var(--radius);
-  background: var(--card-solid);
+  background: var(--grad-soft);
   padding: 18px 22px;
   display: flex;
   flex-direction: column;
@@ -2513,7 +2544,7 @@ body.art-lb-open { overflow: hidden; }
   align-items: center;
   gap: 10px 14px;
   padding: 10px 12px;
-  border: 1px solid #c6ff1a33;
+  border: 1px solid #ff4dad33;
   border-radius: 12px;
   background:
     linear-gradient(180deg, rgba(198,255,26,0.05), transparent 70%),

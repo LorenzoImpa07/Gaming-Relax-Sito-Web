@@ -873,8 +873,8 @@ function initBackgrounds() {
 // ASPETTO GRAFICO — colori globali del sito
 // ==========================================================================
 const DEFAULT_COLORS = {
-  limeColor: "#c6ff1a",
-  purpleColor: "#9b3dff",
+  limeColor: "#ff4dad",
+  purpleColor: "#8b3dff",
   bgColor: "#0a0d16",
   bgAltColor: "#10141f",
   cardColor: "#14182a",
@@ -910,6 +910,10 @@ function initDesign() {
     if (!snap.exists()) return;
     const d = snap.data();
     Object.entries(colorInputs).forEach(([key, el]) => { if (d[key]) el.value = d[key]; });
+    if (/^#ff4dad$/i.test(colorInputs.limeColor.value) || /^#d4ff00$/i.test(colorInputs.limeColor.value)) {
+      colorInputs.limeColor.value = "#ff4dad";
+      setDoc(ref, { limeColor: "#ff4dad", purpleColor: colorInputs.purpleColor.value || "#8b3dff" }, { merge: true });
+    }
     if (d.logoUrl) { logoInput.value = d.logoUrl; setPreview(document.getElementById("d-logo-preview"), d.logoUrl); }
     renderPreview();
   });
@@ -1780,7 +1784,7 @@ function initStaffTags() {
       const row = document.createElement("div");
       row.className = "admin-row";
       row.innerHTML = `
-        <span class="staff-badge" style="background:${escapeHtml(t.color || "#c6ff1a")};color:#0a0d16;">${escapeHtml(t.label)}</span>
+        <span class="staff-badge" style="background:${escapeHtml(t.color || "#ff4dad")};color:#0a0d16;">${escapeHtml(t.label)}</span>
         <div class="admin-row__info">
           <strong>${escapeHtml(docSnap.id)}</strong>
         </div>
@@ -1806,7 +1810,7 @@ function initStaffTags() {
         emailInput.value = btn.dataset.id;
         emailInput.readOnly = true;
         form.querySelector("#st-label").value = t.label || "";
-        form.querySelector("#st-color").value = t.color || "#c6ff1a";
+        form.querySelector("#st-color").value = t.color || "#ff4dad";
         form.dataset.editId = btn.dataset.id;
         form.querySelector("button[type=submit]").textContent = "Salva modifiche";
         cancelBtn.style.display = "inline-flex";
@@ -1867,7 +1871,7 @@ function initForumCategories() {
       const row = document.createElement("div");
       row.className = "admin-row";
       row.innerHTML = `
-        <span class="status-badge" style="color:${escapeHtml(c.color || "#c6ff1a")};background:${escapeHtml(c.color || "#c6ff1a")}22;border:1px solid ${escapeHtml(c.color || "#c6ff1a")}44;">${escapeHtml(c.name)}</span>
+        <span class="status-badge" style="color:${escapeHtml(c.color || "#ff4dad")};background:${escapeHtml(c.color || "#ff4dad")}22;border:1px solid ${escapeHtml(c.color || "#ff4dad")}44;">${escapeHtml(c.name)}</span>
         <div class="admin-row__info">
           <strong>${escapeHtml(categoryIcon(c) ? categoryIcon(c) + " " : "")}${escapeHtml(c.name)}</strong>
           <span style="display:block;font-size:12px;color:var(--text-dim);margin-top:2px;">${escapeHtml(c.description || "")} · ordine ${c.order ?? 0}${c.private ? " · 🔒 privata" : ""}</span>
@@ -1894,7 +1898,7 @@ function initForumCategories() {
         form.querySelector("#fc-name").value = c.name || "";
         form.querySelector("#fc-icon").value = c.icon || "";
         form.querySelector("#fc-desc").value = c.description || "";
-        form.querySelector("#fc-color").value = c.color || "#c6ff1a";
+        form.querySelector("#fc-color").value = c.color || "#ff4dad";
         form.querySelector("#fc-order").value = c.order ?? 10;
         form.querySelector("#fc-private").checked = !!c.private;
         form.dataset.editId = btn.dataset.id;
@@ -1928,7 +1932,7 @@ function initForumCategories() {
   function resetForumCatForm() {
     form.reset();
     form.querySelector("#fc-order").value = 10;
-    form.querySelector("#fc-color").value = "#c6ff1a";
+    form.querySelector("#fc-color").value = "#ff4dad";
     delete form.dataset.editId;
     form.querySelector("button[type=submit]").textContent = "Salva categoria";
     cancelBtn.style.display = "none";
