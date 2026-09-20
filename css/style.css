@@ -3468,38 +3468,10 @@ body:not([data-page="home"]) .site-header {
   border-bottom-color: rgba(255,255,255,.08);
 }
 
-.footer-grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 22px;
-  margin-bottom: 36px;
-}
-.footer-grid > div:nth-child(3),
-.footer-grid > div:nth-child(4) { display: none; }
-.footer-col h4 { display: none; }
-.footer-col a,
-.footer-col p[data-about] {
-  display: inline;
-  margin: 0 10px;
-}
-.footer-col p:not([data-about]) { display: none; }
 .footer-brand {
-  font-size: 28px;
-  margin-bottom: 6px;
-  justify-content: center;
+  font-size: 26px;
 }
-.footer-brand .brand__logo { width: 56px; height: 56px; }
-.footer-grid > div:first-child > p {
-  max-width: 34ch;
-  margin: 0 auto;
-}
-.footer-bottom {
-  justify-content: center;
-  flex-direction: column;
-  padding-top: 36px;
-}
+.footer-brand .brand__logo { width: 52px; height: 52px; }
 [data-edit="footNote"] { display: none !important; }
 
 .page-index {
