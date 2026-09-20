@@ -171,10 +171,9 @@ function boardRow(b, cat) {
   const priv = areaIsPrivate(cat, b);
   const lastHtml = last
     ? `<a class="forum-board-row__last" href="forum-topic.html?id=${last.id}">
-        <span class="forum-board-row__last-title">${prefixChip(last)}${escapeHtml(last.title)}</span>
-        <span>${formatDate(last.lastActivityAt)} · ${userNickHtml(last.authorEmail, last.authorName || "Utente")}${badgeFor(last.authorEmail)}</span>
+        <span class="forum-board-row__last-meta">${prefixChip(last)}${formatDate(last.lastActivityAt)}</span>
       </a>`
-    : `<div class="forum-board-row__last"><span>${isRead ? "Solo lettura" : (priv ? "Conversazioni private" : "Nessuna discussione")}</span></div>`;
+    : `<div class="forum-board-row__last"></div>`;
 
   return `
     <div class="forum-board-row">

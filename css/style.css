@@ -2286,6 +2286,15 @@ body.art-lb-open { overflow: hidden; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.forum-board-row__last-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
 .forum-board-row--empty {
   padding: 18px;
   color: var(--text-dim);
