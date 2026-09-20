@@ -2215,7 +2215,7 @@ body.art-lb-open { overflow: hidden; }
 }
 .forum-board-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
+  grid-template-columns: minmax(0, 1fr) 280px;
   border-top: 1px solid var(--border);
 }
 .forum-board-row:first-child { border-top: none; }
@@ -2290,10 +2290,11 @@ body.art-lb-open { overflow: hidden; }
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   color: var(--text-dim);
-  font-size: 12px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 .forum-board-row--empty {
   padding: 18px;

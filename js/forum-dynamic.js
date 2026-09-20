@@ -22,7 +22,7 @@ function escapeHtml(str = "") {
 
 function formatDate(ts) {
   if (!ts || typeof ts.toDate !== "function") return "";
-  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" });
+  return ts.toDate().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 }
 
 function textColorFor(hex) {
@@ -173,7 +173,7 @@ function boardRow(b, cat) {
   const priv = areaIsPrivate(cat, b);
   const lastHtml = last
     ? `<a class="forum-board-row__last" href="forum-topic.html?id=${last.id}">
-        <span class="forum-board-row__last-meta">${prefixChip(last)}${formatDate(last.lastActivityAt)}</span>
+        <span class="forum-board-row__last-meta">${prefixChip(last)}${formatDate(last.createdAt || last.lastActivityAt)}</span>
       </a>`
     : `<div class="forum-board-row__last"></div>`;
 
