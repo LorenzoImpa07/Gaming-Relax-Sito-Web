@@ -104,6 +104,11 @@ export function userBadgesHtml(email) {
   }).join("");
 }
 
+export function userNickHtml(email, name) {
+  const n = name || "Utente";
+  return `<span class="user-nick" data-email="${escapeHtml(email || "")}" data-name="${escapeHtml(n)}">${escapeHtml(n)}</span>`;
+}
+
 export function userProfile(email) {
   const u = userByEmail(email);
   return {

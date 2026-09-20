@@ -125,8 +125,14 @@ function statsForBoard(boardId) {
 }
 
 function render() {
-  renderIndex();
-  renderSide();
+  try {
+    renderIndex();
+    renderSide();
+  } catch (err) {
+    console.error("forum render", err);
+    const el = document.getElementById("forum-index");
+    if (el) el.innerHTML = '<p class="forum-empty">Errore nel caricamento del forum. Ricarica la pagina.</p>';
+  }
 }
 
 function renderIndex() {
