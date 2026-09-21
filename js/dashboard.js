@@ -689,6 +689,9 @@ const PAGE_FIELDS = {
     { key: "studioTitle", label: "Titolo sezione \"Un team. Uno studio.\"", type: "textarea", placeholder: "Un team.\nUno studio." },
     { key: "studioText", label: "Testo sezione \"Un team. Uno studio.\"", type: "textarea" },
     { key: "studioSideImage", label: "Immagine a destra — sezione Team (Home)", type: "image" },
+    { key: "discordTitle", label: "Titolo sezione Discord (Home)", type: "input", placeholder: "Entra nella community" },
+    { key: "discordText", label: "Testo sezione Discord (Home)", type: "textarea", placeholder: "Unisciti a migliaia di giocatori..." },
+    { key: "discordCta", label: "Testo pulsante Discord", type: "input", placeholder: "Unisciti al Discord" },
     { key: "ctaTitle", label: "Titolo banner finale (\"Hai un'idea?\")", type: "textarea", placeholder: "Hai un'idea?\nTrasformiamola in qualcosa di unico." },
     { key: "partnersTitle", label: "Titolo sezione Partner", type: "input", placeholder: "Partner" },
     { key: "partnersSubtitle", label: "Sottotitolo sezione Partner", type: "textarea", placeholder: "I brand e gli studi con cui collaboriamo." }
