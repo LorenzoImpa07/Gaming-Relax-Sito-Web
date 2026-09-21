@@ -714,6 +714,10 @@ const PAGE_FIELDS = {
   team: [
     { key: "title", label: "Titolo", type: "textarea", placeholder: "Il nostro team" },
     { key: "subtitle", label: "Sottotitolo", type: "textarea" },
+    { key: "staffWarnTitle", label: "Avviso staff finto — titolo", type: "input", placeholder: "Attenzione a chi si finge staff" },
+    { key: "staffWarnText", label: "Avviso staff finto — testo", type: "textarea" },
+    { key: "joinTitle", label: "Candidature — titolo", type: "input", placeholder: "Vuoi far parte del team?" },
+    { key: "joinText", label: "Candidature — testo", type: "textarea" },
     { key: "footNote", label: "Nota in basso (testo grigio piccolo)", type: "textarea", placeholder: "Il team è gestito dallo staff..." }
   ],
   contatti: [

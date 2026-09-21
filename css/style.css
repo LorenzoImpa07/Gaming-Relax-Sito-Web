@@ -3930,3 +3930,36 @@ body:not([data-page="home"]) .site-header {
 @media (max-width: 640px) {
   .community-card { padding: 42px 22px 36px; }
 }
+
+.team-notes { display: flex; flex-direction: column; gap: 16px; margin-top: 48px; max-width: 980px; }
+.team-note {
+  border-radius: 16px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.team-note strong { display: block; font-size: 17px; margin-bottom: 6px; }
+.team-note p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.55; max-width: 62ch; }
+.team-note--warn {
+  background: rgba(180, 140, 40, .12);
+  border: 1px solid rgba(212, 175, 55, .45);
+}
+.team-note--warn strong { color: #e8d48a; }
+.team-note--warn strong::before { content: "🛡 "; }
+.team-note--join {
+  background: rgba(10, 18, 40, .72);
+  border: 1px solid rgba(80, 110, 180, .28);
+}
+.team-note__link {
+  flex-shrink: 0;
+  color: #7eb6ff;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.team-note__link:hover { color: #fff; }
+@media (max-width: 720px) {
+  .team-note { flex-direction: column; align-items: flex-start; }
+}

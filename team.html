@@ -22,7 +22,7 @@
 <meta name="description" content="Professionisti dedicati per ogni settore. Conosci il team di Gaming Relax: tastiere custom, sviluppo bot, consulenze e team grafico.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260920s">
+<link rel="stylesheet" href="css/style.css?v=20260921c">
 <script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){var L=d.limeColor,H=String(L).replace("#","");var r=parseInt(H.slice(0,2),16),g=parseInt(H.slice(2,4),16),b=parseInt(H.slice(4,6),16);if(!H|| (g>170&&b<90&&r>120))L="#ff4dad";s.setProperty("--lime",L);s.setProperty("--lime-dim",L+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 <script src="js/smooth-nav.js?v=20260920at" defer></script>
 </head>
@@ -73,6 +73,20 @@
 
     <div class="team-grid" id="team-grid">
       <p style="text-align:center;grid-column:1/-1;color:var(--text-dim);">Caricamento team…</p>
+    </div>
+
+    <div class="team-notes">
+      <div class="team-note team-note--warn">
+        <strong data-edit="staffWarnTitle">Attenzione a chi si finge staff</strong>
+        <p data-edit="staffWarnText">Nessuno del team ti chiederà mai la password, il codice di accesso o dati del tuo account. Se ricevi richieste simili, controlla il nickname in questo elenco e segnalalo su Discord.</p>
+      </div>
+      <div class="team-note team-note--join">
+        <div>
+          <strong data-edit="joinTitle">Vuoi far parte del team?</strong>
+          <p data-edit="joinText">Le candidature sono aperte a chiunque voglia dare una mano: non serve esperienza, solo costanza e voglia di aiutare gli altri.</p>
+        </div>
+        <a class="team-note__link" href="forum.html?sezione=candidature">Vedi le posizioni aperte →</a>
+      </div>
     </div>
 
     <p style="text-align:center;margin-top:40px;font-size:14px;" data-edit="footNote">Il team è gestito dallo staff tramite la Dashboard e aggiornato automaticamente qui.</p>

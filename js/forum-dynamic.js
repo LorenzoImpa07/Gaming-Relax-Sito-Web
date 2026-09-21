@@ -105,7 +105,28 @@ function statsForBoard(boardId) {
   return { discussions, messages, last };
 }
 
+let jumpedSezione = false;
+
+function slugify(s) {
+  return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function maybeOpenSezione() {
+  if (jumpedSezione || !boardsReady) return;
+  const q = new URLSearchParams(location.search).get("sezione");
+  if (!q) return;
+  const needle = slugify(q);
+  if (!needle) return;
+  const exact = boardsOrdered.find((b) => slugify(b.name) === needle);
+  const part = boardsOrdered.find((b) => slugify(b.name).includes(needle) || needle.includes(slugify(b.name)));
+  const b = exact || part;
+  if (!b) return;
+  jumpedSezione = true;
+  location.replace("forum-board.html?id=" + encodeURIComponent(b.id));
+}
+
 function render() {
+  maybeOpenSezione();
   renderIndex();
   renderSide();
 }
