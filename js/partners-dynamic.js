@@ -34,7 +34,7 @@ if (grid) {
     grid.innerHTML = list.map((p) => {
       const href = hrefOf(p.url);
       const img = p.logoUrl
-        ? `<img src="${escapeHtml(p.logoUrl)}" alt="${escapeHtml(p.name || "Partner")}">`
+        ? `<img src="${escapeHtml(p.logoUrl)}" alt="${escapeHtml(p.name || "Partner")}" loading="lazy" decoding="async">`
         : `<span class="partner-fallback">${escapeHtml((p.name || "P").charAt(0))}</span>`;
       if (!href) return `<div class="partner-card" title="${escapeHtml(p.name || "")}">${img}</div>`;
       return `<a class="partner-card" href="${escapeHtml(href)}" target="_blank" rel="noopener" title="${escapeHtml(p.name || "")}">${img}</a>`;

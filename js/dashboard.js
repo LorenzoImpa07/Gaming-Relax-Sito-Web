@@ -4,7 +4,7 @@
 // (la protezione vera è nelle regole di Firestore, questa è solo l'interfaccia)
 // ==========================================================================
 import { auth, db, ADMIN_EMAIL, authReady } from "./firebase-init.js?v=20260920n";
-import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260920n";
+import { bindUploader, bindMultiUploader, setPreview } from "./upload.js?v=20260921a";
 import { bindEmailFields } from "./email-check.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -1255,6 +1255,14 @@ function initCreators() {
     return { uses: rows.length, earned };
   }
 
+  function createdMs(c) {
+    const t = c.createdAt;
+    if (typeof c.createdMs === "number") return c.createdMs;
+    if (t && typeof t.toMillis === "function") return t.toMillis();
+    if (t && typeof t.seconds === "number") return t.seconds * 1000;
+    return 0;
+  }
+
   function render() {
     const q = (document.getElementById("creator-search")?.value || "").trim().toLowerCase();
     const vis = creators.filter((c) => {
@@ -1307,32 +1315,58 @@ function initCreators() {
   }
 
   function syncPublic(listDocs) {
+    const newestFirst = [...listDocs].sort((a, b) => createdMs(b) - createdMs(a));
     const codes = {};
-    listDocs.forEach((c) => {
+    const portals = {};
+    newestFirst.forEach((c) => {
+      const code = String(c.code || "").trim().toUpperCase();
       const mail = String(c.email || "").trim().toLowerCase();
-      const payload = {
-        code: String(c.code || "").toUpperCase(),
-        name: c.name || "",
-        commission: Number(c.commission) || 0,
-        discount: Number(c.discount) || 0,
-        active: !!(c.code && c.active !== false),
-        uses: statsFor(c.code).uses,
-        earned: statsFor(c.code).earned
-      };
-      if (c.code && c.active !== false) {
-        codes[payload.code] = {
-          name: payload.name,
-          commission: payload.commission,
-          discount: payload.discount
+      const active = !!(code && c.active !== false);
+      if (!code) return;
+      if (active) {
+        codes[code] = {
+          name: c.name || "",
+          commission: Number(c.commission) || 0,
+          discount: Number(c.discount) || 0
         };
       }
-      if (mail) setDoc(doc(db, "creatorPortals", mail), payload, { merge: true }).catch(() => {});
+      if (!mail) return;
+      if (!portals[mail]) {
+        portals[mail] = { email: mail, codes: [], uses: 0, earned: 0 };
+      }
+      const st = statsFor(code);
+      portals[mail].uses += st.uses;
+      portals[mail].earned += st.earned;
+      if (active) {
+        portals[mail].codes.push({
+          code,
+          name: c.name || "",
+          commission: Number(c.commission) || 0,
+          discount: Number(c.discount) || 0
+        });
+      }
+    });
+    Object.keys(portals).forEach((mail) => {
+      const p = portals[mail];
+      const primary = p.codes[0] || null;
+      setDoc(doc(db, "creatorPortals", mail), {
+        email: mail,
+        code: primary ? primary.code : "",
+        name: primary ? primary.name : "",
+        commission: primary ? primary.commission : 0,
+        discount: primary ? primary.discount : 0,
+        codes: p.codes,
+        active: p.codes.length > 0,
+        uses: p.uses,
+        earned: p.earned
+      }, { merge: false }).catch(() => {});
     });
     setDoc(doc(db, "siteContent", "publicCreators"), { codes }, { merge: false }).catch(() => {});
   }
 
-  onSnapshot(query(colRef, orderBy("createdAt", "desc")), (snap) => {
+  onSnapshot(colRef, (snap) => {
     creators = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    creators.sort((a, b) => createdMs(b) - createdMs(a) || String(b.code || "").localeCompare(String(a.code || "")));
     syncPublic(creators);
     render();
   });
@@ -1357,6 +1391,7 @@ function initCreators() {
       await updateDoc(doc(db, "creators", form.dataset.editId), data);
     } else {
       data.createdAt = serverTimestamp();
+      data.createdMs = Date.now();
       await addDoc(colRef, data);
     }
     form.reset();

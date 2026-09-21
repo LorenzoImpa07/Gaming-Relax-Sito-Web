@@ -212,7 +212,7 @@ function renderProducts(products) {
       ${isRecent(p.createdAt) ? '<span class="badge-new">Novità</span>' : ""}
       ${p.inStock === false ? '<span class="badge-oos">Esaurito</span>' : ""}
       <a href="prodotto.html?id=${p.id}" class="product-card__hit">
-        ${img ? `<div class="product-card__media" style="background-image:url('${escapeHtml(img)}')"></div>` : `<div class="product-card__brand">
+        ${img ? `<div class="product-card__media"><img src="${escapeHtml(img)}" alt="${escapeHtml(p.name || "")}" loading="lazy" decoding="async"></div>` : `<div class="product-card__brand">
           <img src="images/logo.png" alt="Gaming Relax">
           <div class="product-card__brand-text">
             <strong>GAMING RELAX</strong>

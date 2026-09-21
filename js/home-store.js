@@ -58,7 +58,7 @@ function renderHomeStore(products) {
       : `<span class="product-card__price">${escapeHtml(withEuro(p.price))}</span>`;
     return `
     <a class="home-store-card is-photo" href="prodotto.html?id=${encodeURIComponent(p.id)}">
-      <div class="home-store-card__img" style="${img ? `background-image:url('${escapeHtml(img)}')` : ""}">
+      <div class="home-store-card__img">${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name || "")}" loading="lazy" decoding="async">` : ""}
         ${sale.onSale ? '<span class="badge-sale">In offerta</span>' : ""}
         <div class="home-store-card__body">
           <h3>${escapeHtml(p.name)}</h3>

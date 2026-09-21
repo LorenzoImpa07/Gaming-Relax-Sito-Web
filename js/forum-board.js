@@ -8,7 +8,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/f
 import { userNickHtml, userBadgesHtml, bumpMessageCount, userAvatarHtml, onUsersChange } from "./user-card.js";
 import { listenVisibleTopics, viewerIsStaff, areaIsPrivate } from "./forum-privacy.js";
 import { prefixChip, prefixSelectHtml, prefixPatch } from "./forum-tags.js";
-import { uploadFile } from "./upload.js?v=20260920n";
+import { uploadFile } from "./upload.js?v=20260921a";
 
 function escapeHtml(str = "") {
   const map = {
