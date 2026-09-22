@@ -1706,16 +1706,21 @@ function initCustomStudio() {
   getDoc(wizRef).then((s) => {
     if (!s.exists()) return;
     const d = s.data();
-    if (d.services) wizForm.querySelector("#cw-services").value = d.services;
-    if (d.layouts) wizForm.querySelector("#cw-layouts").value = d.layouts;
-    if (d.switches) wizForm.querySelector("#cw-switches").value = d.switches;
-    if (d.extras) wizForm.querySelector("#cw-extras").value = d.extras;
+    const setv = (id, v) => { const el = wizForm.querySelector(id); if (el && v != null) el.value = v; };
+    setv("#cw-base", d.basePrice);
+    setv("#cw-layouts", d.layouts);
+    setv("#cw-cases", d.cases);
+    setv("#cw-keycaps", d.keycaps);
+    setv("#cw-switches", d.switches);
+    setv("#cw-extras", d.extras);
   });
   wizForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     await setDoc(wizRef, {
-      services: wizForm.querySelector("#cw-services").value,
+      basePrice: parseFloat(wizForm.querySelector("#cw-base").value) || 0,
       layouts: wizForm.querySelector("#cw-layouts").value,
+      cases: wizForm.querySelector("#cw-cases").value,
+      keycaps: wizForm.querySelector("#cw-keycaps").value,
       switches: wizForm.querySelector("#cw-switches").value,
       extras: wizForm.querySelector("#cw-extras").value
     }, { merge: true });
@@ -1782,6 +1787,7 @@ function initRichieste() {
           <span>🕒 ${formatDate(r.createdAt)}</span>
         </div>
         <div class="richiesta-card__body">${escapeHtml(r.progetto || "")}</div>
+        ${r.customConfig ? `<div class="kb-mini" style="--c:${escapeHtml(r.customConfig.caseHex || "#222")};--k:${escapeHtml(r.customConfig.capsHex || "#ddd")};--a:${escapeHtml(r.customConfig.accentHex || "#ff4dad")}"><i></i><i></i><i></i></div>` : ""}
         <div class="richiesta-card__actions">
           <button type="button" class="btn btn--outline btn-toggle-status" data-id="${r.id}" data-current="${r.status}">
             ${r.status === "nuova" ? "Segna come gestita" : "Segna come nuova"}

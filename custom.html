@@ -22,7 +22,7 @@
 <meta name="description" content="Tu la immagini, noi la costruiamo. Un percorso interattivo step-by-step per dare vita all'hardware perfetto per te.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260920at">
+<link rel="stylesheet" href="css/style.css?v=20260922a">
 <script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){var L=d.limeColor,H=String(L).replace("#","");var r=parseInt(H.slice(0,2),16),g=parseInt(H.slice(2,4),16),b=parseInt(H.slice(4,6),16);if(!H|| (g>170&&b<90&&r>120))L="#ff4dad";s.setProperty("--lime",L);s.setProperty("--lime-dim",L+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 <script src="js/smooth-nav.js?v=20260920at" defer></script>
 </head>
@@ -57,47 +57,113 @@
 <section class="process-hero">
   <div class="container">
     <p class="page-index">02</p>
-    <span class="eyebrow eyebrow--lime" data-edit="eyebrow">Il processo</span>
-    <h1 data-edit="title">Tu la immagini,<br>noi la costruiamo</h1>
-    <p class="lede" style="margin:18px auto 0;" data-edit="subtitle">Un percorso interattivo step-by-step per dare vita all'hardware perfetto per te.</p>
+    <span class="eyebrow eyebrow--lime" data-edit="eyebrow">Configuratore</span>
+    <h1 data-edit="title">Costruisci la tua<br>tastiera custom</h1>
+    <p class="lede" style="margin:18px auto 0;" data-edit="subtitle">Scegli layout, colori e extra: l'anteprima si aggiorna subito. Nessuna foto da caricare, tutto automatico.</p>
+  </div>
+</section>
+
+<section class="kb-studio">
+  <div class="container kb-studio__grid">
+    <div class="kb-controls">
+      <div class="kb-block">
+        <h3>Layout</h3>
+        <div class="cfg-chips" id="kb-layouts"></div>
+      </div>
+      <div class="kb-block">
+        <h3>Case</h3>
+        <div class="kb-swatch-row" id="kb-cases"></div>
+        <label class="kb-free">Colore libero <input type="color" id="kb-case-free" value="#1b1428"></label>
+      </div>
+      <div class="kb-block">
+        <h3>Keycaps</h3>
+        <div class="kb-swatch-row" id="kb-caps"></div>
+        <div class="kb-free-row">
+          <label class="kb-free">Tasti <input type="color" id="kb-caps-free" value="#d8cfe8"></label>
+          <label class="kb-free">Modifier <input type="color" id="kb-accent-free" value="#ff4dad"></label>
+        </div>
+      </div>
+      <div class="kb-block">
+        <h3>Switch</h3>
+        <div class="cfg-chips" id="kb-switches"></div>
+      </div>
+      <div class="kb-block">
+        <h3>Extra</h3>
+        <div class="cfg-chips" id="kb-extras"></div>
+      </div>
+    </div>
+
+    <aside class="kb-stage">
+      <div class="kb-stage__frame">
+        <div id="kb-preview" aria-label="Anteprima tastiera"></div>
+      </div>
+      <p class="kb-stage__hint">Anteprima live · cambia i colori e vedi il risultato</p>
+      <ul class="cfg-sum" id="kb-summary"></ul>
+      <p class="kb-total">Stima <strong id="kb-price">—</strong></p>
+
+      <form id="kb-form" class="kb-form">
+        <div class="cfg-fields">
+          <div class="field">
+            <label for="kb-alias">Nome / nickname</label>
+            <input id="kb-alias" type="text" required autocomplete="nickname">
+          </div>
+          <div class="field">
+            <label for="kb-email">Email</label>
+            <input id="kb-email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="kb-discord">Discord (opzionale)</label>
+            <input id="kb-discord" type="text" placeholder="es. relax#0001">
+          </div>
+          <div class="field">
+            <label for="kb-note">Note</label>
+            <textarea id="kb-note" rows="3" placeholder="Dettagli, riferimenti, scadenze…"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn--lime" id="kb-submit">Invia richiesta custom →</button>
+        <p class="form-status" id="kb-status"></p>
+      </form>
+    </aside>
   </div>
 </section>
 
 <section>
   <div class="container">
     <div class="process-list">
-
       <div class="process-step">
         <span class="process-step__num">01</span>
         <h3>Consultazione</h3>
-        <p>Parliamo delle tue esigenze, del suono che cerchi e dell'estetica.</p>
+        <p>Confermiamo la config, i materiali e i tempi.</p>
       </div>
-
       <div class="process-step">
         <span class="process-step__num">02</span>
         <h3>Progettazione</h3>
-        <p>Selezioniamo case, pcb, plate e switch ideali per il progetto.</p>
+        <p>Case, pcb, plate e switch per il suono che cerchi.</p>
       </div>
-
       <div class="process-step">
         <span class="process-step__num">03</span>
         <h3>Modding</h3>
-        <p>Lubrificazione manuale, tuning degli stabilizzatori e isolamento acustico.</p>
+        <p>Lube, stabilizer e isolamento acustico a mano.</p>
       </div>
-
       <div class="process-step">
         <span class="process-step__num">04</span>
         <h3>Assemblaggio</h3>
-        <p>Costruzione finale, test completi e spedizione sicura.</p>
+        <p>Test completi e spedizione sicura.</p>
       </div>
-
-    </div>
-
-    <div class="process-cta">
-      <a href="contatti.html" class="btn btn--lime">Inizia ora →</a>
     </div>
   </div>
 </section>
+
+<section class="cfg-sec" id="custom-builds-sec" hidden>
+  <div class="container">
+    <div class="section-head">
+      <h2>Lavori fatti</h2>
+      <p class="lede">Alcune build già uscite dal laboratorio.</p>
+    </div>
+    <div class="cbuild-grid" id="custom-builds"></div>
+  </div>
+</section>
+
 
 <footer class="site-footer">
   <div class="container">
@@ -151,5 +217,6 @@
 <script type="module" src="js/auth.js?v=20260920aq"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
 <script type="module" src="js/content-dynamic.js?v=20260920ao"></script>
+<script type="module" src="js/custom-studio.js?v=20260922a"></script>
 </body>
 </html>

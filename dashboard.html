@@ -433,7 +433,7 @@
 
     <!-- ==================== CUSTOM STUDIO ==================== -->
     <div class="dash-panel" id="panel-custom">
-      <p style="font-size:13px;color:var(--text-dim);margin-bottom:22px;max-width:780px;">Pacchetti, lavori fatti e opzioni del configuratore sulla pagina Custom. Le richieste del wizard arrivano in <strong>Richieste</strong>.</p>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:22px;max-width:780px;">Configuratore visivo della pagina Custom: colori, layout e prezzi. Le richieste arrivano in <strong>Richieste</strong>. Pacchetti e lavori fatti restano opzionali.</p>
 
       <h3 style="margin-bottom:14px;">Pacchetti</h3>
       <div class="dash-layout">
@@ -511,24 +511,33 @@
         </div>
       </div>
 
-      <h3 style="margin:32px 0 14px;">Opzioni del configuratore</h3>
-      <div class="dash-form-card" style="max-width:640px;">
+      <h3 style="margin:32px 0 14px;">Opzioni del configuratore visivo</h3>
+      <p style="font-size:13px;color:var(--text-dim);max-width:720px;">Una riga = un’opzione. Per i colori usa <code>Nome|#hex|prezzo extra</code>. Per i keycaps: <code>Nome|#tasti|#modifier|prezzo</code>. Se lasci vuoto, restano i preset del sito.</p>
+      <div class="dash-form-card" style="max-width:720px;">
         <form id="cwiz-form">
           <div class="field">
-            <label for="cw-services">Servizi (una riga)</label>
-            <textarea id="cw-services" rows="5" placeholder="Tastiera custom&#10;Art / keycaps"></textarea>
+            <label for="cw-base">Prezzo base (€)</label>
+            <input type="number" id="cw-base" min="0" step="1" placeholder="89">
           </div>
           <div class="field">
-            <label for="cw-layouts">Layout (una riga)</label>
-            <textarea id="cw-layouts" rows="5"></textarea>
+            <label for="cw-layouts">Layout (nome|extra €)</label>
+            <textarea id="cw-layouts" rows="4" placeholder="60%|0&#10;65%|15&#10;75%|25&#10;TKL|40"></textarea>
           </div>
           <div class="field">
-            <label for="cw-switches">Switch (una riga)</label>
-            <textarea id="cw-switches" rows="4"></textarea>
+            <label for="cw-cases">Case (nome|#colore|extra €)</label>
+            <textarea id="cw-cases" rows="5" placeholder="Void|#14121c|0&#10;Viola|#5b2b9a|12&#10;Rosa|#ff4dad|12"></textarea>
           </div>
           <div class="field">
-            <label for="cw-extras">Extra (una riga)</label>
-            <textarea id="cw-extras" rows="5"></textarea>
+            <label for="cw-keycaps">Keycaps (nome|#tasti|#modifier|extra €)</label>
+            <textarea id="cw-keycaps" rows="5" placeholder="Ghost|#e4dcf2|#c9bddc|0&#10;Neon Pink|#ff4dad|#8b3dff|18"></textarea>
+          </div>
+          <div class="field">
+            <label for="cw-switches">Switch (nome|extra €)</label>
+            <textarea id="cw-switches" rows="4" placeholder="Lineare|0&#10;Tattile|10"></textarea>
+          </div>
+          <div class="field">
+            <label for="cw-extras">Extra (nome|extra €)</label>
+            <textarea id="cw-extras" rows="5" placeholder="RGB underglow|20&#10;Lube switch|25"></textarea>
           </div>
           <button type="submit" class="btn btn--lime">Salva opzioni</button>
           <p class="dash-save-msg" id="cwiz-status"></p>
@@ -1287,6 +1296,6 @@
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
 <script type="module" src="js/auth.js?v=20260920aq"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
-<script type="module" src="js/dashboard.js?v=20260921c"></script>
+<script type="module" src="js/dashboard.js?v=20260922a"></script>
 </body>
 </html>
