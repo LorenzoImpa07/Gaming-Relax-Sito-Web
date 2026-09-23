@@ -49,7 +49,13 @@ function euro(n) {
   return (Number(n) || 0).toLocaleString("it-IT", { style: "currency", currency: "EUR" });
 }
 function esc(s) {
-  return String(s || "").replace(/[&<>"']/g, (m) => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;" }[m]));
+  return String(s || "").replace(/[&<>"']/g, (m) => ({
+    "&": "&" + "amp;",
+    "<": "&" + "lt;",
+    ">": "&" + "gt;",
+    '"': "&" + "quot;",
+    "'": "&#39;"
+  }[m]));
 }
 function shade(hex, amt) {
   const h = String(hex || "#888").replace("#", "");
@@ -149,7 +155,7 @@ function renderPreview() {
       const side = shade(fill, -40);
       parts.push(`<g class="kb-key" transform="translate(${k.x},${y})">
         <rect width="${k.w}" height="${k.h}" rx="5" fill="${side}"/>
-        <rect x="1.6" y="1.2" width="${k.w - 3.2}" height="${k.h - 5}" rx="4" fill="url(#kt)" style="fill:${top}"/>
+        <rect x="1.6" y="1.2" width="${k.w - 3.2}" height="${k.h - 5}" rx="4" fill="${top}"/>
         <text x="${k.w / 2}" y="${k.h / 2 + 1.4}" text-anchor="middle" font-size="${k.w < 22 ? 6.5 : 8}" fill="rgba(8,6,14,.72)" font-family="Inter,sans-serif" font-weight="600">${esc(k.l)}</text>
       </g>`);
     });
@@ -360,46 +366,60 @@ function applyWizard(d) {
 }
 
 function boot() {
-  if (!document.getElementById("kb-preview")) return;
-  document.addEventListener("click", onClick);
-  document.getElementById("kb-form")?.addEventListener("submit", submitCfg);
-  document.getElementById("kb-case-free")?.addEventListener("input", (e) => {
-    state.caseHex = e.target.value;
-    state.caseName = "Personalizzato";
-    renderUI();
-  });
-  document.getElementById("kb-caps-free")?.addEventListener("input", (e) => {
-    state.capsHex = e.target.value;
-    state.capsName = "Personalizzato";
-    renderUI();
-  });
-  document.getElementById("kb-accent-free")?.addEventListener("input", (e) => {
-    state.accentHex = e.target.value;
-    renderUI();
-  });
+  const preview = document.getElementById("kb-preview");
+  if (!preview) return;
   try {
-    onAuthStateChanged(auth, (u) => {
-      currentUser = isVerifiedUser(u) ? u : null;
-      const em = document.getElementById("kb-email");
-      const al = document.getElementById("kb-alias");
-      if (em && currentUser?.email) { em.value = currentUser.email; em.readOnly = true; }
-      if (al && currentUser?.displayName && !al.value) al.value = currentUser.displayName;
+    if (preview.dataset.bound === "1") {
+      renderUI();
+      return;
+    }
+    preview.dataset.bound = "1";
+    document.addEventListener("click", onClick);
+    document.getElementById("kb-form")?.addEventListener("submit", submitCfg);
+    document.getElementById("kb-case-free")?.addEventListener("input", (e) => {
+      state.caseHex = e.target.value;
+      state.caseName = "Personalizzato";
+      renderUI();
     });
-  } catch (_) {}
+    document.getElementById("kb-caps-free")?.addEventListener("input", (e) => {
+      state.capsHex = e.target.value;
+      state.capsName = "Personalizzato";
+      renderUI();
+    });
+    document.getElementById("kb-accent-free")?.addEventListener("input", (e) => {
+      state.accentHex = e.target.value;
+      renderUI();
+    });
+    window.__grCleanups = window.__grCleanups || [];
+    window.__grCleanups.push(() => document.removeEventListener("click", onClick));
+    try {
+      onAuthStateChanged(auth, (u) => {
+        currentUser = isVerifiedUser(u) ? u : null;
+        const em = document.getElementById("kb-email");
+        const al = document.getElementById("kb-alias");
+        if (em && currentUser?.email) { em.value = currentUser.email; em.readOnly = true; }
+        if (al && currentUser?.displayName && !al.value) al.value = currentUser.displayName;
+      });
+    } catch (_) {}
 
-  renderUI();
-
-  try {
-    onSnapshot(collection(db, "customBuilds"), (snap) => {
-      builds = snap.docs.map((d) => d.data()).filter((b) => b.imageUrl);
-      renderBuilds();
-    }, () => { builds = []; renderBuilds(); });
-  } catch (_) {}
-
-  getDoc(doc(db, "siteContent", "customWizard")).then((s) => {
-    if (s.exists()) applyWizard(s.data() || {});
     renderUI();
-  }).catch(() => {});
+
+    try {
+      onSnapshot(collection(db, "customBuilds"), (snap) => {
+        builds = snap.docs.map((d) => d.data()).filter((b) => b.imageUrl);
+        renderBuilds();
+      }, () => { builds = []; renderBuilds(); });
+    } catch (_) {}
+
+    getDoc(doc(db, "siteContent", "customWizard")).then((s) => {
+      if (s.exists()) applyWizard(s.data() || {});
+      renderUI();
+    }).catch(() => { renderUI(); });
+  } catch (err) {
+    console.error("custom-studio", err);
+    preview.innerHTML = '<p style="color:#fff;text-align:center;padding:24px;">Anteprima non disponibile. Ricarica la pagina.</p>';
+  }
 }
 
+window.addEventListener("gr:navigated", boot);
 boot();
