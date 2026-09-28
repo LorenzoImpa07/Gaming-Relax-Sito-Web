@@ -32,10 +32,54 @@
 .partner-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,.42)}
 .partner-fallback{font-family:var(--font-display);font-size:42px;font-weight:700;color:#111}
 .hero h1,.hero h1 span{caret-color:transparent;outline:none;-webkit-text-stroke:0;text-shadow:none;user-select:none;-webkit-user-select:none;border:0;box-shadow:none}
+
+/* Sfere Luminose Sfondo 3D aggiunte */
+.bg-3d-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.4;
+    animation: floatOrb 15s infinite alternate ease-in-out;
+}
+.orb-1 {
+    width: 450px;
+    height: 450px;
+    background: var(--lime, #00f2fe);
+    top: -100px;
+    left: -100px;
+}
+.orb-2 {
+    width: 550px;
+    height: 550px;
+    background: var(--purple, #ff007f);
+    bottom: -150px;
+    right: -150px;
+    animation-delay: -5s;
+}
+@keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, 90px) scale(1.1); }
+}
 </style>
 <script src="js/smooth-nav.js?v=20260920at" defer></script>
 </head>
 <body data-page="home">
+
+<!-- Sfondo Dinamico 3D Aggiunto -->
+<div class="bg-3d-wrapper">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+</div>
 
 <header class="site-header">
   <div class="container">
