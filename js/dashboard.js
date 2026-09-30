@@ -1528,7 +1528,6 @@ function initOrders() {
 
 function initCheckoutCfg() {
   const form = document.getElementById("checkout-cfg-form");
-  const list = document.getElementById("ck-methods");
   const statusMsg = document.getElementById("ck-status");
   if (!form) return;
   const ref = doc(db, "siteContent", "checkout");
@@ -1559,21 +1558,25 @@ function initCheckoutCfg() {
       satispay: document.getElementById("pay-satispay")?.checked ?? false
     };
 
-    await setDoc(ref, {
+    const payload = {
       shippingFlat: Number(form.querySelector("#ck-ship").value) || 0,
       freeOver: Number(form.querySelector("#ck-free").value) || 0,
       taxPercent: Number(form.querySelector("#ck-tax").value) || 0,
       stripePk: form.querySelector("#ck-stripe")?.value.trim() || "",
       payments
-    }, { merge: true });
+    };
+
+    await setDoc(ref, payload, { merge: true });
 
     try {
       localStorage.setItem("gr_active_payments", JSON.stringify(payments));
     } catch(_) {}
 
-    statusMsg.textContent = "Cassa salvata con successo.";
-    statusMsg.classList.add("visible");
-    setTimeout(() => statusMsg.classList.remove("visible"), 4000);
+    if (statusMsg) {
+      statusMsg.textContent = "Cassa salvata con successo.";
+      statusMsg.classList.add("visible");
+      setTimeout(() => statusMsg.classList.remove("visible"), 4000);
+    }
   });
 }
 
@@ -2525,7 +2528,7 @@ function initUsers() {
         <div class="admin-row__actions">
           ${isAdmin
             ? '<span style="font-size:12px;color:var(--text-dim);">Account admin</span>'
-            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email || "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
+            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email \vert{}\vert{} "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
         </div>
       </div>`;
     }).join("");
