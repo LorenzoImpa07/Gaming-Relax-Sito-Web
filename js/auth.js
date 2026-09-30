@@ -11,7 +11,9 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification,
   confirmPasswordReset,
-  verifyPasswordResetCode
+  verifyPasswordResetCode,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import "./partners-dynamic.js";
@@ -26,7 +28,8 @@ const ERROR_MESSAGES = {
   "auth/wrong-password": "Password errata.",
   "auth/too-many-requests": "Troppi tentativi. Riprova tra qualche minuto.",
   "auth/missing-password": "Inserisci una password.",
-  "auth/missing-email": "Inserisci un indirizzo email."
+  "auth/missing-email": "Inserisci un indirizzo email.",
+  "auth/popup-closed-by-user": "La finestra di accesso con Google è stata chiusa prima di completare l'operazione."
 };
 
 function messageFromError(err) {
@@ -182,187 +185,225 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 function bindAuthForms() {
-const loginForm = document.getElementById("login-form");
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = loginForm.querySelector("#login-email").value.trim();
-    const password = loginForm.querySelector("#login-password").value;
-    const errorEl = document.getElementById("login-error");
-    errorEl.classList.remove("visible");
-
-    try {
-      await authReady;
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      if (await isBanned(cred.user)) {
-        await signOut(auth);
-        errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      await cred.user.reload();
-      if (!isVerifiedUser(cred.user)) {
-        try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
-        await signOut(auth);
-        errorEl.textContent = "Conferma prima l'email. Ti abbiamo inviato un link: apri la casella (anche lo spam) e clicca Conferma, poi torna ad accedere.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      try { await setDoc(doc(db, "users", cred.user.uid), { needsEmailVerify: false, emailVerified: true }, { merge: true }); } catch (_) {}
-      await saveUserRecord(cred.user);
-      window.location.href = isAdminEmail(cred.user.email) ? "dashboard.html" : "index.html";
-    } catch (err) {
-      errorEl.textContent = messageFromError(err);
-      errorEl.classList.add("visible");
-    }
-  });
-}
-
-const registerForm = document.getElementById("register-form");
-if (registerForm) {
-  registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const nickname = registerForm.querySelector("#register-nickname").value.trim();
-    const email = registerForm.querySelector("#register-email").value.trim();
-    const password = registerForm.querySelector("#register-password").value;
-    const errorEl = document.getElementById("register-error");
-    errorEl.classList.remove("visible");
-
-    if (nickname.length < 2) {
-      errorEl.textContent = "Il nickname deve avere almeno 2 caratteri.";
-      errorEl.classList.add("visible");
-      return;
-    }
-    const emailErr = await validateRealEmailAsync(email);
-    if (emailErr) {
-      errorEl.textContent = emailErr;
-      errorEl.classList.add("visible");
-      return;
-    }
-
-    try {
-      await authReady;
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(cred.user, { displayName: nickname });
-      await saveUserRecord(cred.user, { nickname, email, createdAt: serverTimestamp(), roleIds: [], needsEmailVerify: true, emailVerified: false });
-      try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
-      await signOut(auth);
-      const okEl = document.getElementById("register-ok");
-      registerForm.style.display = "none";
-      errorEl.classList.remove("visible");
-      if (okEl) {
-        okEl.innerHTML = "Account creato. Ti abbiamo inviato un'email di conferma a <strong>" + email.replace(/</g, "") + "</strong>. Apri il link per attivare l'account, poi <a href=\"login.html\">accedi</a>. Controlla anche lo spam.";
-        okEl.classList.add("visible");
-      } else {
-        errorEl.style.display = "none";
-        window.location.href = "login.html";
-      }
-    } catch (err) {
-      errorEl.textContent = messageFromError(err);
-      errorEl.classList.add("visible");
-    }
-  });
-}
-
-const forgotToggle = document.getElementById("forgot-toggle");
-const forgotWrap = document.getElementById("forgot-wrap");
-const forgotForm = document.getElementById("forgot-form");
-if (forgotToggle && forgotWrap) {
-  forgotToggle.addEventListener("click", () => {
-    const open = forgotWrap.style.display === "block";
-    forgotWrap.style.display = open ? "none" : "block";
-  });
-}
-if (forgotForm) {
-  forgotForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = (document.getElementById("forgot-email").value || "").trim();
-    const msgEl = document.getElementById("forgot-msg");
-    const btn = forgotForm.querySelector('button[type="submit"]');
-    msgEl.className = "auth-ok";
-    msgEl.textContent = "";
-    if (!email) {
-      msgEl.className = "auth-error visible";
-      msgEl.textContent = "Inserisci l'email del tuo account.";
-      return;
-    }
-    const emailErr = await validateRealEmailAsync(email);
-    if (emailErr) {
-      msgEl.className = "auth-error visible";
-      msgEl.textContent = emailErr;
-      return;
-    }
-    btn.disabled = true;
-    try {
-      await sendPasswordResetEmail(auth, email, {
-        url: "https://gamingrelaxofficials.it/login.html",
-        handleCodeInApp: false
-      });
-      msgEl.className = "auth-ok visible";
-      msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Apri il messaggio e usa il link per scegliere una nuova password. Controlla anche Spam.";
-      forgotForm.reset();
-    } catch (err) {
-      if (err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
-        msgEl.className = "auth-ok visible";
-        msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Controlla anche Spam.";
-      } else {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = messageFromError(err);
-      }
-    } finally {
-      btn.disabled = false;
-    }
-  });
-}
-
-const resetForm = document.getElementById("reset-form");
-if (resetForm && resetForm.dataset.bound !== "1") {
-  resetForm.dataset.bound = "1";
-  const params = new URLSearchParams(location.search);
-  const oobCode = params.get("oobCode") || "";
-  const msgEl = document.getElementById("reset-msg");
-  const emailEl = document.getElementById("reset-email-hint");
-  if (!oobCode) {
-    if (msgEl) {
-      msgEl.className = "auth-error visible";
-      msgEl.textContent = "Link non valido. Richiedi di nuovo il reset da Accedi → Password dimenticata.";
-    }
-    resetForm.querySelectorAll("input,button").forEach((el) => { el.disabled = true; });
-  } else {
-    verifyPasswordResetCode(auth, oobCode).then((mail) => {
-      if (emailEl) emailEl.textContent = "Account: " + mail;
-    }).catch(() => {
-      if (msgEl) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = "Link scaduto o già usato. Richiedi un nuovo reset.";
-      }
-    });
-    resetForm.addEventListener("submit", async (e) => {
+  const loginForm = document.getElementById("login-form");
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const p1 = document.getElementById("reset-pass")?.value || "";
-      const p2 = document.getElementById("reset-pass2")?.value || "";
-      if (p1.length < 6) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = "La password deve avere almeno 6 caratteri.";
-        return;
-      }
-      if (p1 !== p2) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = "Le due password non coincidono.";
-        return;
-      }
+      const email = loginForm.querySelector("#login-email").value.trim();
+      const password = loginForm.querySelector("#login-password").value;
+      const errorEl = document.getElementById("login-error");
+      errorEl.classList.remove("visible");
+
       try {
-        await confirmPasswordReset(auth, oobCode, p1);
-        msgEl.className = "auth-ok visible";
-        msgEl.textContent = "Password aggiornata. Ora puoi accedere.";
-        setTimeout(() => { location.href = "login.html"; }, 1200);
+        await authReady;
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        if (await isBanned(cred.user)) {
+          await signOut(auth);
+          errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere.";
+          errorEl.classList.add("visible");
+          return;
+        }
+        await cred.user.reload();
+        if (!isVerifiedUser(cred.user)) {
+          try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
+          await signOut(auth);
+          errorEl.textContent = "Conferma prima l'email. Ti abbiamo inviato un link: apri la casella (anche lo spam) e clicca Conferma, poi torna ad accedere.";
+          errorEl.classList.add("visible");
+          return;
+        }
+        try { await setDoc(doc(db, "users", cred.user.uid), { needsEmailVerify: false, emailVerified: true }, { merge: true }); } catch (_) {}
+        await saveUserRecord(cred.user);
+        window.location.href = isAdminEmail(cred.user.email) ? "dashboard.html" : "index.html";
       } catch (err) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = messageFromError(err);
+        errorEl.textContent = messageFromError(err);
+        errorEl.classList.add("visible");
       }
     });
   }
-}
+
+  const registerForm = document.getElementById("register-form");
+  if (registerForm) {
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nickname = registerForm.querySelector("#register-nickname").value.trim();
+      const email = registerForm.querySelector("#register-email").value.trim();
+      const password = registerForm.querySelector("#register-password").value;
+      const errorEl = document.getElementById("register-error");
+      errorEl.classList.remove("visible");
+
+      if (nickname.length < 2) {
+        errorEl.textContent = "Il nickname deve avere almeno 2 caratteri.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      const emailErr = await validateRealEmailAsync(email);
+      if (emailErr) {
+        errorEl.textContent = emailErr;
+        errorEl.classList.add("visible");
+        return;
+      }
+
+      try {
+        await authReady;
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: nickname });
+        await saveUserRecord(cred.user, { nickname, email, createdAt: serverTimestamp(), roleIds: [], needsEmailVerify: true, emailVerified: false });
+        try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
+        await signOut(auth);
+        const okEl = document.getElementById("register-ok");
+        registerForm.style.display = "none";
+        errorEl.classList.remove("visible");
+        if (okEl) {
+          okEl.innerHTML = "Account creato. Ti abbiamo inviato un'email di conferma a <strong>" + email.replace(/</g, "") + "</strong>. Apri il link per attivare l'account, poi <a href=\"login.html\">accedi</a>. Controlla anche lo spam.";
+          okEl.classList.add("visible");
+        } else {
+          errorEl.style.display = "none";
+          window.location.href = "login.html";
+        }
+      } catch (err) {
+        errorEl.textContent = messageFromError(err);
+        errorEl.classList.add("visible");
+      }
+    });
+  }
+
+  // Gestione pulsante Google (Login / Registrazione)
+  const googleLoginBtn = document.getElementById("google-login-btn");
+  if (googleLoginBtn && googleLoginBtn.dataset.bound !== "1") {
+    googleLoginBtn.dataset.bound = "1";
+    googleLoginBtn.addEventListener("click", async () => {
+      const errorEl = document.getElementById("login-error") || document.getElementById("register-error");
+      if (errorEl) errorEl.classList.remove("visible");
+
+      try {
+        await authReady;
+        const provider = new GoogleAuthProvider();
+        const cred = await signInWithPopup(auth, provider);
+
+        if (await isBanned(cred.user)) {
+          await signOut(auth);
+          if (errorEl) {
+            errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere.";
+            errorEl.classList.add("visible");
+          }
+          return;
+        }
+
+        await saveUserRecord(cred.user, {
+          nickname: cred.user.displayName || cred.user.email.split("@")[0],
+          emailVerified: true,
+          needsEmailVerify: false
+        });
+
+        window.location.href = isAdminEmail(cred.user.email) ? "dashboard.html" : "index.html";
+      } catch (err) {
+        if (errorEl) {
+          errorEl.textContent = messageFromError(err);
+          errorEl.classList.add("visible");
+        }
+      }
+    });
+  }
+
+  const forgotToggle = document.getElementById("forgot-toggle");
+  const forgotWrap = document.getElementById("forgot-wrap");
+  const forgotForm = document.getElementById("forgot-form");
+  if (forgotToggle && forgotWrap) {
+    forgotToggle.addEventListener("click", () => {
+      const open = forgotWrap.style.display === "block";
+      forgotWrap.style.display = open ? "none" : "block";
+    });
+  }
+  if (forgotForm) {
+    forgotForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = (document.getElementById("forgot-email").value || "").trim();
+      const msgEl = document.getElementById("forgot-msg");
+      const btn = forgotForm.querySelector('button[type="submit"]');
+      msgEl.className = "auth-ok";
+      msgEl.textContent = "";
+      if (!email) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = "Inserisci l'email del tuo account.";
+        return;
+      }
+      const emailErr = await validateRealEmailAsync(email);
+      if (emailErr) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = emailErr;
+        return;
+      }
+      btn.disabled = true;
+      try {
+        await sendPasswordResetEmail(auth, email, {
+          url: "https://gamingrelaxofficials.it/login.html",
+          handleCodeInApp: false
+        });
+        msgEl.className = "auth-ok visible";
+        msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Apri il messaggio e usa il link per scegliere una nuova password. Controlla anche Spam.";
+        forgotForm.reset();
+      } catch (err) {
+        if (err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
+          msgEl.className = "auth-ok visible";
+          msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Controlla anche Spam.";
+        } else {
+          msgEl.className = "auth-error visible";
+          msgEl.textContent = messageFromError(err);
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  const resetForm = document.getElementById("reset-form");
+  if (resetForm && resetForm.dataset.bound !== "1") {
+    resetForm.dataset.bound = "1";
+    const params = new URLSearchParams(location.search);
+    const oobCode = params.get("oobCode") || "";
+    const msgEl = document.getElementById("reset-msg");
+    const emailEl = document.getElementById("reset-email-hint");
+    if (!oobCode) {
+      if (msgEl) {
+        msgEl.className = "auth-error visible";
+        msgEl.textContent = "Link non valido. Richiedi di nuovo il reset da Accedi → Password dimenticata.";
+      }
+      resetForm.querySelectorAll("input,button").forEach((el) => { el.disabled = true; });
+    } else {
+      verifyPasswordResetCode(auth, oobCode).then((mail) => {
+        if (emailEl) emailEl.textContent = "Account: " + mail;
+      }).catch(() => {
+        if (msgEl) {
+          msgEl.className = "auth-error visible";
+          msgEl.textContent = "Link scaduto o già usato. Richiedi un nuovo reset.";
+        }
+      });
+      resetForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const p1 = document.getElementById("reset-pass")?.value || "";
+        const p2 = document.getElementById("reset-pass2")?.value || "";
+        if (p1.length < 6) {
+          msgEl.className = "auth-error visible";
+          msgEl.textContent = "La password deve avere almeno 6 caratteri.";
+          return;
+        }
+        if (p1 !== p2) {
+          msgEl.className = "auth-error visible";
+          msgEl.textContent = "Le due password non coincidono.";
+          return;
+        }
+        try {
+          await confirmPasswordReset(auth, oobCode, p1);
+          msgEl.className = "auth-ok visible";
+          msgEl.textContent = "Password aggiornata. Ora puoi accedere.";
+          setTimeout(() => { location.href = "login.html"; }, 1200);
+        } catch (err) {
+          msgEl.className = "auth-error visible";
+          msgEl.textContent = messageFromError(err);
+        }
+      });
+    }
+  }
 }
 
 bindAuthForms();
