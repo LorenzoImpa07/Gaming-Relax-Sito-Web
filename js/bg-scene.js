@@ -1,14 +1,550 @@
+// ==========================================================================
+// Sfondo pagina — fallback locali + configurazione Firestore.
+// Dashboard → Sfondi salva in: siteContent/{pagina}.
+// ==========================================================================
+
 import { db } from "./firebase-init.js";
-import { doc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const DEFAULTS={home:{bgStyle:"aurora",bgOverlay:55,bgMotion:true},store:{bgStyle:"grid",bgOverlay:62,bgMotion:true},custom:{bgStyle:"cinematic",bgOverlay:58,bgMotion:true},art:{bgStyle:"particles",bgOverlay:60,bgMotion:true},novita:{bgStyle:"aurora",bgOverlay:62,bgMotion:true},forum:{bgStyle:"grid",bgOverlay:68,bgMotion:true},team:{bgStyle:"cinematic",bgOverlay:60,bgMotion:true},recensioni:{bgStyle:"aurora",bgOverlay:62,bgMotion:true},contatti:{bgStyle:"cinematic",bgOverlay:60,bgMotion:true},faq:{bgStyle:"grid",bgOverlay:70,bgMotion:true},login:{bgStyle:"aurora",bgOverlay:70,bgMotion:true},register:{bgStyle:"aurora",bgOverlay:70,bgMotion:true},dashboard:{bgStyle:"none",bgOverlay:72,bgMotion:false}};
-const PRESETS={midnight:{label:"Midnight Luxe",style:"none",overlay:64,motion:false,colors:["#05070e","#121a2a"]},violet:{label:"Violet Aurora",style:"aurora",overlay:54,motion:true,colors:["#31145d","#0a1d38"]},cyber:{label:"Cyber Grid",style:"grid",overlay:66,motion:true,colors:["#082530","#17103b"]},chrome:{label:"Liquid Chrome",style:"cinematic",overlay:60,motion:true,colors:["#30264b","#071828"]},workshop:{label:"Warm Workshop",style:"aurora",overlay:58,motion:false,colors:["#432534","#16121d"]},minimal:{label:"Minimal Black",style:"none",overlay:72,motion:false,colors:["#08090d","#161922"]}};
-const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;let key=document.body.dataset.page||"home",unsub=()=>{},stop=()=>{};
-function url(v=""){v=String(v||"").trim();if(v.startsWith("//"))v="https:"+v;if(v.startsWith("http://"))v="https://"+v.slice(7);return v}
-function shell(){let e=document.querySelector("#page-bg");if(e)return e;e=document.createElement("div");e.id="page-bg";e.className="page-bg";e.setAttribute("aria-hidden","true");e.innerHTML='<div class="page-bg__layer page-bg__media"></div><div class="page-bg__layer page-bg__fx"></div><div class="page-bg__overlay"></div><div class="page-bg__vignette"></div>';document.documentElement.prepend(e);document.body.classList.add("has-page-bg");return e}
-function paint(root,c){const media=root.querySelector(".page-bg__media"),fx=root.querySelector(".page-bg__fx"),overlay=root.querySelector(".page-bg__overlay"),image=url(c.bgImageUrl),video=url(c.bgVideoUrl),o=Math.max(0,Math.min(85,Number(c.bgOverlay??55)))/100;media.innerHTML="";fx.innerHTML="";if(video){const v=document.createElement("video");v.src=video;v.autoplay=v.muted=v.loop=v.playsInline=true;v.setAttribute("muted","");media.append(v);v.play().catch(()=>{})}else if(image){const i=document.createElement("div");i.className="page-bg__photo";i.style.backgroundImage=`url("${image.replace(/"/g,"%22")}")`;media.append(i)}const s=c.bgStyle||"none";if(s!=="none"){fx.className="page-bg__layer page-bg__fx page-bg__fx--"+s;fx.innerHTML=s==="particles"?'<span class="bg-dot"></span><span class="bg-dot"></span><span class="bg-dot"></span>':""}overlay.style.background=`linear-gradient(135deg,rgba(4,6,13,${Math.min(.9,o+.15)}),rgba(5,7,14,${o}))`;root.dataset.style=s;stop();if(c.bgMotion!==false&&!reduce){let x=0,y=0,tx=0,ty=0,raf;const move=e=>{tx=(e.clientX/innerWidth-.5)*2;ty=(e.clientY/innerHeight-.5)*2};addEventListener("pointermove",move,{passive:true});const tick=()=>{x+=(tx-x)*.04;y+=(ty-y)*.04;media.style.transform=`translate3d(${x*-12}px,${y*-8}px,0) scale(1.04)`;fx.style.transform=`translate3d(${x*-7}px,${y*-6}px,0)`;raf=requestAnimationFrame(tick)};tick();stop=()=>{cancelAnimationFrame(raf);removeEventListener("pointermove",move)}}}
-function cache(c){try{const a=JSON.parse(localStorage.gr_bgs||"{}");a[key]={image:c.bgImageUrl||"",video:c.bgVideoUrl||"",style:c.bgStyle,overlay:c.bgOverlay,motion:c.bgMotion};localStorage.gr_bgs=JSON.stringify(a)}catch(_){}}
-function apply(c){paint(shell(),c);cache(c)}
-function listen(){unsub();const fallback=DEFAULTS[key]||DEFAULTS.home;unsub=onSnapshot(doc(db,"siteContent",key),s=>{const d=s.exists()?s.data():{};apply({bgImageUrl:d.bgImageUrl||"",bgVideoUrl:d.bgVideoUrl||"",bgStyle:d.bgStyle||fallback.bgStyle,bgOverlay:d.bgOverlay??fallback.bgOverlay,bgMotion:d.bgMotion!==false})},()=>apply(fallback))}
-function css(){if(document.querySelector("#gr-bg-preset-css"))return;const s=document.createElement("style");s.id="gr-bg-preset-css";s.textContent=`.page-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#070912}.page-bg__layer,.page-bg__overlay,.page-bg__vignette{position:absolute;inset:-4%;pointer-events:none}.page-bg__media{background:#080b14 center/cover no-repeat}.page-bg__media video,.page-bg__photo{width:100%;height:100%;object-fit:cover;background:center/cover}.page-bg__overlay{z-index:2}.page-bg__fx{z-index:1}.page-bg__fx--aurora,.page-bg__fx--cinematic{background:radial-gradient(circle at 20% 15%,#8b3dff66,transparent 35%),radial-gradient(circle at 80% 70%,#1bcfff44,transparent 40%);filter:blur(22px)}.page-bg__fx--grid,.page-bg__fx--cinematic{background-image:linear-gradient(#7c5cff20 1px,transparent 1px),linear-gradient(90deg,#7c5cff20 1px,transparent 1px);background-size:42px 42px}.page-bg__fx--particles .bg-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:#d8ffff;box-shadow:0 0 18px #9b3dff}.bg-dot:nth-child(1){left:16%;top:25%}.bg-dot:nth-child(2){left:72%;top:55%}.bg-dot:nth-child(3){left:48%;top:80%}.bg-preset-preview{height:92px;border-radius:12px;margin:0 0 14px;border:1px solid #ffffff1c;background:linear-gradient(135deg,#31145d,#0a1d38);box-shadow:inset 0 0 30px #0008}`;document.head.append(s)}
-function enhanceDashboard(){if(key!=="dashboard")return;const form=document.querySelector("#bg-form"),style=form?.querySelector("#bg-style");if(!form||!style||document.querySelector("#bg-preset"))return;const field=document.createElement("div");field.className="field";field.innerHTML='<label for="bg-preset">Preset Gaming Relax</label><select id="bg-preset"><option value="">Personalizzato</option>'+Object.entries(PRESETS).map(([id,p])=>`<option value="${id}">${p.label}</option>`).join("")+'</select><div class="bg-preset-preview" id="bg-preset-preview"></div><p class="file-status">Il preset imposta stile, leggibilità e movimento. Immagine e video non vengono modificati.</p>';style.closest(".field").before(field);const sel=field.querySelector("select"),preview=field.querySelector("div");const update=()=>{const p=PRESETS[sel.value]||PRESETS.violet;preview.style.background=`linear-gradient(135deg,${p.colors[0]},${p.colors[1]})`};sel.addEventListener("change",()=>{const p=PRESETS[sel.value];if(!p)return;style.value=p.style;const o=form.querySelector("#bg-overlay");o.value=p.overlay;o.dispatchEvent(new Event("input"));form.querySelector("#bg-motion").checked=p.motion;update()});update()}
-css();listen();enhanceDashboard();addEventListener("gr:navigated",()=>{key=document.body.dataset.page||"home";listen();enhanceDashboard()});getDocs(collection(db,"siteContent")).then(s=>{try{const a=JSON.parse(localStorage.gr_bgs||"{}");s.forEach(x=>{const d=x.data();a[x.id]={image:d.bgImageUrl||"",video:d.bgVideoUrl||"",style:d.bgStyle||"",overlay:d.bgOverlay,motion:d.bgMotion}});localStorage.gr_bgs=JSON.stringify(a)}catch(_){}}).catch(()=>{});
+import {
+  doc,
+  onSnapshot,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const DEFAULTS = {
+  home: {
+    bgStyle: "aurora",
+    bgOverlay: 48,
+    bgMotion: true,
+    bgImageUrl: "images/home-bg.jpg"
+  },
+  store: {
+    bgStyle: "grid",
+    bgOverlay: 56,
+    bgMotion: true,
+    bgImageUrl: "images/bg-store.jpg"
+  },
+  custom: {
+    bgStyle: "cinematic",
+    bgOverlay: 52,
+    bgMotion: true,
+    bgImageUrl: "images/bg-studio.jpg"
+  },
+  art: {
+    bgStyle: "particles",
+    bgOverlay: 50,
+    bgMotion: true,
+    bgImageUrl: "images/bg-art.jpg"
+  },
+  novita: {
+    bgStyle: "aurora",
+    bgOverlay: 58,
+    bgMotion: true,
+    bgImageUrl: "images/bg-store.jpg"
+  },
+  forum: {
+    bgStyle: "grid",
+    bgOverlay: 64,
+    bgMotion: true,
+    bgImageUrl: "images/bg-art.jpg"
+  },
+  team: {
+    bgStyle: "cinematic",
+    bgOverlay: 56,
+    bgMotion: true,
+    bgImageUrl: "images/bg-studio.jpg"
+  },
+  recensioni: {
+    bgStyle: "aurora",
+    bgOverlay: 58,
+    bgMotion: true,
+    bgImageUrl: "images/bg-store.jpg"
+  },
+  contatti: {
+    bgStyle: "cinematic",
+    bgOverlay: 58,
+    bgMotion: true,
+    bgImageUrl: "images/bg-studio.jpg"
+  },
+  faq: {
+    bgStyle: "grid",
+    bgOverlay: 68,
+    bgMotion: true,
+    bgImageUrl: "images/bg-quiet.jpg"
+  },
+  login: {
+    bgStyle: "aurora",
+    bgOverlay: 70,
+    bgMotion: false,
+    bgImageUrl: "images/bg-quiet.jpg"
+  },
+  register: {
+    bgStyle: "aurora",
+    bgOverlay: 70,
+    bgMotion: false,
+    bgImageUrl: "images/bg-quiet.jpg"
+  },
+  dashboard: {
+    bgStyle: "none",
+    bgOverlay: 74,
+    bgMotion: false,
+    bgImageUrl: "images/bg-quiet.jpg"
+  },
+  privacy: {
+    bgStyle: "none",
+    bgOverlay: 72,
+    bgMotion: false,
+    bgImageUrl: "images/bg-quiet.jpg"
+  },
+  termini: {
+    bgStyle: "none",
+    bgOverlay: 72,
+    bgMotion: false,
+    bgImageUrl: "images/bg-quiet.jpg"
+  },
+  grazie: {
+    bgStyle: "aurora",
+    bgOverlay: 58,
+    bgMotion: true,
+    bgImageUrl: "images/bg-store.jpg"
+  },
+  "chi-siamo": {
+    bgStyle: "cinematic",
+    bgOverlay: 58,
+    bgMotion: true,
+    bgImageUrl: "images/bg-studio.jpg"
+  }
+};
+
+const reduceMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+
+let pageKey = document.body.dataset.page || "home";
+let unsubscribe = () => {};
+let stopMotion = () => {};
+
+function cleanUrl(value = "") {
+  let valueClean = String(value || "").trim();
+
+  if (valueClean.startsWith("//")) {
+    valueClean = `https:${valueClean}`;
+  }
+
+  if (valueClean.startsWith("http://")) {
+    valueClean = `https://${valueClean.slice(7)}`;
+  }
+
+  if (!valueClean) return "";
+
+  if (!/^https?:\/\//i.test(valueClean) && !valueClean.startsWith("data:")) {
+    try {
+      return new URL(valueClean, window.location.href).href;
+    } catch (_) {
+      return valueClean;
+    }
+  }
+
+  return valueClean;
+}
+
+function injectStyles() {
+  if (document.getElementById("gr-page-bg-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "gr-page-bg-styles";
+
+  style.textContent = `
+    html.has-page-bg,
+    body.has-page-bg {
+      background: #070912 !important;
+    }
+
+    #page-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background: #070912;
+    }
+
+    body.has-page-bg > *:not(#page-bg) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-bg__media,
+    .page-bg__fx,
+    .page-bg__overlay,
+    .page-bg__vignette {
+      position: absolute;
+      inset: -4%;
+    }
+
+    .page-bg__media {
+      z-index: 0;
+      background: #070912 center / cover no-repeat;
+      transition: transform 0.2s ease-out;
+    }
+
+    .page-bg__media video,
+    .page-bg__photo {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      background-position: center;
+      background-size: cover;
+    }
+
+    .page-bg__fx {
+      z-index: 1;
+      transition: transform 0.2s ease-out;
+    }
+
+    .page-bg__overlay {
+      z-index: 2;
+    }
+
+    .page-bg__vignette {
+      z-index: 3;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 25%,
+        rgba(0, 0, 0, 0.38) 100%
+      );
+    }
+
+    .page-bg__fx--aurora,
+    .page-bg__fx--cinematic {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(139, 61, 255, 0.48), transparent 36%),
+        radial-gradient(circle at 82% 72%, rgba(27, 207, 255, 0.25), transparent 42%);
+      filter: blur(18px);
+    }
+
+    .page-bg__fx--grid,
+    .page-bg__fx--cinematic {
+      background-image:
+        linear-gradient(rgba(139, 61, 255, 0.13) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 61, 255, 0.13) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    .page-bg__fx--particles::before,
+    .page-bg__fx--particles::after {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #d6fbff;
+      box-shadow:
+        12vw 18vh 0 rgba(255, 77, 173, 0.75),
+        38vw 62vh 0 rgba(151, 78, 255, 0.75),
+        70vw 24vh 0 rgba(84, 220, 255, 0.7),
+        84vw 76vh 0 rgba(255, 77, 173, 0.6);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page-bg__media,
+      .page-bg__fx {
+        transition: none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+function mountBackground() {
+  let root = document.getElementById("page-bg");
+
+  if (!root) {
+    root = document.createElement("div");
+    root.id = "page-bg";
+    root.setAttribute("aria-hidden", "true");
+
+    root.innerHTML = `
+      <div class="page-bg__media"></div>
+      <div class="page-bg__fx"></div>
+      <div class="page-bg__overlay"></div>
+      <div class="page-bg__vignette"></div>
+    `;
+
+    document.body.prepend(root);
+  }
+
+  document.documentElement.classList.add("has-page-bg");
+  document.body.classList.add("has-page-bg");
+
+  return root;
+}
+
+function startParallax(root, enabled) {
+  if (!enabled || reduceMotion) return () => {};
+
+  const media = root.querySelector(".page-bg__media");
+  const fx = root.querySelector(".page-bg__fx");
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let animationFrame = 0;
+
+  const onPointerMove = (event) => {
+    targetX = (event.clientX / window.innerWidth - 0.5) * 2;
+    targetY = (event.clientY / window.innerHeight - 0.5) * 2;
+  };
+
+  const tick = () => {
+    currentX += (targetX - currentX) * 0.05;
+    currentY += (targetY - currentY) * 0.05;
+
+    if (media) {
+      media.style.transform =
+        `translate3d(${currentX * -14}px, ${currentY * -10}px, 0) scale(1.04)`;
+    }
+
+    if (fx) {
+      fx.style.transform =
+        `translate3d(${currentX * -8}px, ${currentY * -7}px, 0)`;
+    }
+
+    animationFrame = requestAnimationFrame(tick);
+  };
+
+  window.addEventListener("pointermove", onPointerMove, { passive: true });
+  tick();
+
+  return () => {
+    cancelAnimationFrame(animationFrame);
+    window.removeEventListener("pointermove", onPointerMove);
+  };
+}
+
+function applyBackground(config) {
+  const root = mountBackground();
+
+  const imageUrl = cleanUrl(config.bgImageUrl);
+  const videoUrl = cleanUrl(config.bgVideoUrl);
+
+  const media = root.querySelector(".page-bg__media");
+  const fx = root.querySelector(".page-bg__fx");
+  const overlay = root.querySelector(".page-bg__overlay");
+
+  media.innerHTML = "";
+
+  if (videoUrl) {
+    const video = document.createElement("video");
+
+    video.src = videoUrl;
+    video.autoplay = true;
+    video.loop = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    video.setAttribute("autoplay", "");
+    video.setAttribute("muted", "");
+    video.setAttribute("loop", "");
+    video.setAttribute("playsinline", "");
+
+    media.appendChild(video);
+    video.play().catch(() => {});
+  } else if (imageUrl) {
+    const image = document.createElement("div");
+    image.className = "page-bg__photo";
+    image.style.backgroundImage = `url("${imageUrl.replace(/"/g, "%22")}")`;
+    media.appendChild(image);
+  }
+
+  const styleName = config.bgStyle || "none";
+
+  fx.className = "page-bg__fx";
+
+  if (styleName === "aurora") {
+    fx.classList.add("page-bg__fx--aurora");
+  }
+
+  if (styleName === "grid") {
+    fx.classList.add("page-bg__fx--grid");
+  }
+
+  if (styleName === "cinematic") {
+    fx.classList.add("page-bg__fx--cinematic");
+  }
+
+  if (styleName === "particles") {
+    fx.classList.add("page-bg__fx--particles");
+  }
+
+  let overlayValue = Number(config.bgOverlay);
+
+  if (!Number.isFinite(overlayValue)) {
+    overlayValue = 55;
+  }
+
+  overlayValue = Math.max(0, Math.min(85, overlayValue));
+
+  const overlayOpacity = overlayValue / 100;
+
+  overlay.style.background = `
+    linear-gradient(
+      135deg,
+      rgba(4, 6, 13, ${Math.min(0.92, overlayOpacity + 0.18)}),
+      rgba(5, 7, 14, ${overlayOpacity})
+    )
+  `;
+
+  stopMotion();
+  stopMotion = startParallax(root, config.bgMotion !== false);
+}
+
+function saveCache(config) {
+  try {
+    const backgrounds = JSON.parse(
+      localStorage.getItem("gr_bgs") || "{}"
+    );
+
+    backgrounds[pageKey] = {
+      image: config.bgImageUrl || "",
+      video: config.bgVideoUrl || "",
+      style: config.bgStyle || "none",
+      overlay: config.bgOverlay,
+      motion: config.bgMotion !== false
+    };
+
+    localStorage.setItem("gr_bgs", JSON.stringify(backgrounds));
+  } catch (_) {}
+}
+
+function getCachedBackground() {
+  try {
+    const backgrounds = JSON.parse(
+      localStorage.getItem("gr_bgs") || "{}"
+    );
+
+    const cached = backgrounds[pageKey];
+
+    if (!cached) return null;
+
+    return {
+      bgImageUrl: cached.image || "",
+      bgVideoUrl: cached.video || "",
+      bgStyle: cached.style || "",
+      bgOverlay: cached.overlay,
+      bgMotion: cached.motion !== false
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
+function getConfig(data = {}) {
+  const fallback = DEFAULTS[pageKey] || DEFAULTS.home;
+
+  const savedImage = cleanUrl(
+    data.bgImageUrl || data.imageUrl || data.backgroundUrl || ""
+  );
+
+  const savedVideo = cleanUrl(data.bgVideoUrl || "");
+
+  return {
+    bgImageUrl: savedImage || fallback.bgImageUrl,
+    bgVideoUrl: savedVideo || "",
+    bgStyle: data.bgStyle || fallback.bgStyle,
+    bgOverlay:
+      data.bgOverlay !== undefined &&
+      data.bgOverlay !== null &&
+      data.bgOverlay !== ""
+        ? Number(data.bgOverlay)
+        : fallback.bgOverlay,
+    bgMotion:
+      data.bgMotion !== false &&
+      data.bgMotion !== "false" &&
+      fallback.bgMotion !== false
+  };
+}
+
+function boot() {
+  pageKey = document.body.dataset.page || "home";
+
+  injectStyles();
+
+  const fallback = DEFAULTS[pageKey] || DEFAULTS.home;
+  const cached = getCachedBackground();
+
+  applyBackground({
+    ...fallback,
+    ...(cached || {})
+  });
+}
+
+function listenToFirestore() {
+  unsubscribe();
+
+  unsubscribe = onSnapshot(
+    doc(db, "siteContent", pageKey),
+    (snapshot) => {
+      const data = snapshot.exists() ? snapshot.data() : {};
+      const config = getConfig(data);
+
+      saveCache(config);
+      applyBackground(config);
+    },
+    () => {
+      applyBackground(DEFAULTS[pageKey] || DEFAULTS.home);
+    }
+  );
+}
+
+boot();
+listenToFirestore();
+
+window.addEventListener("gr:navigated", () => {
+  boot();
+  listenToFirestore();
+});
+
+getDocs(collection(db, "siteContent"))
+  .then((snapshot) => {
+    try {
+      const backgrounds = JSON.parse(
+        localStorage.getItem("gr_bgs") || "{}"
+      );
+
+      snapshot.forEach((documentSnapshot) => {
+        const page = documentSnapshot.id;
+        const data = documentSnapshot.data() || {};
+        const fallback = DEFAULTS[page] || DEFAULTS.home;
+
+        backgrounds[page] = {
+          image:
+            cleanUrl(
+              data.bgImageUrl ||
+              data.imageUrl ||
+              data.backgroundUrl ||
+              ""
+            ) || fallback.bgImageUrl,
+          video: cleanUrl(data.bgVideoUrl || ""),
+          style: data.bgStyle || fallback.bgStyle,
+          overlay:
+            data.bgOverlay !== undefined &&
+            data.bgOverlay !== null &&
+            data.bgOverlay !== ""
+              ? Number(data.bgOverlay)
+              : fallback.bgOverlay,
+          motion:
+            data.bgMotion !== false &&
+            data.bgMotion !== "false" &&
+            fallback.bgMotion !== false
+        };
+      });
+
+      localStorage.setItem("gr_bgs", JSON.stringify(backgrounds));
+    } catch (_) {}
+  })
+  .catch(() => {});
