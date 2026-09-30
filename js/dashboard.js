@@ -2528,7 +2528,7 @@ function initUsers() {
         <div class="admin-row__actions">
           ${isAdmin
             ? '<span style="font-size:12px;color:var(--text-dim);">Account admin</span>'
-            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email \vert{}\vert{} "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
+            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email || "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
         </div>
       </div>`;
     }).join("");
