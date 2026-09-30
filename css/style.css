@@ -3892,15 +3892,21 @@ body:not([data-page="home"]) .site-header {
   box-shadow: 0 24px 60px -32px rgba(88, 101, 242, .35);
 }
 .community-card__icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 22px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  color: #8ea0ff;
-  background: rgba(88, 101, 242, .18);
-  border: 1px solid rgba(88, 101, 242, .28);
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(88, 101, 242, 0.15);
+  border: 1px solid rgba(88, 101, 242, 0.3);
+}
+.community-card__icon img.discord-mascot-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
 }
 .community-card h2 {
   font-size: clamp(28px, 5vw, 42px);
