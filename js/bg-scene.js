@@ -1,550 +1,374 @@
 // ==========================================================================
-// Sfondo pagina — fallback locali + configurazione Firestore.
-// Dashboard → Sfondi salva in: siteContent/{pagina}.
+// Sfondo interattivo — immagine / video / aurora, movimento col mouse.
+// Impostazioni: Dashboard → Sfondi.
 // ==========================================================================
-
 import { db } from "./firebase-init.js";
-import {
-  doc,
-  onSnapshot,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const DEFAULTS = {
-  home: {
-    bgStyle: "aurora",
-    bgOverlay: 48,
-    bgMotion: true,
-    bgImageUrl: "images/home-bg.jpg"
-  },
-  store: {
-    bgStyle: "grid",
-    bgOverlay: 56,
-    bgMotion: true,
-    bgImageUrl: "images/bg-store.jpg"
-  },
-  custom: {
-    bgStyle: "cinematic",
-    bgOverlay: 52,
-    bgMotion: true,
-    bgImageUrl: "images/bg-studio.jpg"
-  },
-  art: {
-    bgStyle: "particles",
-    bgOverlay: 50,
-    bgMotion: true,
-    bgImageUrl: "images/bg-art.jpg"
-  },
-  novita: {
-    bgStyle: "aurora",
-    bgOverlay: 58,
-    bgMotion: true,
-    bgImageUrl: "images/bg-store.jpg"
-  },
-  forum: {
-    bgStyle: "grid",
-    bgOverlay: 64,
-    bgMotion: true,
-    bgImageUrl: "images/bg-art.jpg"
-  },
-  team: {
-    bgStyle: "cinematic",
-    bgOverlay: 56,
-    bgMotion: true,
-    bgImageUrl: "images/bg-studio.jpg"
-  },
-  recensioni: {
-    bgStyle: "aurora",
-    bgOverlay: 58,
-    bgMotion: true,
-    bgImageUrl: "images/bg-store.jpg"
-  },
-  contatti: {
-    bgStyle: "cinematic",
-    bgOverlay: 58,
-    bgMotion: true,
-    bgImageUrl: "images/bg-studio.jpg"
-  },
-  faq: {
-    bgStyle: "grid",
-    bgOverlay: 68,
-    bgMotion: true,
-    bgImageUrl: "images/bg-quiet.jpg"
-  },
-  login: {
-    bgStyle: "aurora",
-    bgOverlay: 70,
-    bgMotion: false,
-    bgImageUrl: "images/bg-quiet.jpg"
-  },
-  register: {
-    bgStyle: "aurora",
-    bgOverlay: 70,
-    bgMotion: false,
-    bgImageUrl: "images/bg-quiet.jpg"
-  },
-  dashboard: {
-    bgStyle: "none",
-    bgOverlay: 74,
-    bgMotion: false,
-    bgImageUrl: "images/bg-quiet.jpg"
-  },
-  privacy: {
-    bgStyle: "none",
-    bgOverlay: 72,
-    bgMotion: false,
-    bgImageUrl: "images/bg-quiet.jpg"
-  },
-  termini: {
-    bgStyle: "none",
-    bgOverlay: 72,
-    bgMotion: false,
-    bgImageUrl: "images/bg-quiet.jpg"
-  },
-  grazie: {
-    bgStyle: "aurora",
-    bgOverlay: 58,
-    bgMotion: true,
-    bgImageUrl: "images/bg-store.jpg"
-  },
-  "chi-siamo": {
-    bgStyle: "cinematic",
-    bgOverlay: 58,
-    bgMotion: true,
-    bgImageUrl: "images/bg-studio.jpg"
-  }
+  home: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/home-bg.jpg" },
+  store: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  custom: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" },
+  art: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-art.jpg" },
+  novita: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  forum: { bgStyle: "none", bgOverlay: 24, bgMotion: true, bgImageUrl: "images/bg-art.jpg" },
+  team: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" },
+  recensioni: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  contatti: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" },
+  faq: { bgStyle: "none", bgOverlay: 26, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  login: { bgStyle: "none", bgOverlay: 28, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  register: { bgStyle: "none", bgOverlay: 28, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  dashboard: { bgStyle: "none", bgOverlay: 40, bgMotion: false, bgImageUrl: "images/bg-quiet.jpg" },
+  privacy: { bgStyle: "none", bgOverlay: 26, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  termini: { bgStyle: "none", bgOverlay: 26, bgMotion: true, bgImageUrl: "images/bg-quiet.jpg" },
+  grazie: { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-store.jpg" },
+  "chi-siamo": { bgStyle: "none", bgOverlay: 22, bgMotion: true, bgImageUrl: "images/bg-studio.jpg" }
 };
 
-const reduceMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-).matches;
-
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let pageKey = document.body.dataset.page || "home";
-let unsubscribe = () => {};
-let stopMotion = () => {};
 
-function cleanUrl(value = "") {
-  let valueClean = String(value || "").trim();
-
-  if (valueClean.startsWith("//")) {
-    valueClean = `https:${valueClean}`;
-  }
-
-  if (valueClean.startsWith("http://")) {
-    valueClean = `https://${valueClean.slice(7)}`;
-  }
-
-  if (!valueClean) return "";
-
-  if (!/^https?:\/\//i.test(valueClean) && !valueClean.startsWith("data:")) {
-    try {
-      return new URL(valueClean, window.location.href).href;
-    } catch (_) {
-      return valueClean;
-    }
-  }
-
-  return valueClean;
+function youtubeId(url = "") {
+  const m = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
 }
 
-function injectStyles() {
-  if (document.getElementById("gr-page-bg-styles")) return;
+function isVideoFile(url = "") {
+  return /\.(mp4|webm|ogg)(\?|#|$)/i.test(url);
+}
 
-  const style = document.createElement("style");
-  style.id = "gr-page-bg-styles";
+function directUrl(raw = "") {
+  let url = String(raw || "").trim().replace(/^<|>$/g, "").replace(/^['"]|['"]$/g, "");
+  if (!url) return "";
+  if (url.startsWith("//")) url = "https:" + url;
+  if (url.startsWith("http://")) url = "https://" + url.slice(7);
+  let m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (m) return "https://lh3.googleusercontent.com/d/" + m[1] + "=s0";
+  m = url.match(/drive\.google\.com\/(?:open|uc)\?[^#]*id=([^&]+)/);
+  if (m) return "https://lh3.googleusercontent.com/d/" + m[1] + "=s0";
+  if (/dropbox\.com\//.test(url)) {
+    return url.replace("www.dropbox.com", "dl.dropboxusercontent.com").replace(/[?&]dl=0/, "");
+  }
+  m = url.match(/^https?:\/\/(?:www\.)?imgur\.com\/(?:gallery\/|a\/)?([A-Za-z0-9]+)(?:\.[a-z]+)?$/i);
+  if (m) return "https://i.imgur.com/" + m[1] + ".jpg";
+  if (!/^https?:\/\//i.test(url) && !url.startsWith("data:")) {
+    try { url = new URL(url, location.href).href; } catch (_) {}
+  }
+  return url;
+}
 
-  style.textContent = `
-    html.has-page-bg,
-    body.has-page-bg {
-      background: #070912 !important;
-    }
-
-    #page-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-      background: #070912;
-    }
-
-    body.has-page-bg > *:not(#page-bg) {
-      position: relative;
-      z-index: 1;
-    }
-
-    .page-bg__media,
-    .page-bg__fx,
-    .page-bg__overlay,
-    .page-bg__vignette {
-      position: absolute;
-      inset: -4%;
-    }
-
-    .page-bg__media {
-      z-index: 0;
-      background: #070912 center / cover no-repeat;
-      transition: transform 0.2s ease-out;
-    }
-
-    .page-bg__media video,
-    .page-bg__photo {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      background-position: center;
-      background-size: cover;
-    }
-
-    .page-bg__fx {
-      z-index: 1;
-      transition: transform 0.2s ease-out;
-    }
-
-    .page-bg__overlay {
-      z-index: 2;
-    }
-
-    .page-bg__vignette {
-      z-index: 3;
-      background: radial-gradient(
-        ellipse at center,
-        transparent 25%,
-        rgba(0, 0, 0, 0.38) 100%
-      );
-    }
-
-    .page-bg__fx--aurora,
-    .page-bg__fx--cinematic {
-      background:
-        radial-gradient(circle at 18% 18%, rgba(139, 61, 255, 0.48), transparent 36%),
-        radial-gradient(circle at 82% 72%, rgba(27, 207, 255, 0.25), transparent 42%);
-      filter: blur(18px);
-    }
-
-    .page-bg__fx--grid,
-    .page-bg__fx--cinematic {
-      background-image:
-        linear-gradient(rgba(139, 61, 255, 0.13) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(139, 61, 255, 0.13) 1px, transparent 1px);
-      background-size: 44px 44px;
-    }
-
-    .page-bg__fx--particles::before,
-    .page-bg__fx--particles::after {
-      content: "";
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #d6fbff;
-      box-shadow:
-        12vw 18vh 0 rgba(255, 77, 173, 0.75),
-        38vw 62vh 0 rgba(151, 78, 255, 0.75),
-        70vw 24vh 0 rgba(84, 220, 255, 0.7),
-        84vw 76vh 0 rgba(255, 77, 173, 0.6);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .page-bg__media,
-      .page-bg__fx {
-        transition: none !important;
-      }
-    }
+function mountShell() {
+  let el = document.getElementById("page-bg");
+  if (el) {
+    if (el.parentElement !== document.documentElement) document.documentElement.prepend(el);
+    document.body.classList.add("has-page-bg");
+    document.documentElement.classList.add("has-page-bg");
+    return el;
+  }
+  el = document.createElement("div");
+  el.id = "page-bg";
+  el.className = "page-bg";
+  el.setAttribute("aria-hidden", "true");
+  el.innerHTML = `
+    <div class="page-bg__layer" data-depth="media"></div>
+    <div class="page-bg__layer page-bg__fx" data-depth="fx"></div>
+    <canvas class="page-bg__particles" hidden></canvas>
+    <div class="page-bg__overlay"></div>
+    <div class="page-bg__vignette"></div>
   `;
-
-  document.head.appendChild(style);
-}
-
-function mountBackground() {
-  let root = document.getElementById("page-bg");
-
-  if (!root) {
-    root = document.createElement("div");
-    root.id = "page-bg";
-    root.setAttribute("aria-hidden", "true");
-
-    root.innerHTML = `
-      <div class="page-bg__media"></div>
-      <div class="page-bg__fx"></div>
-      <div class="page-bg__overlay"></div>
-      <div class="page-bg__vignette"></div>
-    `;
-
-    document.body.prepend(root);
-  }
-
-  document.documentElement.classList.add("has-page-bg");
+  document.documentElement.prepend(el);
   document.body.classList.add("has-page-bg");
-
-  return root;
+  document.documentElement.classList.add("has-page-bg");
+  return el;
 }
 
-function startParallax(root, enabled) {
-  if (!enabled || reduceMotion) return () => {};
-
-  const media = root.querySelector(".page-bg__media");
-  const fx = root.querySelector(".page-bg__fx");
-
-  let targetX = 0;
-  let targetY = 0;
-  let currentX = 0;
-  let currentY = 0;
-  let animationFrame = 0;
-
-  const onPointerMove = (event) => {
-    targetX = (event.clientX / window.innerWidth - 0.5) * 2;
-    targetY = (event.clientY / window.innerHeight - 0.5) * 2;
-  };
-
-  const tick = () => {
-    currentX += (targetX - currentX) * 0.05;
-    currentY += (targetY - currentY) * 0.05;
-
-    if (media) {
-      media.style.transform =
-        `translate3d(${currentX * -14}px, ${currentY * -10}px, 0) scale(1.04)`;
-    }
-
-    if (fx) {
-      fx.style.transform =
-        `translate3d(${currentX * -8}px, ${currentY * -7}px, 0)`;
-    }
-
-    animationFrame = requestAnimationFrame(tick);
-  };
-
-  window.addEventListener("pointermove", onPointerMove, { passive: true });
-  tick();
-
-  return () => {
-    cancelAnimationFrame(animationFrame);
-    window.removeEventListener("pointermove", onPointerMove);
-  };
-}
-
-function applyBackground(config) {
-  const root = mountBackground();
-
-  const imageUrl = cleanUrl(config.bgImageUrl);
-  const videoUrl = cleanUrl(config.bgVideoUrl);
-
-  const media = root.querySelector(".page-bg__media");
-  const fx = root.querySelector(".page-bg__fx");
-  const overlay = root.querySelector(".page-bg__overlay");
-
-  media.innerHTML = "";
+function renderMedia(layer, cfg) {
+  const videoUrl = directUrl(cfg.bgVideoUrl);
+  const imageUrl = directUrl(cfg.bgImageUrl);
+  const nextKey = videoUrl + "|" + imageUrl;
+  if (layer.dataset.key === nextKey && layer.children.length) return true;
 
   if (videoUrl) {
-    const video = document.createElement("video");
-
-    video.src = videoUrl;
-    video.autoplay = true;
-    video.loop = true;
-    video.muted = true;
-    video.defaultMuted = true;
-    video.playsInline = true;
-
-    video.setAttribute("autoplay", "");
-    video.setAttribute("muted", "");
-    video.setAttribute("loop", "");
-    video.setAttribute("playsinline", "");
-
-    media.appendChild(video);
-    video.play().catch(() => {});
-  } else if (imageUrl) {
-    const image = document.createElement("div");
-    image.className = "page-bg__photo";
-    image.style.backgroundImage = `url("${imageUrl.replace(/"/g, "%22")}")`;
-    media.appendChild(image);
+    const yt = youtubeId(videoUrl);
+    layer.innerHTML = "";
+    layer.dataset.key = nextKey;
+    if (yt) {
+      const wrap = document.createElement("div");
+      wrap.className = "page-bg__yt";
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3`;
+      iframe.allow = "autoplay; encrypted-media";
+      iframe.setAttribute("allowfullscreen", "");
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      wrap.appendChild(iframe);
+      layer.appendChild(wrap);
+      return true;
+    }
+    if (isVideoFile(videoUrl) || /^https?:\/\//i.test(videoUrl)) {
+      const v = document.createElement("video");
+      v.src = videoUrl;
+      v.autoplay = true;
+      v.muted = true;
+      v.defaultMuted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.setAttribute("muted", "");
+      v.setAttribute("playsinline", "");
+      v.setAttribute("autoplay", "");
+      layer.appendChild(v);
+      const tryPlay = () => v.play().catch(() => {});
+      v.addEventListener("canplay", tryPlay, { once: true });
+      tryPlay();
+      if (isVideoFile(videoUrl) || !imageUrl) return true;
+    }
   }
 
-  const styleName = config.bgStyle || "none";
-
-  fx.className = "page-bg__fx";
-
-  if (styleName === "aurora") {
-    fx.classList.add("page-bg__fx--aurora");
+  if (imageUrl) {
+    const incoming = document.createElement("div");
+    incoming.className = "page-bg__photo page-bg__photo--in";
+    incoming.style.backgroundImage = "url(\"" + imageUrl.replace(/\\/g, "/").replace(/"/g, "%22") + "\")";
+    const pic = document.createElement("img");
+    pic.className = "page-bg__photo-img";
+    pic.alt = "";
+    pic.src = imageUrl;
+    pic.decoding = "async";
+    pic.referrerPolicy = "no-referrer";
+    incoming.appendChild(pic);
+    layer.appendChild(incoming);
+    const reveal = () => {
+      incoming.classList.add("is-on");
+      layer.dataset.key = nextKey;
+      window.setTimeout(() => {
+        [...layer.children].forEach((ch) => { if (ch !== incoming) ch.remove(); });
+        incoming.classList.remove("page-bg__photo--in");
+      }, 480);
+    };
+    if (pic.complete && pic.naturalWidth) reveal();
+    else {
+      pic.addEventListener("load", reveal, { once: true });
+      pic.addEventListener("error", reveal, { once: true });
+    }
+    try {
+      document.documentElement.style.backgroundImage = "url(\"" + imageUrl.replace(/"/g, "%22") + "\")";
+      document.documentElement.style.backgroundSize = "cover";
+      document.documentElement.style.backgroundPosition = "center";
+      document.documentElement.style.backgroundAttachment = "fixed";
+    } catch (_) {}
+    return true;
   }
 
-  if (styleName === "grid") {
-    fx.classList.add("page-bg__fx--grid");
-  }
-
-  if (styleName === "cinematic") {
-    fx.classList.add("page-bg__fx--cinematic");
-  }
-
-  if (styleName === "particles") {
-    fx.classList.add("page-bg__fx--particles");
-  }
-
-  let overlayValue = Number(config.bgOverlay);
-
-  if (!Number.isFinite(overlayValue)) {
-    overlayValue = 55;
-  }
-
-  overlayValue = Math.max(0, Math.min(85, overlayValue));
-
-  const overlayOpacity = overlayValue / 100;
-
-  overlay.style.background = `
-    linear-gradient(
-      135deg,
-      rgba(4, 6, 13, ${Math.min(0.92, overlayOpacity + 0.18)}),
-      rgba(5, 7, 14, ${overlayOpacity})
-    )
-  `;
-
-  stopMotion();
-  stopMotion = startParallax(root, config.bgMotion !== false);
+  if (!layer.children.length) layer.innerHTML = "";
+  layer.dataset.key = nextKey;
+  return false;
 }
 
-function saveCache(config) {
+
+function renderFx(fx, style, hasMedia) {
+  fx.innerHTML = "";
+  fx.className = "page-bg__layer page-bg__fx";
+  if (hasMedia) return;
+  if (style === "none" || !style) return;
+  if (style === "grid" || style === "cinematic") fx.classList.add("page-bg__fx--grid");
+  if (style === "aurora" || style === "cinematic") {
+    const a = document.createElement("div");
+    a.className = "page-bg__aurora";
+    fx.appendChild(a);
+  }
+}
+
+function startParticles(canvas, enabled) {
+  if (!enabled) {
+    canvas.hidden = true;
+    return () => {};
+  }
+  canvas.hidden = false;
+  const ctx = canvas.getContext("2d");
+  let w = 0, h = 0, raf = 0;
+  const dots = Array.from({ length: 42 }, () => ({
+    x: Math.random(), y: Math.random(),
+    r: 0.6 + Math.random() * 1.6,
+    s: 0.15 + Math.random() * 0.35,
+    a: 0.18 + Math.random() * 0.4
+  }));
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener("resize", resize);
+  function tick() {
+    ctx.clearRect(0, 0, w, h);
+    dots.forEach((d) => {
+      d.y -= d.s * 0.00035;
+      if (d.y < -0.02) d.y = 1.02;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(198,255,26,${d.a})`;
+      ctx.arc(d.x * w, d.y * h, d.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    raf = requestAnimationFrame(tick);
+  }
+  if (!reduceMotion) raf = requestAnimationFrame(tick);
+  return () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener("resize", resize);
+  };
+}
+
+function startMotion(root, enabled) {
+  const media = root.querySelector("[data-depth=media]");
+  const fx = root.querySelector("[data-depth=fx]");
+  if (!enabled || reduceMotion) return () => {};
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+  const onMove = (e) => {
+    tx = (e.clientX / window.innerWidth - 0.5) * 2;
+    ty = (e.clientY / window.innerHeight - 0.5) * 2;
+  };
+  window.addEventListener("pointermove", onMove, { passive: true });
+  function tick() {
+    cx += (tx - cx) * 0.045;
+    cy += (ty - cy) * 0.045;
+    if (media) media.style.transform = `translate3d(${cx * -18}px, ${cy * -12}px, 0)`;
+    if (fx) fx.style.transform = `translate3d(${cx * -12}px, ${cy * -10}px, 0)`;
+    raf = requestAnimationFrame(tick);
+  }
+  raf = requestAnimationFrame(tick);
+  return () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener("pointermove", onMove);
+  };
+}
+
+let stopMotion = () => {};
+let stopParticles = () => {};
+
+function apply(cfg) {
+  const root = mountShell();
+  const imageUrl = directUrl(cfg.bgImageUrl);
+  const videoUrl = directUrl(cfg.bgVideoUrl);
+  const hasMedia = !!(imageUrl || videoUrl);
+  root.classList.toggle("page-bg--has-media", hasMedia);
+  let overlay = Number(cfg.bgOverlay);
+  if (!Number.isFinite(overlay)) overlay = 28;
+  overlay = Math.max(0, Math.min(80, overlay));
+  const o = overlay / 100;
+  const ov = root.querySelector(".page-bg__overlay");
+  const vig = root.querySelector(".page-bg__vignette");
+  if (hasMedia) {
+    if (ov) ov.style.display = "none";
+    if (vig) vig.style.display = "none";
+  } else {
+    const center = Math.min(0.75, o * 0.85);
+    const edge = Math.min(0.9, o + 0.15);
+    if (ov) ov.style.background = `radial-gradient(ellipse 90% 70% at 50% 38%, rgba(10,13,22,${center}) 0%, rgba(8,10,18,${edge}) 100%)`;
+    if (vig) vig.style.opacity = "1";
+  }
+  renderMedia(root.querySelector("[data-depth=media]"), { bgImageUrl: imageUrl, bgVideoUrl: videoUrl });
+  renderFx(root.querySelector("[data-depth=fx]"), cfg.bgStyle || "aurora", hasMedia);
+  stopMotion();
+  stopParticles();
+  stopMotion = startMotion(root, !hasMedia && cfg.bgMotion !== false);
+  stopParticles = startParticles(
+    root.querySelector(".page-bg__particles"),
+    cfg.bgStyle === "particles"
+  );
+}
+
+function saveCache(cfg) {
   try {
-    const backgrounds = JSON.parse(
-      localStorage.getItem("gr_bgs") || "{}"
-    );
-
-    backgrounds[pageKey] = {
-      image: config.bgImageUrl || "",
-      video: config.bgVideoUrl || "",
-      style: config.bgStyle || "none",
-      overlay: config.bgOverlay,
-      motion: config.bgMotion !== false
+    const all = JSON.parse(localStorage.getItem("gr_bgs") || "{}");
+    all[pageKey] = {
+      image: directUrl(cfg.bgImageUrl) || "",
+      video: directUrl(cfg.bgVideoUrl) || "",
+      style: cfg.bgStyle || "",
+      overlay: cfg.bgOverlay,
+      motion: cfg.bgMotion
     };
-
-    localStorage.setItem("gr_bgs", JSON.stringify(backgrounds));
+    localStorage.setItem("gr_bgs", JSON.stringify(all));
   } catch (_) {}
 }
 
-function getCachedBackground() {
+function loadCache() {
   try {
-    const backgrounds = JSON.parse(
-      localStorage.getItem("gr_bgs") || "{}"
-    );
-
-    const cached = backgrounds[pageKey];
-
-    if (!cached) return null;
-
+    const all = JSON.parse(localStorage.getItem("gr_bgs") || "{}");
+    const c = all[pageKey];
+    if (!c) return null;
     return {
-      bgImageUrl: cached.image || "",
-      bgVideoUrl: cached.video || "",
-      bgStyle: cached.style || "",
-      bgOverlay: cached.overlay,
-      bgMotion: cached.motion !== false
+      bgImageUrl: c.image || "",
+      bgVideoUrl: c.video || "",
+      bgStyle: c.style || "",
+      bgOverlay: c.overlay,
+      bgMotion: c.motion
     };
   } catch (_) {
     return null;
   }
 }
 
-function getConfig(data = {}) {
-  const fallback = DEFAULTS[pageKey] || DEFAULTS.home;
-
-  const savedImage = cleanUrl(
-    data.bgImageUrl || data.imageUrl || data.backgroundUrl || ""
-  );
-
-  const savedVideo = cleanUrl(data.bgVideoUrl || "");
-
-  return {
-    bgImageUrl: savedImage || fallback.bgImageUrl,
-    bgVideoUrl: savedVideo || "",
-    bgStyle: data.bgStyle || fallback.bgStyle,
-    bgOverlay:
-      data.bgOverlay !== undefined &&
-      data.bgOverlay !== null &&
-      data.bgOverlay !== ""
-        ? Number(data.bgOverlay)
-        : fallback.bgOverlay,
-    bgMotion:
-      data.bgMotion !== false &&
-      data.bgMotion !== "false" &&
-      fallback.bgMotion !== false
-  };
-}
-
-function boot() {
+let fallback = DEFAULTS[pageKey] || DEFAULTS.home;
+function bootPageBg() {
   pageKey = document.body.dataset.page || "home";
-
-  injectStyles();
-
-  const fallback = DEFAULTS[pageKey] || DEFAULTS.home;
-  const cached = getCachedBackground();
-
-  applyBackground({
-    ...fallback,
-    ...(cached || {})
-  });
+  fallback = DEFAULTS[pageKey] || DEFAULTS.home;
+  const cached = loadCache();
+  if (cached && (cached.bgImageUrl || cached.bgVideoUrl)) {
+    apply({
+      bgImageUrl: cached.bgImageUrl,
+      bgVideoUrl: cached.bgVideoUrl,
+      bgStyle: cached.bgStyle || fallback.bgStyle,
+      bgOverlay: cached.bgOverlay != null && cached.bgOverlay !== "" ? Number(cached.bgOverlay) : 0,
+      bgMotion: cached.bgMotion !== false
+    });
+  } else {
+    apply(fallback);
+  }
 }
+bootPageBg();
 
-function listenToFirestore() {
-  unsubscribe();
-
-  unsubscribe = onSnapshot(
-    doc(db, "siteContent", pageKey),
-    (snapshot) => {
-      const data = snapshot.exists() ? snapshot.data() : {};
-      const config = getConfig(data);
-
-      saveCache(config);
-      applyBackground(config);
-    },
-    () => {
-      applyBackground(DEFAULTS[pageKey] || DEFAULTS.home);
-    }
-  );
+let unsubPageBg = () => {};
+function listenPageBg() {
+  unsubPageBg();
+  unsubPageBg = onSnapshot(doc(db, "siteContent", pageKey), (snap) => {
+  const d = snap.exists() ? snap.data() : {};
+  let image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
+  let video = (d.bgVideoUrl || "").trim();
+  if (!image && !video) {
+    image = fallback.bgImageUrl || "";
+    video = fallback.bgVideoUrl || "";
+    if (!image && !video && !snap.exists()) return;
+  }
+  const cfg = {
+    bgImageUrl: image,
+    bgVideoUrl: video,
+    bgStyle: d.bgStyle || fallback.bgStyle,
+    bgOverlay: d.bgOverlay != null && d.bgOverlay !== "" ? Number(d.bgOverlay) : (image || video ? 0 : fallback.bgOverlay),
+    bgMotion: d.bgMotion !== false && d.bgMotion !== "false"
+  };
+  saveCache(cfg);
+  apply(cfg);
+}, () => {});
 }
-
-boot();
-listenToFirestore();
-
+listenPageBg();
 window.addEventListener("gr:navigated", () => {
-  boot();
-  listenToFirestore();
+  bootPageBg();
+  listenPageBg();
 });
 
-getDocs(collection(db, "siteContent"))
-  .then((snapshot) => {
-    try {
-      const backgrounds = JSON.parse(
-        localStorage.getItem("gr_bgs") || "{}"
-      );
-
-      snapshot.forEach((documentSnapshot) => {
-        const page = documentSnapshot.id;
-        const data = documentSnapshot.data() || {};
-        const fallback = DEFAULTS[page] || DEFAULTS.home;
-
-        backgrounds[page] = {
-          image:
-            cleanUrl(
-              data.bgImageUrl ||
-              data.imageUrl ||
-              data.backgroundUrl ||
-              ""
-            ) || fallback.bgImageUrl,
-          video: cleanUrl(data.bgVideoUrl || ""),
-          style: data.bgStyle || fallback.bgStyle,
-          overlay:
-            data.bgOverlay !== undefined &&
-            data.bgOverlay !== null &&
-            data.bgOverlay !== ""
-              ? Number(data.bgOverlay)
-              : fallback.bgOverlay,
-          motion:
-            data.bgMotion !== false &&
-            data.bgMotion !== "false" &&
-            fallback.bgMotion !== false
-        };
-      });
-
-      localStorage.setItem("gr_bgs", JSON.stringify(backgrounds));
-    } catch (_) {}
-  })
-  .catch(() => {});
+getDocs(collection(db, "siteContent")).then((snap) => {
+  try {
+    const all = JSON.parse(localStorage.getItem("gr_bgs") || "{}");
+    snap.forEach((docSnap) => {
+      const d = docSnap.data() || {};
+      const image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
+      const video = (d.bgVideoUrl || "").trim();
+      if (!image && !video) return;
+      all[docSnap.id] = {
+        image,
+        video,
+        style: d.bgStyle || "",
+        overlay: d.bgOverlay,
+        motion: d.bgMotion
+      };
+    });
+    localStorage.setItem("gr_bgs", JSON.stringify(all));
+  } catch (_) {}
+}).catch(() => {});
