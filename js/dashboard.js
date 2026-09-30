@@ -1540,7 +1540,6 @@ function initCheckoutCfg() {
     form.querySelector("#ck-tax").value = d.taxPercent ?? 22;
     const sp = form.querySelector("#ck-stripe"); if (sp) sp.value = d.stripePk || "";
     
-    // Imposta lo stato dei metodi di pagamento in base a Firestore (o default)
     const payments = d.payments || { card: true, paypal: true, klarna: false, wallets: false, satispay: false };
     if(document.getElementById("pay-card")) document.getElementById("pay-card").checked = !!payments.card;
     if(document.getElementById("pay-paypal")) document.getElementById("pay-paypal").checked = !!payments.paypal;
@@ -1568,7 +1567,6 @@ function initCheckoutCfg() {
       payments
     }, { merge: true });
 
-    // Salva anche in localStorage per lettura immediata lato client
     try {
       localStorage.setItem("gr_active_payments", JSON.stringify(payments));
     } catch(_) {}
@@ -2431,7 +2429,6 @@ function initForumBoards() {
     toggleContent();
   }
 }
-
 
 // ==========================================================================
 // RUOLI FORUM — Membro default + ruoli extra
