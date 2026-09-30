@@ -1,52 +1,96 @@
 <!DOCTYPE html>
 <html lang="it">
-<div class="dash-panel" id="panel-checkout">
-  <div class="dash-form-card" style="max-width:640px;">
-    <h3>Cassa: spedizione, IVA, pagamenti</h3>
-    <p style="font-size:13px;color:var(--text-dim);">Abilita o disabilita i metodi di pagamento desiderati e configura le impostazioni di cassa.</p>
-    <form id="checkout-cfg-form">
-      <div class="field">
-        <label for="ck-ship">Spedizione fissa (€) — 0 = da confermare</label>
-        <input type="number" id="ck-ship" min="0" step="0.01" value="0">
-      </div>
-      <div class="field">
-        <label for="ck-free">Spedizione gratis sopra (€) — 0 = mai</label>
-        <input type="number" id="ck-free" min="0" step="0.01" value="0">
-      </div>
-      <div class="field">
-        <label for="ck-tax">IVA % (es. 22)</label>
-        <input type="number" id="ck-tax" min="0" step="0.1" value="22">
-      </div>
-      <div class="field">
-        <label for="ck-stripe">Chiave pubblica Stripe (pk_live_… o pk_test_…) per il form carta</label>
-        <input type="text" id="ck-stripe" placeholder="pk_live_...">
-      </div>
-      
-      <h4 style="margin:18px 0 8px;">Metodi di pagamento attivi</h4>
-      <div class="field" style="display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" id="pay-card" checked style="width:auto;">
-        <label for="pay-card" style="margin:0;">Carta di Credito / Debito (Stripe)</label>
-      </div>
-      <div class="field" style="display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" id="pay-paypal" checked style="width:auto;">
-        <label for="pay-paypal" style="margin:0;">PayPal</label>
-      </div>
-      <div class="field" style="display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" id="pay-klarna" style="width:auto;">
-        <label for="pay-klarna" style="margin:0;">Klarna (Paga in 3 rate)</label>
-      </div>
-      <div class="field" style="display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" id="pay-wallets" style="width:auto;">
-        <label for="pay-wallets" style="margin:0;">Apple Pay / Google Pay</label>
-      </div>
-      <div class="field" style="display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" id="pay-satispay" style="width:auto;">
-        <label for="pay-satispay" style="margin:0;">Satispay</label>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin — Gaming Relax</title>
+  <link rel="stylesheet" href="style.css?v=20260921a">
+</head>
+<body class="dash-body">
 
-      <p style="font-size:13px;color:var(--text-dim);margin:12px 0;">Gli sconti si gestiscono da <strong>Voucher</strong>: i codici creati lì valgono in cassa.</p>
-      <button type="submit" class="btn btn--lime">Salva cassa</button>
-      <p class="dash-save-msg" id="ck-status"></p>
-    </form>
+  <!-- Guardia di accesso (Schermata di login/blocco se non sei admin) -->
+  <div id="dashboard-guard" class="dash-guard" style="display:none;"></div>
+
+  <!-- Contenitore principale della Dashboard -->
+  <div id="dashboard-root" style="display:none;">
+    <div class="dash-layout">
+      
+      <!-- Sidebar di navigazione tra i pannelli -->
+      <aside class="dash-sidebar">
+        <div class="dash-sidebar__top">
+          <h2>Gaming Relax</h2>
+          <span id="admin-email" style="font-size:12px;color:var(--text-dim);"></span>
+        </div>
+        <nav class="dash-nav">
+          <button type="button" class="dash-tab active" data-panel="panel-checkout">Cassa & Pagamenti</button>
+          <!-- (Qui ci sono gli altri tab della dashboard) -->
+        </nav>
+        <div class="dash-sidebar__bottom">
+          <a href="#" id="dash-open-site" class="btn btn--outline" style="width:100%;margin-bottom:8px;text-align:center;">Apri il sito ↗</a>
+          <button type="button" id="logout-dash" class="btn btn--outline" style="width:100%;color:#ff8080;border-color:rgba(255,128,128,0.3);">Esci</button>
+        </div>
+      </aside>
+
+      <!-- Area dei contenuti / Pannelli -->
+      <main class="dash-main">
+
+        <!-- Pannello Cassa -->
+        <div class="dash-panel active" id="panel-checkout">
+          <div class="dash-form-card" style="max-width:640px;">
+            <h3>Cassa: spedizione, IVA, pagamenti</h3>
+            <p style="font-size:13px;color:var(--text-dim);">Abilita o disabilita i metodi di pagamento desiderati e configura le impostazioni di cassa.</p>
+            <form id="checkout-cfg-form">
+              <div class="field">
+                <label for="ck-ship">Spedizione fissa (€) — 0 = da confermare</label>
+                <input type="number" id="ck-ship" min="0" step="0.01" value="0">
+              </div>
+              <div class="field">
+                <label for="ck-free">Spedizione gratis sopra (€) — 0 = mai</label>
+                <input type="number" id="ck-free" min="0" step="0.01" value="0">
+              </div>
+              <div class="field">
+                <label for="ck-tax">IVA % (es. 22)</label>
+                <input type="number" id="ck-tax" min="0" step="0.1" value="22">
+              </div>
+              <div class="field">
+                <label for="ck-stripe">Chiave pubblica Stripe (pk_live_… o pk_test_…) per il form carta</label>
+                <input type="text" id="ck-stripe" placeholder="pk_live_...">
+              </div>
+              
+              <h4 style="margin:18px 0 8px;">Metodi di pagamento attivi</h4>
+              <div class="field" style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" id="pay-card" checked style="width:auto;">
+                <label for="pay-card" style="margin:0;">Carta di Credito / Debito (Stripe)</label>
+              </div>
+              <div class="field" style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" id="pay-paypal" checked style="width:auto;">
+                <label for="pay-paypal" style="margin:0;">PayPal</label>
+              </div>
+              <div class="field" style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" id="pay-klarna" style="width:auto;">
+                <label for="pay-klarna" style="margin:0;">Klarna (Paga in 3 rate)</label>
+              </div>
+              <div class="field" style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" id="pay-wallets" style="width:auto;">
+                <label for="pay-wallets" style="margin:0;">Apple Pay / Google Pay</label>
+              </div>
+              <div class="field" style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" id="pay-satispay" style="width:auto;">
+                <label for="pay-satispay" style="margin:0;">Satispay</label>
+              </div>
+
+              <p style="font-size:13px;color:var(--text-dim);margin:12px 0;">Gli sconti si gestiscono da <strong>Voucher</strong>: i codici creati lì valgono in cassa.</p>
+              <button type="submit" class="btn btn--lime">Salva cassa</button>
+              <p class="dash-save-msg" id="ck-status"></p>
+            </form>
+          </div>
+        </div>
+
+      </main>
+    </div>
   </div>
-</div>
+
+  <!-- Script di logica della dashboard -->
+  <script type="module" src="dashboard.js?v=20260921a"></script>
+</body>
+</html>
