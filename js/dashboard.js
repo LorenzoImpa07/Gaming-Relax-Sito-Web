@@ -2529,16 +2529,22 @@ function initUsers() {
     }
     list.innerHTML = visible.map((u) => {
       const isAdmin = String(u.email || "").toLowerCase() === String(ADMIN_EMAIL).toLowerCase();
+      const safeId = u.id || "";
+      const safeEmail = u.email || "";
+      const safeNick = u.nickname || "Utente";
+      const regDate = formatDate(u.createdAt);
+      const loginDate = formatDate(u.lastLoginAt);
+
       return `
       <div class="admin-row">
         <div class="admin-row__info">
-          <strong>${escapeHtml(u.nickname || "Utente")}</strong>
-          <span>${escapeHtml(u.email || "—")} · registrato ${formatDate(u.createdAt)} · ultimo accesso ${formatDate(u.lastLoginAt)}</span>
+          <strong>${escapeHtml(safeNick)}</strong>
+          <span>${escapeHtml(safeEmail)} · registrato ${regDate} · ultimo accesso ${loginDate}</span>
         </div>
         <div class="admin-row__actions">
           ${isAdmin
             ? '<span style="font-size:12px;color:var(--text-dim);">Account admin</span>'
-            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email \vert{}\vert{} "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
+            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${safeId}" data-email="${safeEmail}" data-nick="${safeNick}">Elimina account</button>`}
         </div>
       </div>`;
     }).join("");
