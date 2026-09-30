@@ -1526,6 +1526,9 @@ function initOrders() {
   });
 }
 
+// ==========================================================================
+// CONFIGURAZIONE CASSA / CHECKOUT
+// ==========================================================================
 function initCheckoutCfg() {
   const form = document.getElementById("checkout-cfg-form");
   const statusMsg = document.getElementById("ck-status");
@@ -1540,22 +1543,29 @@ function initCheckoutCfg() {
     const sp = form.querySelector("#ck-stripe"); if (sp) sp.value = d.stripePk || "";
     
     const payments = d.payments || { card: true, paypal: true, klarna: false, wallets: false, satispay: false };
-    if(document.getElementById("pay-card")) document.getElementById("pay-card").checked = !!payments.card;
-    if(document.getElementById("pay-paypal")) document.getElementById("pay-paypal").checked = !!payments.paypal;
-    if(document.getElementById("pay-klarna")) document.getElementById("pay-klarna").checked = !!payments.klarna;
-    if(document.getElementById("pay-wallets")) document.getElementById("pay-wallets").checked = !!payments.wallets;
-    if(document.getElementById("pay-satispay")) document.getElementById("pay-satispay").checked = !!payments.satispay;
-  });
+    
+    const cbCard = document.getElementById("pay-card");
+    const cbPaypal = document.getElementById("pay-paypal");
+    const cbKlarna = document.getElementById("pay-klarna");
+    const cbWallets = document.getElementById("pay-wallets");
+    const cbSatispay = document.getElementById("pay-satispay");
+
+    if (cbCard) cbCard.checked = payments.card !== false;
+    if (cbPaypal) cbPaypal.checked = payments.paypal !== false;
+    if (cbKlarna) cbKlarna.checked = !!payments.klarna;
+    if (cbWallets) cbWallets.checked = !!payments.wallets;
+    if (cbSatispay) cbSatispay.checked = !!payments.satispay;
+  }).catch(() => {});
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     
     const payments = {
-      card: document.getElementById("pay-card")?.checked ?? true,
-      paypal: document.getElementById("pay-paypal")?.checked ?? true,
-      klarna: document.getElementById("pay-klarna")?.checked ?? false,
-      wallets: document.getElementById("pay-wallets")?.checked ?? false,
-      satispay: document.getElementById("pay-satispay")?.checked ?? false
+      card: !!document.getElementById("pay-card")?.checked,
+      paypal: !!document.getElementById("pay-paypal")?.checked,
+      klarna: !!document.getElementById("pay-klarna")?.checked,
+      wallets: !!document.getElementById("pay-wallets")?.checked,
+      satispay: !!document.getElementById("pay-satispay")?.checked
     };
 
     const payload = {
@@ -1570,10 +1580,10 @@ function initCheckoutCfg() {
 
     try {
       localStorage.setItem("gr_active_payments", JSON.stringify(payments));
-    } catch(_) {}
+    } catch (_) {}
 
     if (statusMsg) {
-      statusMsg.textContent = "Cassa salvata con successo.";
+      statusMsg.textContent = "Cassa salvata con successo. I metodi di pagamento ora sono attivi.";
       statusMsg.classList.add("visible");
       setTimeout(() => statusMsg.classList.remove("visible"), 4000);
     }
@@ -2528,7 +2538,7 @@ function initUsers() {
         <div class="admin-row__actions">
           ${isAdmin
             ? '<span style="font-size:12px;color:var(--text-dim);">Account admin</span>'
-            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email || "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
+            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email \vert{}\vert{} "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
         </div>
       </div>`;
     }).join("");
