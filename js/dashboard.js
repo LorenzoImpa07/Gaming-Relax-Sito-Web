@@ -1530,43 +1530,8 @@ function initCheckoutCfg() {
   const form = document.getElementById("checkout-cfg-form");
   const list = document.getElementById("ck-methods");
   const statusMsg = document.getElementById("ck-status");
-  if (!form || !list) return;
+  if (!form) return;
   const ref = doc(db, "siteContent", "checkout");
-  let methods = [];
-
-  function rowHtml(m, i) {
-    return `<div class="ck-row" data-i="${i}" style="display:grid;grid-template-columns:1fr 140px 1fr auto;gap:8px;margin-bottom:8px;align-items:center;">
-      <input type="text" class="ck-name" placeholder="Nome (PayPal, Satispay...)" value="">
-      <select class="ck-type">
-        <option value="paypal">PayPal</option>
-        <option value="stripe">Stripe / carta</option>
-        <option value="link">Link esterno</option>
-        <option value="note">Istruzioni</option>
-      </select>
-      <input type="text" class="ck-url" placeholder="URL o istruzioni">
-      <button type="button" class="btn btn--outline ck-del">✕</button>
-    </div>`;
-  }
-  function paint() {
-    list.innerHTML = methods.map((m, i) => rowHtml(m, i)).join("") || "<p class='empty-hint'>Nessun metodo. Aggiungine uno.</p>";
-    list.querySelectorAll(".ck-row").forEach((row) => {
-      const i = Number(row.dataset.i);
-      row.querySelector(".ck-name").value = methods[i].name || "";
-      row.querySelector(".ck-type").value = methods[i].type || "link";
-      row.querySelector(".ck-url").value = methods[i].url || methods[i].note || "";
-      row.querySelector(".ck-del").addEventListener("click", () => {
-        methods.splice(i, 1);
-        paint();
-      });
-    });
-  }
-  function harvest() {
-    methods = [...list.querySelectorAll(".ck-row")].map((row) => ({
-      name: row.querySelector(".ck-name").value.trim(),
-      type: row.querySelector(".ck-type").value,
-      url: row.querySelector(".ck-url").value.trim()
-    })).filter((m) => m.name);
-  }
 
   getDoc(ref).then((snap) => {
     const d = snap.exists() ? snap.data() : {};
@@ -1574,30 +1539,41 @@ function initCheckoutCfg() {
     form.querySelector("#ck-free").value = d.freeOver ?? 0;
     form.querySelector("#ck-tax").value = d.taxPercent ?? 22;
     const sp = form.querySelector("#ck-stripe"); if (sp) sp.value = d.stripePk || "";
-    methods = Array.isArray(d.methods) && d.methods.length ? d.methods : [
-      { name: "PayPal", type: "paypal", url: "" },
-      { name: "Carta / Stripe", type: "stripe", url: "" }
-    ];
-    paint();
-  });
-
-  document.getElementById("ck-add-method")?.addEventListener("click", () => {
-    harvest();
-    methods.push({ name: "", type: "link", url: "" });
-    paint();
+    
+    // Imposta lo stato dei metodi di pagamento in base a Firestore (o default)
+    const payments = d.payments || { card: true, paypal: true, klarna: false, wallets: false, satispay: false };
+    if(document.getElementById("pay-card")) document.getElementById("pay-card").checked = !!payments.card;
+    if(document.getElementById("pay-paypal")) document.getElementById("pay-paypal").checked = !!payments.paypal;
+    if(document.getElementById("pay-klarna")) document.getElementById("pay-klarna").checked = !!payments.klarna;
+    if(document.getElementById("pay-wallets")) document.getElementById("pay-wallets").checked = !!payments.wallets;
+    if(document.getElementById("pay-satispay")) document.getElementById("pay-satispay").checked = !!payments.satispay;
   });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    harvest();
+    
+    const payments = {
+      card: document.getElementById("pay-card")?.checked ?? true,
+      paypal: document.getElementById("pay-paypal")?.checked ?? true,
+      klarna: document.getElementById("pay-klarna")?.checked ?? false,
+      wallets: document.getElementById("pay-wallets")?.checked ?? false,
+      satispay: document.getElementById("pay-satispay")?.checked ?? false
+    };
+
     await setDoc(ref, {
       shippingFlat: Number(form.querySelector("#ck-ship").value) || 0,
       freeOver: Number(form.querySelector("#ck-free").value) || 0,
       taxPercent: Number(form.querySelector("#ck-tax").value) || 0,
       stripePk: form.querySelector("#ck-stripe")?.value.trim() || "",
-      methods
+      payments
     }, { merge: true });
-    statusMsg.textContent = "Cassa salvata.";
+
+    // Salva anche in localStorage per lettura immediata lato client
+    try {
+      localStorage.setItem("gr_active_payments", JSON.stringify(payments));
+    } catch(_) {}
+
+    statusMsg.textContent = "Cassa salvata con successo.";
     statusMsg.classList.add("visible");
     setTimeout(() => statusMsg.classList.remove("visible"), 4000);
   });
@@ -2552,7 +2528,7 @@ function initUsers() {
         <div class="admin-row__actions">
           ${isAdmin
             ? '<span style="font-size:12px;color:var(--text-dim);">Account admin</span>'
-            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email || "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
+            : `<button type="button" class="btn btn--outline btn-del-user" data-id="${u.id}" data-email="${escapeHtml(u.email \vert{}\vert{} "")}" data-nick="${escapeHtml(u.nickname || "")}">Elimina account</button>`}
         </div>
       </div>`;
     }).join("");
