@@ -36,9 +36,6 @@ let creatorPercent = 0;
 let creatorName = "";
 let currentUser = null;
 let stripe = null;
-let cardNumberEl = null;
-let cardExpiryEl = null;
-let cardCvcEl = null;
 
 onAuthStateChanged(auth, (u) => {
   currentUser = isVerifiedUser(u) ? u : null;
@@ -128,15 +125,17 @@ async function loadStates(country) {
 }
 
 function selectedMethod() {
-  const idx = Number(document.querySelector('input[name="pay"]:checked')?.value || 0);
-  return cfg.methods[idx] || cfg.methods[0] || null;
+  const selectedRadio = document.querySelector('input[name="pay"]:checked');
+  if (!selectedRadio) return cfg.methods[0] || null;
+  const methodId = selectedRadio.value;
+  return cfg.methods.find(m => String(m.id || cfg.methods.indexOf(m)) === String(methodId)) || cfg.methods[0] || null;
 }
 
 function syncCardBox() {
   const m = selectedMethod();
   const box = document.getElementById("co-card-box");
   if (!box) return;
-  const isCard = !!(m && (m.type === "stripe" || /carta|card|stripe|credit/i.test(m.name || "")));
+  const isCard = !!(m && (m.type === "stripe" || m.type === "card" || /carta|card|stripe|credit/i.test(m.name || "")));
   box.hidden = !isCard;
   if (isCard) {
     const n = document.getElementById("card-number");
@@ -167,30 +166,49 @@ async function loadStripe() {
 function renderMethods() {
   const wrap = document.getElementById("co-methods");
   const express = document.getElementById("co-express");
-  const methods = (cfg.methods && cfg.methods.length) ? cfg.methods.slice() : [];
-  if (!methods.some((m) => m.type === "paypal")) methods.unshift({ name: "PayPal", type: "paypal", url: "" });
-  if (!methods.some((m) => m.type === "stripe" || /carta|card|stripe|credit/i.test(m.name || ""))) {
-    methods.push({ name: "Carta di credito", type: "stripe", url: "" });
+  if (!wrap) return;
+
+  let methods = (cfg.methods && cfg.methods.length) ? cfg.methods.slice() : [];
+  if (!methods.length) {
+    methods = [
+      { name: "PayPal", type: "paypal", url: "" },
+      { name: "Carta di credito", type: "stripe", url: "" }
+    ];
   }
   cfg.methods = methods;
-  wrap.innerHTML = methods.map((m, i) => `
+
+  wrap.innerHTML = methods.map((m, i) => {
+    const methodId = m.id || i;
+    return `
     <label class="co-method">
-      <input type="radio" name="pay" value="${i}" ${i === 0 ? "checked" : ""}>
+      <input type="radio" name="pay" value="${methodId}" ${i === 0 ? "checked" : ""}>
       <span>${escapeHtml(m.name)}</span>
-    </label>`).join("");
+    </label>`;
+  }).join("");
+
   wrap.querySelectorAll('input[name="pay"]').forEach((r) => r.addEventListener("change", syncCardBox));
-  express.innerHTML = methods.slice(0, 3).map((m, i) =>
-    `<button type="button" class="co-exp-btn" data-i="${i}">${escapeHtml(m.name)}</button>`
-  ).join("");
-  express.querySelectorAll(".co-exp-btn").forEach((b) => {
-    b.addEventListener("click", () => {
-      const r = wrap.querySelector(`input[value="${b.dataset.i}"]`);
-      if (r) r.checked = true;
-      syncCardBox();
-      if (selectedMethod()?.type === "stripe") document.getElementById("co-card-box")?.scrollIntoView({ behavior: "smooth", block: "center" });
-      else document.getElementById("co-pay")?.scrollIntoView({ behavior: "smooth" });
+
+  if (express) {
+    express.innerHTML = methods.slice(0, 3).map((m, i) => {
+      const methodId = m.id || i;
+      return `<button type="button" class="co-exp-btn" data-id="${methodId}">${escapeHtml(m.name)}</button>`;
+    }).join("");
+
+    express.querySelectorAll(".co-exp-btn").forEach((b) => {
+      b.addEventListener("click", () => {
+        const r = wrap.querySelector(`input[value="${b.dataset.id}"]`);
+        if (r) {
+          r.checked = true;
+          syncCardBox();
+          if (selectedMethod()?.type === "stripe" || selectedMethod()?.type === "card") {
+            document.getElementById("co-card-box")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            document.getElementById("co-pay")?.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      });
     });
-  });
+  }
   syncCardBox();
 }
 
@@ -309,13 +327,12 @@ document.getElementById("co-form")?.addEventListener("submit", async (e) => {
     return;
   }
   const t = totals();
-  const idx = Number(document.querySelector('input[name="pay"]:checked')?.value || 0);
-  const method = (cfg.methods[idx] || cfg.methods[0] || { name: "Da concordare", type: "note" });
+  const method = selectedMethod() || { name: "Da concordare", type: "note" };
   const btn = document.getElementById("co-pay");
   btn.disabled = true;
   let cardMeta = {};
   try {
-    if (method.type === "stripe" || /carta|card|stripe|credit/i.test(method.name || "")) {
+    if (method.type === "stripe" || method.type === "card" || /carta|card|stripe|credit/i.test(method.name || "")) {
       const number = (document.getElementById("card-number")?.value || "").replace(/\s+/g, "");
       const exp = (document.getElementById("card-expiry")?.value || "").replace(/\s+/g, "");
       const cvc = (document.getElementById("card-cvc")?.value || "").trim();
@@ -389,11 +406,11 @@ document.getElementById("co-form")?.addEventListener("submit", async (e) => {
       window.location.href = /paypal\.me/i.test(base) ? `${base}/${amount}` : base;
       return;
     }
-    if (method.type === "stripe") {
-      const link = method.url || items.find((i) => i.paymentLink)?.paymentLink;
-      if (link) { window.location.href = link; return; }
+    if ((method.type === "stripe" || method.type === "card") && method.url) {
+      window.location.href = method.url;
+      return;
     }
-    if (method.type === "link" && method.url) {
+    if (method.url) {
       window.location.href = method.url;
       return;
     }
