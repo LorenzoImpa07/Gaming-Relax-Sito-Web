@@ -7,7 +7,7 @@ function euro(n) {
 }
 
 function esc(s) {
-  return String(s || "").replace(/[&<>"']/g, (m) => ({ "&": "&", "<": "<", ">": ">", '"': """, "'": "&#39;" }[m]));
+  return String(s || "").replace(/[&<>"']/g, (m) => ({ "&": "&", "<": "<", ">": ">", '"': "\"", "'": "&#39;" }[m]));
 }
 
 function render(d) {
@@ -46,18 +46,34 @@ function render(d) {
   });
 }
 
-onAuthStateChanged(auth, async (user) => {
+if (!auth) {
   const box = document.getElementById("creator-box");
-  if (!box) return;
-  if (!isVerifiedUser(user) || !user.email) {
-    box.innerHTML = '<p class="empty-hint">Accedi con l\'account creator per vedere il codice.</p>';
-    return;
-  }
-  try {
-    const snap = await getDoc(doc(db, "creatorPortals", String(user.email).trim().toLowerCase()));
-    const d = snap.exists() ? snap.data() : null;
-    render(d);
-  } catch (_) {
-    render(null);
-  }
-});
+  if (box) box.innerHTML = '<p class="empty-hint">Errore di connessione a Firebase Auth.</p>';
+} else {
+  onAuthStateChanged(auth, async (user) => {
+    const box = document.getElementById("creator-box");
+    if (!box) return;
+    
+    // Controllo di sicurezza se l'utente è loggato
+    if (!user || !user.email) {
+      box.innerHTML = '<p class="empty-hint">Accedi con l\'account creator per vedere il codice.</p>';
+      return;
+    }
+
+    try {
+      // Verifica opzionale tramite isVerifiedUser se definita
+      if (typeof isVerifiedUser === "function" && !isVerifiedUser(user)) {
+        box.innerHTML = '<p class="empty-hint">Account non autorizzato o non verificato.</p>';
+        return;
+      }
+
+      const docRef = doc(db, "creatorPortals", String(user.email).trim().toLowerCase());
+      const snap = await getDoc(docRef);
+      const d = snap.exists() ? snap.data() : null;
+      render(d);
+    } catch (err) {
+      console.error("Errore nel caricamento del portale creator:", err);
+      render(null);
+    }
+  });
+}
