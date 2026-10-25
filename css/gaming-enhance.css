@@ -1,1 +1,179 @@
-PLACEHOLDER_ENHANCE
+/* ==========================================================================
+   2026-10 — Migliorie grafiche: icone, contrasti, Dashboard Gaming, sfondi, carrello
+   ========================================================================== */
+
+:root {
+  --text: #f4f5f7;
+  --text-dim: #a8b0bc;
+  --border: #ffffff22;
+  --card-glow: 0 0 0 1px color-mix(in srgb, var(--lime) 18%, transparent),
+               0 12px 40px -16px color-mix(in srgb, var(--purple) 45%, transparent);
+}
+
+p, .lede, .field-hint, .admin-hint, .empty-hint { color: var(--text-dim); }
+.main-nav a { color: #c8ced8; }
+.main-nav a:hover,
+.main-nav a.active { color: var(--lime); }
+
+.soc-ico {
+  width: 20px; height: 20px;
+  transition: transform .2s ease, filter .2s ease, color .2s ease;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--lime) 35%, transparent));
+}
+.social-link:hover .soc-ico,
+.socials a:hover .soc-ico {
+  transform: scale(1.15) translateY(-1px);
+  filter: drop-shadow(0 0 10px var(--lime));
+  color: var(--lime);
+}
+.social-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  transition: color .2s ease, transform .2s ease;
+}
+.social-link:hover { color: var(--lime); transform: translateX(2px); }
+
+.feature-card__num {
+  font-family: var(--font-display); font-weight: 700; letter-spacing: 0.06em;
+  background: linear-gradient(135deg, var(--purple), var(--lime));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--lime) 40%, transparent);
+}
+.feature-card {
+  border: 1px solid color-mix(in srgb, var(--purple) 22%, transparent);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--purple) 10%, #12162a), #0e1220);
+  box-shadow: var(--card-glow);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .25s ease;
+}
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--lime) 45%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lime) 35%, transparent),
+              0 20px 50px -18px color-mix(in srgb, var(--lime) 40%, transparent);
+}
+
+.btn--lime {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lime) 40%, transparent),
+              0 8px 28px -8px color-mix(in srgb, var(--lime) 55%, transparent);
+}
+.btn--lime:hover {
+  box-shadow: 0 0 0 1px var(--lime),
+              0 12px 36px -8px color-mix(in srgb, var(--lime) 70%, transparent);
+}
+
+/* ==========================================================================
+   2026-10 — Priorità: contrasto, bottoni, dark coerente, focus accessibile
+   ========================================================================== */
+
+:root {
+  --bg: #05070e;
+  --bg-alt: #0a0e18;
+  --text: #f5f7fb;
+  --text-dim: #b4bcc8;
+  --border: rgba(255, 255, 255, 0.14);
+}
+
+html, body {
+  background-color: #05070e;
+  color: var(--text);
+}
+
+/* 1 — Contrasto testo */
+h1, h2, h3, h4, h5, h6,
+.section-title, .hero-title, .product-title, .card-title {
+  color: #ffffff;
+}
+p, .lede, .field-hint, .admin-hint, .empty-hint,
+.meta, .muted, .subtitle, .card-meta, small {
+  color: var(--text-dim);
+}
+.main-nav a { color: #d0d6e0; }
+label, .field label { color: #e8ecf2; }
+input, select, textarea {
+  color: #f5f7fb !important;
+  background-color: #0a0e18;
+}
+input::placeholder, textarea::placeholder {
+  color: rgba(180, 188, 200, 0.7);
+}
+
+/* 4 — Gerarchia bottoni */
+.btn {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease, color .2s ease;
+}
+.btn--lime,
+button.btn--lime,
+a.btn--lime {
+  background: linear-gradient(135deg, #ff4dad 0%, #8b3dff 55%, #50c8ff 120%) !important;
+  color: #fff !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 77, 173, 0.35),
+    0 10px 28px -8px rgba(255, 77, 173, 0.55);
+}
+.btn--lime:hover,
+.btn--lime:focus-visible {
+  filter: brightness(1.08);
+  box-shadow:
+    0 0 0 1px #ff4dad,
+    0 14px 36px -8px rgba(255, 77, 173, 0.7);
+  transform: translateY(-2px);
+}
+.btn--outline,
+button.btn--outline,
+a.btn--outline {
+  background: transparent !important;
+  color: #f0f3f8 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: none !important;
+}
+.btn--outline:hover,
+.btn--outline:focus-visible {
+  border-color: #ff4dad !important;
+  color: #ff4dad !important;
+  background: rgba(255, 77, 173, 0.08) !important;
+  transform: translateY(-2px);
+}
+.btn--ghost-lime {
+  background: transparent !important;
+  color: #ff4dad !important;
+  border: 1.5px solid rgba(255, 77, 173, 0.45) !important;
+}
+.btn--ghost-lime:hover {
+  background: rgba(255, 77, 173, 0.12) !important;
+  border-color: #ff4dad !important;
+}
+
+/* 16 — Focus accessibile */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid #ff4dad !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(255, 77, 173, 0.25) !important;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.dash-search:focus-visible {
+  border-color: #ff4dad !important;
+  outline: 2px solid rgba(255, 77, 173, 0.55) !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 4px rgba(139, 61, 255, 0.2) !important;
+}
+a:focus-visible,
+.icon-btn:focus-visible,
+.dash-tab:focus-visible,
+.filter-pill:focus-visible {
+  outline: 2px solid #ff4dad !important;
+  outline-offset: 3px !important;
+}
+
+/* 15 — Superfici scure coerenti */
+.site-header,
+.site-footer,
+.card, .feature-card, .product-card, .admin-row,
+.dash-stat, .auth-card, .cart-summary {
+  background-color: color-mix(in srgb, #0a0e18 92%, transparent);
+}
