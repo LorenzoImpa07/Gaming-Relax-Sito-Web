@@ -8,6 +8,24 @@
   (document.head || document.documentElement).appendChild(l);
 })();
 
+// Dashboard PRO — command center visual
+(function () {
+  if (typeof document === "undefined") return;
+  var page = document.body && document.body.getAttribute("data-page");
+  if (page !== "dashboard") return;
+  if (!document.querySelector("link[data-gr-dash-pro]")) {
+    var l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = "css/dashboard-pro.css?v=20261025a";
+    l.setAttribute("data-gr-dash-pro", "1");
+    (document.head || document.documentElement).appendChild(l);
+  }
+  var s = document.createElement("script");
+  s.src = "js/dashboard-ui-pro.js?v=20261025a";
+  s.defer = true;
+  (document.body || document.documentElement).appendChild(s);
+})();
+
 // Sfondi admin (zone + colore) — solo in Dashboard
 if (typeof document !== "undefined" && document.getElementById("bg-form")) {
   import("./bg-admin-enhance.js?v=20261025a").catch(function () {});
@@ -37,8 +55,8 @@ import { validateRealEmailAsync } from "./email-check.js";
 const MIN_AGE = 14;
 
 const ERROR_MESSAGES = {
-  "auth/email-already-in-use": "Questa email è già registrata. Prova ad accedere.",
-  "auth/invalid-email": "L'indirizzo email non è valido.",
+  "auth/email-already-in-use": "Questa email e gia registrata. Prova ad accedere.",
+  "auth/invalid-email": "L'indirizzo email non e valido.",
   "auth/weak-password": "La password deve avere almeno 6 caratteri.",
   "auth/invalid-credential": "Email o password errati.",
   "auth/user-not-found": "Nessun account trovato con questa email.",
@@ -46,11 +64,11 @@ const ERROR_MESSAGES = {
   "auth/too-many-requests": "Troppi tentativi. Riprova tra qualche minuto.",
   "auth/missing-password": "Inserisci una password.",
   "auth/missing-email": "Inserisci un indirizzo email.",
-  "auth/popup-closed-by-user": "La finestra di accesso con Google è stata chiusa prima di completare l'operazione."
+  "auth/popup-closed-by-user": "La finestra di accesso con Google e stata chiusa prima di completare l'operazione."
 };
 
 function messageFromError(err) {
-  return ERROR_MESSAGES[err.code] || "Si è verificato un errore. Riprova.";
+  return ERROR_MESSAGES[err.code] || "Si e verificato un errore. Riprova.";
 }
 
 function getDisplayName(user) {
@@ -218,7 +236,7 @@ function bindAuthForms() {
         const cred = await signInWithEmailAndPassword(auth, email, password);
         if (await isBanned(cred.user)) {
           await signOut(auth);
-          errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere.";
+          errorEl.textContent = "Questo account e stato rimosso. Non e piu possibile accedere.";
           errorEl.classList.add("visible");
           return;
         }
@@ -280,7 +298,7 @@ function bindAuthForms() {
         registerForm.style.display = "none";
         errorEl.classList.remove("visible");
         if (okEl) {
-          okEl.innerHTML = "Account creato. Ti abbiamo inviato un'email di conferma a <strong>" + email.replace(/</g, "") + "</strong>. Apri il link per attivare l'account, poi <a href=\"login.html\">accedi</a>. Controlla anche lo spam.";
+          okEl.innerHTML = "Account creato. Ti abbiamo inviato un'email di conferma. Apri il link per attivare l'account, poi <a href=\"login.html\">accedi</a>. Controlla anche lo spam.";
           okEl.classList.add("visible");
         } else {
           window.location.href = "login.html";
@@ -304,7 +322,7 @@ function bindAuthForms() {
         const cred = await signInWithPopup(auth, provider);
         if (await isBanned(cred.user)) {
           await signOut(auth);
-          if (errorEl) { errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere."; errorEl.classList.add("visible"); }
+          if (errorEl) { errorEl.textContent = "Questo account e stato rimosso."; errorEl.classList.add("visible"); }
           return;
         }
         await saveUserRecord(cred.user, {
@@ -341,12 +359,12 @@ function bindAuthForms() {
       try {
         await sendPasswordResetEmail(auth, email, { url: "https://gamingrelaxofficials.it/login.html", handleCodeInApp: false });
         msgEl.className = "auth-ok visible";
-        msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Apri il messaggio e usa il link per scegliere una nuova password. Controlla anche Spam.";
+        msgEl.textContent = "Ti abbiamo inviato l'email. Controlla anche Spam.";
         forgotForm.reset();
       } catch (err) {
         if (err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
           msgEl.className = "auth-ok visible";
-          msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Controlla anche Spam.";
+          msgEl.textContent = "Ti abbiamo inviato l'email. Controlla anche Spam.";
         } else {
           msgEl.className = "auth-error visible";
           msgEl.textContent = messageFromError(err);
@@ -363,13 +381,13 @@ function bindAuthForms() {
     const msgEl = document.getElementById("reset-msg");
     const emailEl = document.getElementById("reset-email-hint");
     if (!oobCode) {
-      if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link non valido. Richiedi di nuovo il reset da Accedi → Password dimenticata."; }
+      if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link non valido."; }
       resetForm.querySelectorAll("input,button").forEach((el) => { el.disabled = true; });
     } else {
       verifyPasswordResetCode(auth, oobCode).then((mail) => {
         if (emailEl) emailEl.textContent = "Account: " + mail;
       }).catch(() => {
-        if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link scaduto o già usato. Richiedi un nuovo reset."; }
+        if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link scaduto o gia usato."; }
       });
       resetForm.addEventListener("submit", async (e) => {
         e.preventDefault();
