@@ -8,7 +8,6 @@
 <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gaming Relax">
 <meta property="og:title" content="Store — Gaming Relax">
@@ -46,6 +45,7 @@
       <a href="contatti.html">Contatti</a>
     </nav>
     <div class="header-actions">
+      <a href="carrello.html" id="cart-open" class="icon-btn cart-btn" aria-label="Carrello"><span class="cart-btn__ico" aria-hidden="true">&#128722;</span><span class="cart-btn__count" hidden>0</span></a>
       <span id="auth-area"></span>
       <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -57,36 +57,20 @@
 <section class="store-hero">
   <div class="container">
     <span class="eyebrow eyebrow--purple" data-edit="eyebrow">Esplora lo Store</span>
-    <h1 data-edit="title">Hardware &amp; Accessori</h1>
+    <h1 data-edit="title">Hardware e Accessori</h1>
     <p class="lede" style="margin:18px auto 0;" data-edit="subtitle">Sfoglia tastiere, keycaps, switch e accessori per il tuo desk setup. Ogni prodotto ha un link di pagamento sicuro per l'acquisto immediato, oppure puoi richiedere un preventivo su misura.</p>
     <div class="trust-bar">
       <article class="trust-item">
-        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 4h13v9h-2.2a3 3 0 0 0-5.6 0H6v-2H3V4zm0 9h1.2a3 3 0 0 0 5.6 0h3.4a3 3 0 0 0 5.6 0H21v3a1 1 0 0 1-1 1h-1.2a3 3 0 0 1-5.6 0H11a3 3 0 0 1-5.6 0H3a1 1 0 0 1-1-1v-3h1zm16-7h2.6L24 9.4V13h-2.2a3 3 0 0 0-5.6 0H16V6h3zM7 16.5A1.5 1.5 0 1 0 7 19a1.5 1.5 0 0 0 0-2.5zm10 0A1.5 1.5 0 1 0 17 19a1.5 1.5 0 0 0 0-2.5z"/></svg>
-        <div>
-          <strong>Spedizione rapida</strong>
-          <span>Tracciata in Italia e UE</span>
-        </div>
+        <div><strong>Spedizione rapida</strong><span>Tracciata in Italia e UE</span></div>
       </article>
       <article class="trust-item">
-        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5.2 3.4 10 8 11 4.6-1 8-5.8 8-11V5l-8-3zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.5-4.5 1.4 1.4-5.9 5.9z"/></svg>
-        <div>
-          <strong>Pagamenti sicuri</strong>
-          <span>Stripe e PayPal, IVA inclusa</span>
-        </div>
+        <div><strong>Pagamenti sicuri</strong><span>Stripe e PayPal, IVA inclusa</span></div>
       </article>
       <article class="trust-item">
-        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.5-4.5 1.4 1.4z"/></svg>
-        <div>
-          <strong>Handmade</strong>
-          <span>Assemblate e testate a mano</span>
-        </div>
+        <div><strong>Handmade</strong><span>Assemblate e testate a mano</span></div>
       </article>
       <article class="trust-item">
-        <svg class="trust-item__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8l-4 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6v2h10V9H7z"/></svg>
-        <div>
-          <strong>Supporto diretto</strong>
-          <span>Discord e email, risposta in 24h</span>
-        </div>
+        <div><strong>Supporto diretto</strong><span>Discord e email, risposta in 24h</span></div>
       </article>
     </div>
   </div>
@@ -94,28 +78,25 @@
 
 <section>
   <div class="container">
-
     <div class="store-layout">
       <aside class="store-aside">
         <div class="store-facet">
-          <h4>Disponibilità</h4>
+          <h4>Disponibilita</h4>
           <label><input type="checkbox" id="flt-in" checked> Disponibile (<span id="cnt-in">0</span>)</label>
           <label><input type="checkbox" id="flt-out" checked> Esaurito (<span id="cnt-out">0</span>)</label>
         </div>
         <div class="store-facet">
           <h4>Prezzo</h4>
-          <div class="store-price-labs"><span id="price-min-lab">€ 0</span><span id="price-max-lab">€ 0</span></div>
+          <div class="store-price-labs"><span id="price-min-lab">EUR 0</span><span id="price-max-lab">EUR 0</span></div>
           <input type="range" id="flt-price" min="0" max="500" value="500" step="1">
         </div>
       </aside>
       <div>
-    <div class="filter-row" id="store-filters"></div>
-
-    <div class="product-grid" id="product-grid">
-      <p style="text-align:center;grid-column:1/-1;color:var(--text-dim);">Caricamento prodotti…</p>
-    </div>
-
-    <p style="text-align:center;margin-top:40px;font-size:14px;" data-edit="footNote">I prodotti sono gestiti dallo staff tramite la Dashboard e aggiornati automaticamente qui.</p>
+        <div class="filter-row" id="store-filters"></div>
+        <div class="product-grid" id="product-grid">
+          <p style="text-align:center;grid-column:1/-1;color:var(--text-dim);">Caricamento prodotti…</p>
+        </div>
+        <p style="text-align:center;margin-top:40px;font-size:14px;" data-edit="footNote">I prodotti sono gestiti dallo staff tramite la Dashboard e aggiornati automaticamente qui.</p>
       </div>
     </div>
   </div>
@@ -140,7 +121,7 @@
     <div class="footer-grid">
       <div>
         <div class="footer-brand"><span class="brand__logo"><img src="images/logo.png" alt="Gaming Relax logo"></span> <span class="brand__name">Gaming Relax</span></div>
-        <p>Custom Keyboards &amp; Digital Craftsmanship.</p>
+        <p>Custom Keyboards e Digital Craftsmanship.</p>
       </div>
       <div class="footer-col">
         <h4>Link utili</h4>
@@ -149,42 +130,30 @@
         <a href="privacy.html">Privacy Policy</a>
         <a href="cookies.html">Cookies</a>
         <a href="chi-siamo.html">Chi siamo</a>
-        
       </div>
       <div class="footer-col">
-        <h4>Orari di supporto &amp; disponibilità</h4>
+        <h4>Orari di supporto</h4>
         <p data-general="hoursWeekday">Lun - Ven: 10:00 - 19:00</p>
         <p data-general="hoursWeekend">Sab - Dom: Su appuntamento</p>
         <a href="mailto:gamingrelaxofficials@gmail.com" data-social="email">gamingrelaxofficials@gmail.com</a>
-
       </div>
       <div class="footer-col">
         <h4>Community</h4>
         <p>Unisciti al nostro server per news, setup e supporto diretto.</p>
-        <a class="social-link" href="https://discord.gg/5MxfYT7C5f" target="_blank" rel="noopener" data-social="discord"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M19.54 5.16A16.9 16.9 0 0 0 15.26 4c-.2.36-.43.85-.59 1.23a15.4 15.4 0 0 0-5.34 0A10.6 10.6 0 0 0 8.74 4 16.9 16.9 0 0 0 4.46 5.16C1.73 9.3.96 13.32 1.33 17.24c2.18 1.61 4.3 2.58 6.37 3.21l.81-1.4a12.4 12.4 0 0 1-1.96-.94l.38-.3c3.92 1.82 8.17 1.82 12.04 0l.39.3c-.62.37-1.28.68-1.96.94l.81 1.4c2.07-.63 4.19-1.6 6.37-3.21.44-4.54-.73-8.52-3.48-12.08zM8.68 14.72c-1.04 0-1.9-.96-1.9-2.13s.84-2.14 1.9-2.14 1.91.96 1.9 2.14c0 1.17-.84 2.13-1.9 2.13zm6.64 0c-1.04 0-1.9-.96-1.9-2.13s.84-2.14 1.9-2.14 1.91.96 1.9 2.14c0 1.17-.83 2.13-1.9 2.13z"/></svg> Entra su Discord</a>
-        <a class="social-link" href="https://www.youtube.com/@gamingrelaxofficials" target="_blank" rel="noopener" data-social="youtube"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.8 15.5V8.5L16 12l-6.2 3.5z"/></svg> Seguici su YouTube</a>
-        <a class="social-link" href="https://www.instagram.com/gamingrelaxofficials/" target="_blank" rel="noopener" data-social="instagram"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.8 6.2a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"/></svg> Seguici su Instagram</a>
-        <a class="social-link" href="https://www.tiktok.com/@gamingrelaxofficials?_r=1&_t=ZN-99DS7emVF8Y" target="_blank" rel="noopener" data-social="tiktok"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M14.5 3c.4 3.2 2.1 5.2 5.2 5.5v3.1c-1.8.2-3.4-.3-5.2-1.4v6.6c0 4.4-3.2 7.2-7.3 7.2A7 7 0 0 1 7.5 10c.9 0 1.8.2 2.5.6v3.2a3.6 3.6 0 0 0-1.5-.3 3.2 3.2 0 1 0 3.2 3.2V3h3.8z"/></svg> Seguici su TikTok</a>
+        <a class="social-link" href="https://discord.gg/5MxfYT7C5f" target="_blank" rel="noopener" data-social="discord">Entra su Discord</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <small data-footer="copy">Copyright © 2026 Gaming Relax. Tutti i diritti riservati.</small>
-      <div class="socials">
-        <a href="https://www.youtube.com/@gamingrelaxofficials" target="_blank" rel="noopener" aria-label="YouTube" data-social="youtube"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.8 15.5V8.5L16 12l-6.2 3.5z"/></svg></a>
-        <a href="https://www.instagram.com/gamingrelaxofficials/" target="_blank" rel="noopener" aria-label="Instagram" data-social="instagram"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.8 6.2a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"/></svg></a>
-        <a href="https://www.tiktok.com/@gamingrelaxofficials?_r=1&_t=ZN-99DS7emVF8Y" target="_blank" rel="noopener" aria-label="TikTok" data-social="tiktok"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M14.5 3c.4 3.2 2.1 5.2 5.2 5.5v3.1c-1.8.2-3.4-.3-5.2-1.4v6.6c0 4.4-3.2 7.2-7.3 7.2A7 7 0 0 1 7.5 10c.9 0 1.8.2 2.5.6v3.2a3.6 3.6 0 0 0-1.5-.3 3.2 3.2 0 1 0 3.2 3.2V3h3.8z"/></svg></a>
-        <a href="https://discord.gg/5MxfYT7C5f" target="_blank" rel="noopener" aria-label="Discord" data-social="discord"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M19.54 5.16A16.9 16.9 0 0 0 15.26 4c-.2.36-.43.85-.59 1.23a15.4 15.4 0 0 0-5.34 0A10.6 10.6 0 0 0 8.74 4 16.9 16.9 0 0 0 4.46 5.16C1.73 9.3.96 13.32 1.33 17.24c2.18 1.61 4.3 2.58 6.37 3.21l.81-1.4a12.4 12.4 0 0 1-1.96-.94l.38-.3c3.92 1.82 8.17 1.82 12.04 0l.39.3c-.62.37-1.28.68-1.96.94l.81 1.4c2.07-.63 4.19-1.6 6.37-3.21.44-4.54-.73-8.52-3.48-12.08zM8.68 14.72c-1.04 0-1.9-.96-1.9-2.13s.84-2.14 1.9-2.14 1.91.96 1.9 2.14c0 1.17-.84 2.13-1.9 2.13zm6.64 0c-1.04 0-1.9-.96-1.9-2.13s.84-2.14 1.9-2.14 1.91.96 1.9 2.14c0 1.17-.83 2.13-1.9 2.13z"/></svg></a>
-        <a href="mailto:gamingrelaxofficials@gmail.com" aria-label="Email" data-social="email"><svg class="soc-ico" viewBox="0 0 24 24" overflow="visible" aria-hidden="true"><path fill="currentColor" d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 2v.4l9 5.6 9-5.6V7H3zm18 10V9.2l-8.4 5.2a1.2 1.2 0 0 1-1.2 0L3 9.2V17h18z"/></svg></a>
-      </div>
+      <small data-footer="copy">Copyright 2026 Gaming Relax. Tutti i diritti riservati.</small>
     </div>
   </div>
 </footer>
 
 <script src="js/script.js?v=20260920q"></script>
 <script type="module" src="js/firebase-init.js?v=20260920n"></script>
-<script type="module" src="js/cart.js?v=20260920al"></script>
+<script type="module" src="js/cart.js?v=20261025e"></script>
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
-<script type="module" src="js/auth.js?v=20260920aq"></script>
+<script type="module" src="js/auth.js?v=20261025c"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
 <script type="module" src="js/content-dynamic.js?v=20260920ao"></script>
 <script type="module" src="js/store-dynamic.js?v=20260921a"></script>
