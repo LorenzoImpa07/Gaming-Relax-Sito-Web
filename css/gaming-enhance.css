@@ -46,7 +46,6 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
   transform: translateX(2px);
 }
 
-/* Icone feature card e numeri più "gaming" */
 .feature-card__num {
   font-family: var(--font-display);
   font-weight: 700;
@@ -70,7 +69,6 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
               0 20px 50px -18px color-mix(in srgb, var(--lime) 40%, transparent);
 }
 
-/* Bottoni più definiti e con glow leggero */
 .btn--lime {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--lime) 40%, transparent),
               0 8px 28px -8px color-mix(in srgb, var(--lime) 55%, transparent);
@@ -87,7 +85,6 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
   box-shadow: 0 0 20px -6px color-mix(in srgb, var(--lime) 50%, transparent);
 }
 
-/* Icon-btn account più curato */
 .icon-btn {
   border: 1px solid color-mix(in srgb, var(--lime) 30%, transparent);
   background: linear-gradient(145deg, #1a1f32, #12162a);
@@ -100,7 +97,6 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
   box-shadow: 0 0 18px -4px color-mix(in srgb, var(--lime) 55%, transparent);
 }
 
-/* Discord floating button più gaming */
 .floating-discord {
   box-shadow: 0 0 0 1px color-mix(in srgb, #5865F2 50%, transparent),
               0 10px 30px -8px rgba(88,101,242,.55);
@@ -128,8 +124,7 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
 .dash-stat {
   border: 1px solid color-mix(in srgb, var(--purple) 35%, transparent);
   border-top: 2px solid var(--lime);
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--purple) 14%, #14182a), #0f1320);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--purple) 14%, #14182a), #0f1320);
   box-shadow: 0 8px 28px -16px color-mix(in srgb, var(--purple) 50%, transparent);
   position: relative;
   overflow: hidden;
@@ -155,10 +150,8 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
 
 .dash-sidebar {
   border: 1px solid color-mix(in srgb, var(--purple) 28%, transparent);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--purple) 10%, #12162a), #0c101c);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04),
-              0 16px 40px -24px rgba(0,0,0,.7);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--purple) 10%, #12162a), #0c101c);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 16px 40px -24px rgba(0,0,0,.7);
 }
 .dash-sidebar__label {
   color: color-mix(in srgb, var(--lime) 75%, #fff);
@@ -188,8 +181,7 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
 
 .dash-form-card {
   border: 1px solid color-mix(in srgb, var(--purple) 25%, transparent);
-  background:
-    linear-gradient(160deg, color-mix(in srgb, var(--purple) 8%, #14182a), #0e1220);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--purple) 8%, #14182a), #0e1220);
   box-shadow: var(--card-glow);
   position: relative;
 }
@@ -203,10 +195,7 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lime) 50%, transparent), transparent);
   opacity: .7;
 }
-.dash-form-card h3 {
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
+.dash-form-card h3 { color: var(--text); letter-spacing: -0.01em; }
 
 .admin-row {
   border: 1px solid color-mix(in srgb, var(--purple) 18%, transparent);
@@ -218,7 +207,6 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
   box-shadow: 0 8px 24px -14px color-mix(in srgb, var(--lime) 30%, transparent);
 }
 
-/* Input dashboard più gaming */
 #dashboard-root input[type="text"],
 #dashboard-root input[type="email"],
 #dashboard-root input[type="number"],
@@ -278,20 +266,38 @@ p, .lede, .field-hint, .admin-hint, .empty-hint {
   color: var(--text);
   box-shadow: 0 0 16px -8px color-mix(in srgb, var(--lime) 40%, transparent);
 }
-.bg-zone-option strong {
-  color: var(--text);
-  font-size: 14px;
-}
+.bg-zone-option strong { color: var(--text); font-size: 14px; }
 .bg-zone-option input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-/* Preview sfondo più grande */
 #bg-preview.file-preview {
   max-height: 180px;
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--purple) 25%, transparent);
   margin-top: 10px;
+}
+
+/* --- Zone sfondi (rendering) --- */
+.page-bg--zone-full { inset: 0; }
+.page-bg--zone-hero {
+  inset: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(72vh, 640px);
+  bottom: auto;
+}
+.page-bg--zone-content {
+  inset: auto;
+  top: 78px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+@media (max-width: 980px) {
+  .page-bg--zone-content { top: 64px; }
+  .page-bg--zone-hero { height: min(58vh, 480px); }
 }
