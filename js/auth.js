@@ -3,7 +3,7 @@
   if (typeof document === "undefined" || document.querySelector("link[data-gr-enhance]")) return;
   var l = document.createElement("link");
   l.rel = "stylesheet";
-  l.href = "css/gaming-enhance.css?v=20261025b";
+  l.href = "css/gaming-enhance.css?v=20261025c";
   l.setAttribute("data-gr-enhance", "1");
   (document.head || document.documentElement).appendChild(l);
 })();
@@ -103,7 +103,6 @@ async function isBanned(user) {
 function renderAuthArea(user, extra = {}) {
   const area = document.getElementById("auth-area");
   if (!area) return;
-
   if (user) {
     const isAdmin = isAdminEmail(user.email);
     const nickname = getDisplayName(user);
@@ -121,7 +120,6 @@ function renderAuthArea(user, extra = {}) {
           <button type="button" data-action="logout">Esci</button>
         </div>
       </div>`;
-
     const trigger = area.querySelector(".auth-menu__trigger");
     const menu = area.querySelector(".auth-menu");
     const dropdown = area.querySelector(".auth-menu__dropdown");
@@ -132,7 +130,6 @@ function renderAuthArea(user, extra = {}) {
     });
     dropdown.addEventListener("click", (e) => e.stopPropagation());
     document.addEventListener("click", () => menu.classList.remove("open"));
-
     area.querySelector('[data-action="logout"]').addEventListener("click", () => {
       signOut(auth).then(() => { window.location.href = "index.html"; });
     });
@@ -167,10 +164,7 @@ async function loadCreatorPortal(user) {
 }
 
 async function refreshAuthMenu(user) {
-  if (!user) {
-    renderAuthArea(null);
-    return;
-  }
+  if (!user) { renderAuthArea(null); return; }
   let creator = null;
   try {
     const cached = JSON.parse(sessionStorage.getItem("gr_creator") || "null");
@@ -219,7 +213,6 @@ function bindAuthForms() {
       const password = loginForm.querySelector("#login-password").value;
       const errorEl = document.getElementById("login-error");
       errorEl.classList.remove("visible");
-
       try {
         await authReady;
         const cred = await signInWithEmailAndPassword(auth, email, password);
@@ -261,71 +254,24 @@ function bindAuthForms() {
       const terms = registerForm.querySelector("#register-terms");
       const errorEl = document.getElementById("register-error");
       errorEl.classList.remove("visible");
-
-      if (nickname.length < 2) {
-        errorEl.textContent = "Il nickname deve avere almeno 2 caratteri.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      if (!firstName) {
-        errorEl.textContent = "Inserisci il tuo nome.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      if (!birthdate) {
-        errorEl.textContent = "Inserisci la data di nascita.";
-        errorEl.classList.add("visible");
-        return;
-      }
+      if (nickname.length < 2) { errorEl.textContent = "Il nickname deve avere almeno 2 caratteri."; errorEl.classList.add("visible"); return; }
+      if (!firstName) { errorEl.textContent = "Inserisci il tuo nome."; errorEl.classList.add("visible"); return; }
+      if (!birthdate) { errorEl.textContent = "Inserisci la data di nascita."; errorEl.classList.add("visible"); return; }
       const age = calcAge(birthdate);
-      if (age === null) {
-        errorEl.textContent = "Data di nascita non valida.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      if (age < MIN_AGE) {
-        errorEl.textContent = "Devi avere almeno " + MIN_AGE + " anni per registrarti.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      if (password.length < 6) {
-        errorEl.textContent = "La password deve avere almeno 6 caratteri.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      if (password !== password2) {
-        errorEl.textContent = "Le due password non coincidono.";
-        errorEl.classList.add("visible");
-        return;
-      }
-      if (terms && !terms.checked) {
-        errorEl.textContent = "Devi accettare i Termini e Condizioni e la Privacy Policy.";
-        errorEl.classList.add("visible");
-        return;
-      }
-
+      if (age === null) { errorEl.textContent = "Data di nascita non valida."; errorEl.classList.add("visible"); return; }
+      if (age < MIN_AGE) { errorEl.textContent = "Devi avere almeno " + MIN_AGE + " anni per registrarti."; errorEl.classList.add("visible"); return; }
+      if (password.length < 6) { errorEl.textContent = "La password deve avere almeno 6 caratteri."; errorEl.classList.add("visible"); return; }
+      if (password !== password2) { errorEl.textContent = "Le due password non coincidono."; errorEl.classList.add("visible"); return; }
+      if (terms && !terms.checked) { errorEl.textContent = "Devi accettare i Termini e Condizioni e la Privacy Policy."; errorEl.classList.add("visible"); return; }
       const emailErr = await validateRealEmailAsync(email);
-      if (emailErr) {
-        errorEl.textContent = emailErr;
-        errorEl.classList.add("visible");
-        return;
-      }
-
+      if (emailErr) { errorEl.textContent = emailErr; errorEl.classList.add("visible"); return; }
       try {
         await authReady;
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName: nickname });
         await saveUserRecord(cred.user, {
-          nickname,
-          firstName,
-          lastName,
-          birthdate,
-          age,
-          email,
-          createdAt: serverTimestamp(),
-          roleIds: [],
-          needsEmailVerify: true,
-          emailVerified: false,
+          nickname, firstName, lastName, birthdate, age, email,
+          createdAt: serverTimestamp(), roleIds: [], needsEmailVerify: true, emailVerified: false,
           acceptedTermsAt: serverTimestamp()
         });
         try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
@@ -337,7 +283,6 @@ function bindAuthForms() {
           okEl.innerHTML = "Account creato. Ti abbiamo inviato un'email di conferma a <strong>" + email.replace(/</g, "") + "</strong>. Apri il link per attivare l'account, poi <a href=\"login.html\">accedi</a>. Controlla anche lo spam.";
           okEl.classList.add("visible");
         } else {
-          errorEl.style.display = "none";
           window.location.href = "login.html";
         }
       } catch (err) {
@@ -353,33 +298,22 @@ function bindAuthForms() {
     googleLoginBtn.addEventListener("click", async () => {
       const errorEl = document.getElementById("login-error") || document.getElementById("register-error");
       if (errorEl) errorEl.classList.remove("visible");
-
       try {
         await authReady;
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
-
         if (await isBanned(cred.user)) {
           await signOut(auth);
-          if (errorEl) {
-            errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere.";
-            errorEl.classList.add("visible");
-          }
+          if (errorEl) { errorEl.textContent = "Questo account è stato rimosso. Non è più possibile accedere."; errorEl.classList.add("visible"); }
           return;
         }
-
         await saveUserRecord(cred.user, {
           nickname: cred.user.displayName || cred.user.email.split("@")[0],
-          emailVerified: true,
-          needsEmailVerify: false
+          emailVerified: true, needsEmailVerify: false
         });
-
         window.location.href = isAdminEmail(cred.user.email) ? "dashboard.html" : "index.html";
       } catch (err) {
-        if (errorEl) {
-          errorEl.textContent = messageFromError(err);
-          errorEl.classList.add("visible");
-        }
+        if (errorEl) { errorEl.textContent = messageFromError(err); errorEl.classList.add("visible"); }
       }
     });
   }
@@ -399,25 +333,13 @@ function bindAuthForms() {
       const email = (document.getElementById("forgot-email").value || "").trim();
       const msgEl = document.getElementById("forgot-msg");
       const btn = forgotForm.querySelector('button[type="submit"]');
-      msgEl.className = "auth-ok";
-      msgEl.textContent = "";
-      if (!email) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = "Inserisci l'email del tuo account.";
-        return;
-      }
+      msgEl.className = "auth-ok"; msgEl.textContent = "";
+      if (!email) { msgEl.className = "auth-error visible"; msgEl.textContent = "Inserisci l'email del tuo account."; return; }
       const emailErr = await validateRealEmailAsync(email);
-      if (emailErr) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = emailErr;
-        return;
-      }
+      if (emailErr) { msgEl.className = "auth-error visible"; msgEl.textContent = emailErr; return; }
       btn.disabled = true;
       try {
-        await sendPasswordResetEmail(auth, email, {
-          url: "https://gamingrelaxofficials.it/login.html",
-          handleCodeInApp: false
-        });
+        await sendPasswordResetEmail(auth, email, { url: "https://gamingrelaxofficials.it/login.html", handleCodeInApp: false });
         msgEl.className = "auth-ok visible";
         msgEl.textContent = "Ti abbiamo inviato l'email da Gaming Relax. Apri il messaggio e usa il link per scegliere una nuova password. Controlla anche Spam.";
         forgotForm.reset();
@@ -429,9 +351,7 @@ function bindAuthForms() {
           msgEl.className = "auth-error visible";
           msgEl.textContent = messageFromError(err);
         }
-      } finally {
-        btn.disabled = false;
-      }
+      } finally { btn.disabled = false; }
     });
   }
 
@@ -443,34 +363,20 @@ function bindAuthForms() {
     const msgEl = document.getElementById("reset-msg");
     const emailEl = document.getElementById("reset-email-hint");
     if (!oobCode) {
-      if (msgEl) {
-        msgEl.className = "auth-error visible";
-        msgEl.textContent = "Link non valido. Richiedi di nuovo il reset da Accedi → Password dimenticata.";
-      }
+      if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link non valido. Richiedi di nuovo il reset da Accedi → Password dimenticata."; }
       resetForm.querySelectorAll("input,button").forEach((el) => { el.disabled = true; });
     } else {
       verifyPasswordResetCode(auth, oobCode).then((mail) => {
         if (emailEl) emailEl.textContent = "Account: " + mail;
       }).catch(() => {
-        if (msgEl) {
-          msgEl.className = "auth-error visible";
-          msgEl.textContent = "Link scaduto o già usato. Richiedi un nuovo reset.";
-        }
+        if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link scaduto o già usato. Richiedi un nuovo reset."; }
       });
       resetForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const p1 = document.getElementById("reset-pass")?.value || "";
         const p2 = document.getElementById("reset-pass2")?.value || "";
-        if (p1.length < 6) {
-          msgEl.className = "auth-error visible";
-          msgEl.textContent = "La password deve avere almeno 6 caratteri.";
-          return;
-        }
-        if (p1 !== p2) {
-          msgEl.className = "auth-error visible";
-          msgEl.textContent = "Le due password non coincidono.";
-          return;
-        }
+        if (p1.length < 6) { msgEl.className = "auth-error visible"; msgEl.textContent = "La password deve avere almeno 6 caratteri."; return; }
+        if (p1 !== p2) { msgEl.className = "auth-error visible"; msgEl.textContent = "Le due password non coincidono."; return; }
         try {
           await confirmPasswordReset(auth, oobCode, p1);
           msgEl.className = "auth-ok visible";
