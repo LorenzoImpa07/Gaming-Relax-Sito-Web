@@ -21,9 +21,19 @@
 <meta name="twitter:image" content="https://gamingrelaxofficials.it/images/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260920s">
+<link rel="stylesheet" href="css/style.css?v=20261025a">
 <script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){var L=d.limeColor,H=String(L).replace("#","");var r=parseInt(H.slice(0,2),16),g=parseInt(H.slice(2,4),16),b=parseInt(H.slice(4,6),16);if(!H|| (g>170&&b<90&&r>120))L="#ff4dad";s.setProperty("--lime",L);s.setProperty("--lime-dim",L+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 <script src="js/smooth-nav.js?v=20260920at" defer></script>
+<style>
+.auth-card { max-width: 520px; }
+.auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .auth-grid { grid-template-columns: 1fr; } }
+.field-hint { font-size: 12px; color: var(--text-dim); margin: 6px 0 0; line-height: 1.4; }
+.terms-row { display: flex; align-items: flex-start; gap: 10px; margin: 18px 0 8px; font-size: 13.5px; color: var(--text-dim); line-height: 1.45; }
+.terms-row input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--lime); flex-shrink: 0; cursor: pointer; }
+.terms-row a { color: var(--lime); text-decoration: underline; text-underline-offset: 2px; }
+.age-badge { display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--lime-dim); color: var(--lime); }
+</style>
 </head>
 <body data-page="register">
 
@@ -56,7 +66,7 @@
 <div class="auth-page">
   <div class="auth-card">
     <h1>Crea account</h1>
-    <p class="lede">Registrati per seguire i tuoi ordini e le tue richieste.</p>
+    <p class="lede">Registrati per seguire i tuoi ordini, partecipare al forum e salvare i preferiti.</p>
 
     <p class="auth-error" id="register-error"></p>
     <p class="auth-ok" id="register-ok"></p>
@@ -78,21 +88,52 @@
       <div style="flex: 1; border-bottom: 1px solid var(--border);"></div>
     </div>
 
-    <form id="register-form">
+    <form id="register-form" novalidate>
       <div class="field">
-        <label for="register-nickname">Nickname <span style="color:var(--text-dim);font-weight:400;">(verrà mostrato nel forum e sul sito)</span></label>
+        <label for="register-nickname">Nickname <span style="color:var(--text-dim);font-weight:400;">(visibile nel forum e sul sito)</span></label>
         <input type="text" id="register-nickname" name="nickname" required autocomplete="username" minlength="2" maxlength="24" placeholder="Es. DarkKnight92">
       </div>
+
+      <div class="auth-grid">
+        <div class="field">
+          <label for="register-firstname">Nome</label>
+          <input type="text" id="register-firstname" name="firstname" required autocomplete="given-name" maxlength="40" placeholder="Mario">
+        </div>
+        <div class="field">
+          <label for="register-lastname">Cognome</label>
+          <input type="text" id="register-lastname" name="lastname" autocomplete="family-name" maxlength="40" placeholder="Rossi">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="register-birthdate">Data di nascita</label>
+        <input type="date" id="register-birthdate" name="birthdate" required>
+        <p class="field-hint">Devi avere almeno <strong>14 anni</strong> per registrarti. <span id="age-preview" class="age-badge" hidden></span></p>
+      </div>
+
       <div class="field">
         <label for="register-email">Email</label>
         <input type="email" id="register-email" name="email" required autocomplete="email" placeholder="es. mario@gmail.com">
-        <p style="font-size:12px;color:var(--text-dim);margin:8px 0 0;">Ti inviamo un link di conferma. Senza conferma l'account non si attiva: così nessuno può registrarsi con un'email a caso.</p>
+        <p class="field-hint">Ti inviamo un link di conferma. Senza conferma l'account non si attiva.</p>
       </div>
-      <div class="field">
-        <label for="register-password">Password</label>
-        <input type="password" id="register-password" name="password" required autocomplete="new-password" minlength="6">
+
+      <div class="auth-grid">
+        <div class="field">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" name="password" required autocomplete="new-password" minlength="6" placeholder="Minimo 6 caratteri">
+        </div>
+        <div class="field">
+          <label for="register-password2">Conferma password</label>
+          <input type="password" id="register-password2" name="password2" required autocomplete="new-password" minlength="6" placeholder="Ripeti la password">
+        </div>
       </div>
-      <button type="submit" class="btn btn--lime">Registrati</button>
+
+      <label class="terms-row">
+        <input type="checkbox" id="register-terms" name="terms" required>
+        <span>Ho letto e accetto i <a href="termini.html" target="_blank" rel="noopener">Termini e Condizioni</a> e la <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+      </label>
+
+      <button type="submit" class="btn btn--lime" style="width:100%;justify-content:center;margin-top:8px;">Registrati</button>
     </form>
 
     <p class="auth-switch">Hai già un account? <a href="login.html">Accedi</a></p>
@@ -102,8 +143,29 @@
 <script type="module" src="js/firebase-init.js?v=20260920n"></script>
 <script type="module" src="js/cart.js?v=20260920al"></script>
 <script type="module" src="js/bg-scene.js?v=20260920s"></script>
-<script type="module" src="js/auth.js?v=20260920aq"></script>
+<script type="module" src="js/auth.js?v=20261025a"></script>
 <script type="module" src="js/banner.js?v=20260919aj"></script>
 <script src="js/script.js?v=20260920h"></script>
+<script>
+(function () {
+  const birth = document.getElementById("register-birthdate");
+  const preview = document.getElementById("age-preview");
+  if (!birth) return;
+  const today = new Date();
+  const max = new Date(today.getFullYear() - 14, today.getMonth(), today.getDate());
+  birth.max = max.toISOString().slice(0, 10);
+  birth.addEventListener("change", () => {
+    if (!birth.value) { preview.hidden = true; return; }
+    const d = new Date(birth.value + "T00:00:00");
+    let age = today.getFullYear() - d.getFullYear();
+    const m = today.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+    preview.textContent = age + " anni";
+    preview.hidden = false;
+    preview.style.color = age < 14 ? "#fca5a5" : "var(--lime)";
+    preview.style.background = age < 14 ? "#fca5a533" : "var(--lime-dim)";
+  });
+})();
+</script>
 </body>
 </html>
