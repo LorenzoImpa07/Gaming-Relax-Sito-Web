@@ -8,20 +8,23 @@
   (document.head || document.documentElement).appendChild(l);
 })();
 
+// Polish estetica (contrasto, bottoni, focus, tab/toast)
+(function () {
+  if (typeof document === "undefined" || document.querySelector("link[data-gr-polish]")) return;
+  var l = document.createElement("link");
+  l.rel = "stylesheet";
+  l.href = "css/gaming-polish.css?v=20261025a";
+  l.setAttribute("data-gr-polish", "1");
+  (document.head || document.documentElement).appendChild(l);
+})();
+
 // Dashboard PRO — command center visual
 (function () {
   if (typeof document === "undefined") return;
   var page = document.body && document.body.getAttribute("data-page");
   if (page !== "dashboard") return;
-  if (!document.querySelector("link[data-gr-dash-pro]")) {
-    var l = document.createElement("link");
-    l.rel = "stylesheet";
-    l.href = "css/dashboard-pro.css?v=20261025c";
-    l.setAttribute("data-gr-dash-pro", "1");
-    (document.head || document.documentElement).appendChild(l);
-  }
   var s = document.createElement("script");
-  s.src = "js/dashboard-ui-pro.js?v=20261025c";
+  s.src = "js/dashboard-ui-pro.js?v=20261025d";
   s.defer = true;
   (document.body || document.documentElement).appendChild(s);
 })();
