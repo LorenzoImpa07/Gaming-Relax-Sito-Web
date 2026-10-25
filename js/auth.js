@@ -1,3 +1,13 @@
+// Carica stile gaming (icone, contrasti, Dashboard neon)
+(function () {
+  if (typeof document === "undefined" || document.querySelector("link[data-gr-enhance]")) return;
+  var l = document.createElement("link");
+  l.rel = "stylesheet";
+  l.href = "css/gaming-enhance.css?v=20261025a";
+  l.setAttribute("data-gr-enhance", "1");
+  (document.head || document.documentElement).appendChild(l);
+})();
+
 // ==========================================================================
 // Autenticazione: login, registrazione, logout, reset password, anagrafica utenti
 // ==========================================================================
