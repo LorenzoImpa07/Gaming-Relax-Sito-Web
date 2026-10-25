@@ -1,11 +1,11 @@
-// Dashboard UI PRO — logo header, sidebar brand, load CSS
+// Dashboard UI PRO — logo header, sidebar brand, load CSS, stats fix
 (function () {
   if (!document.body || document.body.getAttribute("data-page") !== "dashboard") return;
 
   if (!document.querySelector('link[href*="dashboard-pro.css"]')) {
     var link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "css/dashboard-pro.css?v=20261025a";
+    link.href = "css/dashboard-pro.css?v=20261025b";
     document.head.appendChild(link);
   }
 
@@ -41,9 +41,23 @@
     nav.insertBefore(brand, nav.firstChild);
   }
 
+  // Sostituisce "Apri il sito" con statistica Richieste aperte
+  function upgradeStats() {
+    if (document.getElementById("stat-richieste")) return;
+    var openSite = document.getElementById("dash-open-site");
+    if (!openSite) return;
+    var card = document.createElement("div");
+    card.className = "dash-stat";
+    card.innerHTML =
+      '<strong id="stat-richieste">–</strong>' +
+      "<span>Richieste aperte</span>";
+    openSite.replaceWith(card);
+  }
+
   function run() {
     upgradeHeader();
     upgradeSidebar();
+    upgradeStats();
   }
 
   if (document.readyState === "loading") {
@@ -53,9 +67,13 @@
   }
   var root = document.getElementById("dashboard-root");
   if (root) {
-    var obs = new MutationObserver(function () { run(); });
+    var obs = new MutationObserver(function () {
+      run();
+    });
     obs.observe(root, { childList: true, subtree: true, attributes: true });
-    setTimeout(function () { obs.disconnect(); }, 15000);
+    setTimeout(function () {
+      obs.disconnect();
+    }, 15000);
   }
   setTimeout(run, 400);
   setTimeout(run, 1200);
