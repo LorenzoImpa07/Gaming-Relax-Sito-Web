@@ -2,10 +2,9 @@
 // Carrello — drawer, toast, badge animato, pagina carrello
 // ==========================================================================
 import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
-import { addDoc, collection, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { onSnapshot } from "./live.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { validateRealEmailAsync } from "./email-check.js";
 
 const KEY = "gr_cart";
 let currentUser = null;
@@ -18,13 +17,12 @@ onSnapshot(doc(db, "siteContent", "general"), (s) => {
 });
 
 function escapeHtml(str = "") {
-  return String(str).replace(/[&<>"']/g, (m) => {
-    if (m === "&") return "&";
-    if (m === "<") return "<";
-    if (m === ">") return ">";
-    if (m === '"') return """;
-    return "&#39;";
-  });
+  return String(str)
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">")
+    .replace(/"/g, """)
+    .replace(/'/g, "&#39;");
 }
 
 export function parsePrice(str) {
@@ -66,10 +64,10 @@ function showToast(message, opts = {}) {
   const host = ensureToastHost();
   const el = document.createElement("div");
   el.className = "gr-toast" + (opts.error ? " gr-toast--err" : " gr-toast--ok");
-  el.innerHTML = `
-    <span class="gr-toast__ico">${opts.error ? "!" : "✓"}</span>
-    <span class="gr-toast__msg">${escapeHtml(message)}</span>
-    ${opts.action ? `<button type="button" class="gr-toast__action">${escapeHtml(opts.action)}</button>` : ""}`;
+  el.innerHTML =
+    '<span class="gr-toast__ico">' + (opts.error ? "!" : "\u2713") + '</span>' +
+    '<span class="gr-toast__msg">' + escapeHtml(message) + '</span>' +
+    (opts.action ? '<button type="button" class="gr-toast__action">' + escapeHtml(opts.action) + '</button>' : '');
   host.appendChild(el);
   requestAnimationFrame(() => el.classList.add("is-in"));
   const actionBtn = el.querySelector(".gr-toast__action");
@@ -97,13 +95,13 @@ function ensureDrawer() {
   drawer.id = "cart-drawer";
   drawer.className = "cart-drawer";
   drawer.setAttribute("aria-hidden", "true");
-  drawer.innerHTML = `
-    <div class="cart-drawer__head">
-      <h2>Carrello</h2>
-      <button type="button" class="cart-drawer__close" id="cart-drawer-close" aria-label="Chiudi">✕</button>
-    </div>
-    <div class="cart-drawer__body" id="cart-drawer-body"></div>
-    <div class="cart-drawer__foot" id="cart-drawer-foot"></div>`;
+  drawer.innerHTML =
+    '<div class="cart-drawer__head">' +
+      '<h2>Carrello</h2>' +
+      '<button type="button" class="cart-drawer__close" id="cart-drawer-close" aria-label="Chiudi">\u2715</button>' +
+    '</div>' +
+    '<div class="cart-drawer__body" id="cart-drawer-body"></div>' +
+    '<div class="cart-drawer__foot" id="cart-drawer-foot"></div>';
 
   document.body.appendChild(backdrop);
   document.body.appendChild(drawer);
@@ -197,35 +195,34 @@ function subtotal(items) {
   }, 0);
 }
 
-function mountHeaderBtn() {
+function mountHeaderBtn(attempt) {
   const actions = document.querySelector(".header-actions");
-  if (actions && !document.getElementById("cart-open")) {
-    const a = document.createElement("a");
+  if (!actions) {
+    if ((attempt || 0) < 20) setTimeout(() => mountHeaderBtn((attempt || 0) + 1), 80);
+    return;
+  }
+  let a = document.getElementById("cart-open");
+  if (!a) {
+    a = document.createElement("a");
     a.href = "carrello.html";
     a.id = "cart-open";
     a.className = "icon-btn cart-btn";
     a.setAttribute("aria-label", "Carrello");
-    a.innerHTML = `<span class="cart-btn__ico" aria-hidden="true">🛒</span><span class="cart-btn__count" hidden>0</span>`;
+    a.innerHTML = '<span class="cart-btn__ico" aria-hidden="true">\uD83D\uDED2</span><span class="cart-btn__count" hidden>0</span>';
+    const toggle = actions.querySelector(".nav-toggle");
+    const authEl = document.getElementById("auth-area");
+    if (toggle) actions.insertBefore(a, toggle);
+    else if (authEl) actions.insertBefore(a, authEl);
+    else actions.appendChild(a);
+  }
+  if (!a.dataset.drawerBound) {
+    a.dataset.drawerBound = "1";
     a.addEventListener("click", (e) => {
       if (!document.getElementById("cart-page")) {
         e.preventDefault();
         openCart();
       }
     });
-    const authEl = document.getElementById("auth-area");
-    if (authEl) actions.insertBefore(a, authEl);
-    else actions.prepend(a);
-  } else {
-    const existing = document.getElementById("cart-open");
-    if (existing && !existing.dataset.drawerBound) {
-      existing.dataset.drawerBound = "1";
-      existing.addEventListener("click", (e) => {
-        if (!document.getElementById("cart-page")) {
-          e.preventDefault();
-          openCart();
-        }
-      });
-    }
   }
 }
 
@@ -234,25 +231,31 @@ function itemLineHtml(i, compact) {
     const n = parsePrice(i.price);
     return n == null ? "" : formatEuro(n * i.qty);
   })();
-  return `
-    <article class="cart-item" data-key="${escapeHtml(cartKey(i))}">
-      <a class="cart-item__img" href="prodotto.html?id=${encodeURIComponent(i.id)}">${i.imageUrl ? `<img src="${escapeHtml(i.imageUrl)}" alt="" loading="lazy">` : `<span class="cart-item__ph">🎮</span>`}</a>
-      <div class="cart-item__info">
-        <a class="cart-item__name" href="prodotto.html?id=${encodeURIComponent(i.id)}">${escapeHtml(i.name)}</a>
-        <span class="cart-item__price">${escapeHtml(i.price || "")}${lineTotal && i.qty > 1 ? ` · <em>${lineTotal}</em>` : ""}</span>
-        <div class="cart-item__row">
-          <div class="cart-qty">
-            <button type="button" data-qty="-1" data-key="${escapeHtml(cartKey(i))}" aria-label="Diminuisci">−</button>
-            <span class="cart-qty__val">${i.qty}</span>
-            <button type="button" data-qty="1" data-key="${escapeHtml(cartKey(i))}" aria-label="Aumenta">+</button>
-          </div>
-          ${compact ? "" : `<a class="cart-item__open" href="prodotto.html?id=${encodeURIComponent(i.id)}">Vedi →</a>`}
-        </div>
-      </div>
-      <button type="button" class="cart-item__del" data-del="${escapeHtml(cartKey(i))}" aria-label="Rimuovi">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
-      </button>
-    </article>`;
+  const k = escapeHtml(cartKey(i));
+  return (
+    '<article class="cart-item" data-key="' + k + '">' +
+      '<a class="cart-item__img" href="prodotto.html?id=' + encodeURIComponent(i.id) + '">' +
+        (i.imageUrl ? '<img src="' + escapeHtml(i.imageUrl) + '" alt="" loading="lazy">' : '<span class="cart-item__ph">\uD83C\uDFAE</span>') +
+      '</a>' +
+      '<div class="cart-item__info">' +
+        '<a class="cart-item__name" href="prodotto.html?id=' + encodeURIComponent(i.id) + '">' + escapeHtml(i.name) + '</a>' +
+        '<span class="cart-item__price">' + escapeHtml(i.price || "") +
+          (lineTotal && i.qty > 1 ? ' \u00B7 <em>' + lineTotal + '</em>' : '') +
+        '</span>' +
+        '<div class="cart-item__row">' +
+          '<div class="cart-qty">' +
+            '<button type="button" data-qty="-1" data-key="' + k + '" aria-label="Diminuisci">\u2212</button>' +
+            '<span class="cart-qty__val">' + i.qty + '</span>' +
+            '<button type="button" data-qty="1" data-key="' + k + '" aria-label="Aumenta">+</button>' +
+          '</div>' +
+          (compact ? '' : '<a class="cart-item__open" href="prodotto.html?id=' + encodeURIComponent(i.id) + '">Vedi \u2192</a>') +
+        '</div>' +
+      '</div>' +
+      '<button type="button" class="cart-item__del" data-del="' + k + '" aria-label="Rimuovi">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>' +
+      '</button>' +
+    '</article>'
+  );
 }
 
 function bindItemActions(root) {
@@ -270,37 +273,37 @@ function bindItemActions(root) {
 }
 
 function emptyHtml() {
-  return `
-    <div class="cart-empty">
-      <div class="cart-empty__ico">🛒</div>
-      <p class="cart-empty__title">Il carrello è vuoto</p>
-      <p class="cart-empty__hint">Aggiungi qualcosa dallo Store e torna qui.</p>
-      <a href="store.html" class="btn btn--lime">Vai allo Store</a>
-    </div>`;
+  return (
+    '<div class="cart-empty">' +
+      '<div class="cart-empty__ico">\uD83D\uDED2</div>' +
+      '<p class="cart-empty__title">Il carrello \u00E8 vuoto</p>' +
+      '<p class="cart-empty__hint">Aggiungi qualcosa dallo Store e torna qui.</p>' +
+      '<a href="store.html" class="btn btn--lime">Vai allo Store</a>' +
+    '</div>'
+  );
 }
 
 function footHtml(items, compact) {
   const total = subtotal(items);
   const quoteOnly = items.every((i) => parsePrice(i.price) == null);
   const count = items.reduce((n, i) => n + i.qty, 0);
-  return `
-    <div class="cart-sub">
-      <span>${count} articol${count === 1 ? "o" : "i"}</span>
-      <strong>${quoteOnly ? "Su preventivo" : formatEuro(total)}</strong>
-    </div>
-    <p class="cart-hint">Spedizione e sconti alla cassa.</p>
-    ${compact ? `
-      <a href="carrello.html" class="btn btn--outline cart-checkout" style="margin-bottom:8px;">Vedi carrello</a>
-      <a href="checkout.html" class="btn btn--lime cart-checkout">Vai al check-out</a>
-    ` : `
-      <label class="cart-note-label">Nota sull'ordine</label>
-      <textarea id="cart-note" placeholder="Richieste, switch, colore…"></textarea>
-      <input type="email" id="cart-email" placeholder="Email per l'ordine" value="${escapeHtml(currentUser?.email || "")}">
-      <button type="button" class="btn btn--lime cart-checkout" id="cart-checkout">Check-out</button>
-      <button type="button" class="btn cart-paypal" id="cart-paypal" ${paypalMeUrl ? "" : "hidden"}>PayPal</button>
-      <div id="cart-pay-extra"></div>
-      <p class="cart-status" id="cart-status"></p>
-    `}`;
+  return (
+    '<div class="cart-sub">' +
+      '<span>' + count + ' articol' + (count === 1 ? 'o' : 'i') + '</span>' +
+      '<strong>' + (quoteOnly ? 'Su preventivo' : formatEuro(total)) + '</strong>' +
+    '</div>' +
+    '<p class="cart-hint">Spedizione e sconti alla cassa.</p>' +
+    (compact
+      ? '<a href="carrello.html" class="btn btn--outline cart-checkout" style="margin-bottom:8px;">Vedi carrello</a>' +
+        '<a href="checkout.html" class="btn btn--lime cart-checkout">Vai al check-out</a>'
+      : '<label class="cart-note-label">Nota sull\'ordine</label>' +
+        '<textarea id="cart-note" placeholder="Richieste, switch, colore\u2026"></textarea>' +
+        '<input type="email" id="cart-email" placeholder="Email per l\'ordine" value="' + escapeHtml(currentUser?.email || '') + '">' +
+        '<button type="button" class="btn btn--lime cart-checkout" id="cart-checkout">Check-out</button>' +
+        '<button type="button" class="btn cart-paypal" id="cart-paypal" ' + (paypalMeUrl ? '' : 'hidden') + '>PayPal</button>' +
+        '<div id="cart-pay-extra"></div>' +
+        '<p class="cart-status" id="cart-status"></p>')
+  );
 }
 
 function renderDrawer() {
@@ -358,9 +361,10 @@ function render() {
 }
 
 window.GRCart = { add: addToCart, open: openCart, close: closeCart };
-
 mountHeaderBtn();
 render();
+setTimeout(() => { try { mountHeaderBtn(); render(); } catch (_) {} }, 300);
+setTimeout(() => { try { mountHeaderBtn(); render(); } catch (_) {} }, 1000);
 window.addEventListener("gr:navigated", () => {
   try { render(); } catch (_) {}
 });
