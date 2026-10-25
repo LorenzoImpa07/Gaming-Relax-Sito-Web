@@ -1,1 +1,4 @@
-PLACEHOLDER_PRO
+/* Dashboard PRO — stili principali ora iniettati da dashboard-ui-pro.js + gaming-polish.css */
+body[data-page="dashboard"] {
+  background-color: #05070e;
+}
