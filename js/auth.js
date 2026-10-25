@@ -16,12 +16,12 @@
   if (!document.querySelector("link[data-gr-dash-pro]")) {
     var l = document.createElement("link");
     l.rel = "stylesheet";
-    l.href = "css/dashboard-pro.css?v=20261025a";
+    l.href = "css/dashboard-pro.css?v=20261025b";
     l.setAttribute("data-gr-dash-pro", "1");
     (document.head || document.documentElement).appendChild(l);
   }
   var s = document.createElement("script");
-  s.src = "js/dashboard-ui-pro.js?v=20261025a";
+  s.src = "js/dashboard-ui-pro.js?v=20261025b";
   s.defer = true;
   (document.body || document.documentElement).appendChild(s);
 })();
@@ -282,7 +282,7 @@ function bindAuthForms() {
       if (password !== password2) { errorEl.textContent = "Le due password non coincidono."; errorEl.classList.add("visible"); return; }
       if (terms && !terms.checked) { errorEl.textContent = "Devi accettare i Termini e Condizioni e la Privacy Policy."; errorEl.classList.add("visible"); return; }
       const emailErr = await validateRealEmailAsync(email);
-      if (emailErr) { errorEl.textContent = emailErr; errorEl.classList.add("visible"); return; }
+      if (emailErr) { errorEl.textContent = emailErr; return; }
       try {
         await authReady;
         const cred = await createUserWithEmailAndPassword(auth, email, password);
