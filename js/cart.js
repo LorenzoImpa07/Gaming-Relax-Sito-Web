@@ -1,5 +1,5 @@
 // ==========================================================================
-// Carrello — drawer, toast, badge, pagina
+// Carrello — toast, badge, pagina carrello (senza overlay bloccante)
 // ==========================================================================
 import { db, auth, isVerifiedUser } from "./firebase-init.js?v=20260920n";
 import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -16,7 +16,6 @@ onSnapshot(doc(db, "siteContent", "general"), (s) => {
   if (s.exists()) paypalMeUrl = s.data().paypalMeUrl || "";
 });
 
-// Concatenazione per non usare entity HTML nel sorgente (alcuni push le decodificano)
 function escapeHtml(str) {
   return String(str == null ? "" : str).replace(/[&<>"']/g, function (c) {
     if (c === "&") return "&" + "amp;";
@@ -89,34 +88,14 @@ function showToast(message, opts) {
   setTimeout(dismiss, opts.duration || 3200);
 }
 
-function ensureDrawer() {
-  if (document.getElementById("cart-drawer")) return;
-  if (document.getElementById("cart-page")) return;
-
-  var backdrop = document.createElement("div");
-  backdrop.id = "cart-backdrop";
-  backdrop.className = "cart-backdrop";
-  backdrop.addEventListener("click", closeCart);
-
-  var drawer = document.createElement("aside");
-  drawer.id = "cart-drawer";
-  drawer.className = "cart-drawer";
-  drawer.setAttribute("aria-hidden", "true");
-  drawer.innerHTML =
-    '<div class="cart-drawer__head">' +
-      "<h2>Carrello</h2>" +
-      '<button type="button" class="cart-drawer__close" id="cart-drawer-close" aria-label="Chiudi">X</button>' +
-    "</div>" +
-    '<div class="cart-drawer__body" id="cart-drawer-body"></div>' +
-    '<div class="cart-drawer__foot" id="cart-drawer-foot"></div>';
-
-  document.body.appendChild(backdrop);
-  document.body.appendChild(drawer);
-  var closeBtn = document.getElementById("cart-drawer-close");
-  if (closeBtn) closeBtn.addEventListener("click", closeCart);
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && drawerOpen) closeCart();
+function closeCart() {
+  document.querySelectorAll("#cart-backdrop, .cart-backdrop, #cart-drawer, .cart-drawer").forEach(function (el) {
+    el.classList.remove("open");
+    try { el.remove(); } catch (e) {}
   });
+  drawerOpen = false;
+  document.body.classList.remove("cart-drawer-open");
+  document.body.style.overflow = "";
 }
 
 export function openCart() {
@@ -125,29 +104,7 @@ export function openCart() {
     if (body) body.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
-  ensureDrawer();
-  renderDrawer();
-  var backdrop = document.getElementById("cart-backdrop");
-  var drawer = document.getElementById("cart-drawer");
-  if (backdrop) backdrop.classList.add("open");
-  if (drawer) {
-    drawer.classList.add("open");
-    drawer.setAttribute("aria-hidden", "false");
-  }
-  drawerOpen = true;
-  document.body.classList.add("cart-drawer-open");
-}
-
-function closeCart() {
-  var backdrop = document.getElementById("cart-backdrop");
-  var drawer = document.getElementById("cart-drawer");
-  if (backdrop) backdrop.classList.remove("open");
-  if (drawer) {
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-  }
-  drawerOpen = false;
-  document.body.classList.remove("cart-drawer-open");
+  window.location.href = "carrello.html";
 }
 
 export function addToCart(product) {
@@ -177,9 +134,8 @@ export function addToCart(product) {
   pulseBadge();
   showToast(display + " aggiunto al carrello", {
     action: "Vedi",
-    onAction: function () { openCart(); }
+    onAction: function () { window.location.href = "carrello.html"; }
   });
-  if (!document.getElementById("cart-page")) openCart();
 }
 
 function pulseBadge() {
@@ -227,12 +183,7 @@ function subtotal(items) {
 function bindCartClick(a) {
   if (!a || a.dataset.drawerBound === "1") return;
   a.dataset.drawerBound = "1";
-  a.addEventListener("click", function (e) {
-    if (!document.getElementById("cart-page")) {
-      e.preventDefault();
-      openCart();
-    }
-  });
+  a.setAttribute("href", "carrello.html");
 }
 
 function mountHeaderBtn(attempt) {
@@ -256,6 +207,8 @@ function mountHeaderBtn(attempt) {
     if (toggle) actions.insertBefore(a, toggle);
     else if (authEl) actions.insertBefore(a, authEl);
     else actions.appendChild(a);
+  } else {
+    a.setAttribute("href", "carrello.html");
   }
   bindCartClick(a);
 }
@@ -354,22 +307,6 @@ function footHtml(items, compact) {
   );
 }
 
-function renderDrawer() {
-  ensureDrawer();
-  var body = document.getElementById("cart-drawer-body");
-  var foot = document.getElementById("cart-drawer-foot");
-  if (!body || !foot) return;
-  var items = readCart();
-  if (!items.length) {
-    body.innerHTML = emptyHtml();
-    foot.innerHTML = "";
-    return;
-  }
-  body.innerHTML = items.map(function (i) { return itemLineHtml(i, true); }).join("");
-  bindItemActions(body);
-  foot.innerHTML = footHtml(items, true);
-}
-
 function renderPage() {
   var body = document.getElementById("cart-body");
   var foot = document.getElementById("cart-foot");
@@ -410,10 +347,19 @@ function render() {
     badge.textContent = count > 99 ? "99+" : String(count);
   });
   if (document.getElementById("cart-page")) renderPage();
-  if (document.getElementById("cart-drawer") || drawerOpen) renderDrawer();
 }
 
 window.GRCart = { add: addToCart, open: openCart, close: closeCart };
+
+try {
+  document.querySelectorAll("#cart-backdrop, .cart-backdrop, #cart-drawer, .cart-drawer").forEach(function (el) {
+    el.classList.remove("open");
+    el.remove();
+  });
+  document.body.classList.remove("cart-drawer-open");
+  document.body.style.overflow = "";
+} catch (e) {}
+
 mountHeaderBtn();
 render();
 setTimeout(function () { try { mountHeaderBtn(); render(); } catch (e) {} }, 200);
