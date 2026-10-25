@@ -1,5 +1,5 @@
 // ==========================================================================
-// Sfondo interattivo — immagine / video / aurora, movimento col mouse.
+// Sfondo interattivo — immagine / video / aurora, zone, colore solido.
 // Impostazioni: Dashboard → Sfondi.
 // ==========================================================================
 import { db } from "./firebase-init.js";
@@ -162,7 +162,6 @@ function renderMedia(layer, cfg) {
   return false;
 }
 
-
 function renderFx(fx, style, hasMedia) {
   fx.innerHTML = "";
   fx.className = "page-bg__layer page-bg__fx";
@@ -246,8 +245,15 @@ function apply(cfg) {
   const root = mountShell();
   const imageUrl = directUrl(cfg.bgImageUrl);
   const videoUrl = directUrl(cfg.bgVideoUrl);
+  const solid = (cfg.bgColor || "").trim();
   const hasMedia = !!(imageUrl || videoUrl);
+  const zone = ["full", "hero", "content"].includes(cfg.bgZone) ? cfg.bgZone : "full";
   root.classList.toggle("page-bg--has-media", hasMedia);
+  root.classList.remove("page-bg--zone-full", "page-bg--zone-hero", "page-bg--zone-content");
+  root.classList.add("page-bg--zone-" + zone);
+  root.dataset.zone = zone;
+  if (solid && !hasMedia) root.style.background = solid;
+  else root.style.background = "";
   let overlay = Number(cfg.bgOverlay);
   if (!Number.isFinite(overlay)) overlay = 28;
   overlay = Math.max(0, Math.min(80, overlay));
@@ -255,12 +261,21 @@ function apply(cfg) {
   const ov = root.querySelector(".page-bg__overlay");
   const vig = root.querySelector(".page-bg__vignette");
   if (hasMedia) {
+    if (ov) {
+      ov.style.display = "block";
+      ov.style.background = `rgba(5,7,14,${Math.min(0.75, o * 0.9)})`;
+    }
+    if (vig) vig.style.display = "none";
+  } else if (solid) {
     if (ov) ov.style.display = "none";
     if (vig) vig.style.display = "none";
   } else {
     const center = Math.min(0.75, o * 0.85);
     const edge = Math.min(0.9, o + 0.15);
-    if (ov) ov.style.background = `radial-gradient(ellipse 90% 70% at 50% 38%, rgba(10,13,22,${center}) 0%, rgba(8,10,18,${edge}) 100%)`;
+    if (ov) {
+      ov.style.display = "block";
+      ov.style.background = `radial-gradient(ellipse 90% 70% at 50% 38%, rgba(10,13,22,${center}) 0%, rgba(8,10,18,${edge}) 100%)`;
+    }
     if (vig) vig.style.opacity = "1";
   }
   renderMedia(root.querySelector("[data-depth=media]"), { bgImageUrl: imageUrl, bgVideoUrl: videoUrl });
@@ -282,7 +297,9 @@ function saveCache(cfg) {
       video: directUrl(cfg.bgVideoUrl) || "",
       style: cfg.bgStyle || "",
       overlay: cfg.bgOverlay,
-      motion: cfg.bgMotion
+      motion: cfg.bgMotion,
+      zone: cfg.bgZone || "full",
+      color: cfg.bgColor || ""
     };
     localStorage.setItem("gr_bgs", JSON.stringify(all));
   } catch (_) {}
@@ -298,7 +315,9 @@ function loadCache() {
       bgVideoUrl: c.video || "",
       bgStyle: c.style || "",
       bgOverlay: c.overlay,
-      bgMotion: c.motion
+      bgMotion: c.motion,
+      bgZone: c.zone || "full",
+      bgColor: c.color || ""
     };
   } catch (_) {
     return null;
@@ -310,16 +329,18 @@ function bootPageBg() {
   pageKey = document.body.dataset.page || "home";
   fallback = DEFAULTS[pageKey] || DEFAULTS.home;
   const cached = loadCache();
-  if (cached && (cached.bgImageUrl || cached.bgVideoUrl)) {
+  if (cached && (cached.bgImageUrl || cached.bgVideoUrl || cached.bgColor)) {
     apply({
       bgImageUrl: cached.bgImageUrl,
       bgVideoUrl: cached.bgVideoUrl,
       bgStyle: cached.bgStyle || fallback.bgStyle,
       bgOverlay: cached.bgOverlay != null && cached.bgOverlay !== "" ? Number(cached.bgOverlay) : 0,
-      bgMotion: cached.bgMotion !== false
+      bgMotion: cached.bgMotion !== false,
+      bgZone: cached.bgZone || "full",
+      bgColor: cached.bgColor || ""
     });
   } else {
-    apply(fallback);
+    apply({ ...fallback, bgZone: "full", bgColor: "" });
   }
 }
 bootPageBg();
@@ -331,7 +352,7 @@ function listenPageBg() {
   const d = snap.exists() ? snap.data() : {};
   let image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
   let video = (d.bgVideoUrl || "").trim();
-  if (!image && !video) {
+  if (!image && !video && !(d.bgColor || "").trim()) {
     image = fallback.bgImageUrl || "";
     video = fallback.bgVideoUrl || "";
     if (!image && !video && !snap.exists()) return;
@@ -341,7 +362,9 @@ function listenPageBg() {
     bgVideoUrl: video,
     bgStyle: d.bgStyle || fallback.bgStyle,
     bgOverlay: d.bgOverlay != null && d.bgOverlay !== "" ? Number(d.bgOverlay) : (image || video ? 0 : fallback.bgOverlay),
-    bgMotion: d.bgMotion !== false && d.bgMotion !== "false"
+    bgMotion: d.bgMotion !== false && d.bgMotion !== "false",
+    bgZone: d.bgZone || "full",
+    bgColor: d.bgColor || ""
   };
   saveCache(cfg);
   apply(cfg);
@@ -360,13 +383,15 @@ getDocs(collection(db, "siteContent")).then((snap) => {
       const d = docSnap.data() || {};
       const image = (d.bgImageUrl || d.imageUrl || d.backgroundUrl || "").trim();
       const video = (d.bgVideoUrl || "").trim();
-      if (!image && !video) return;
+      if (!image && !video && !(d.bgColor || "").trim()) return;
       all[docSnap.id] = {
         image,
         video,
         style: d.bgStyle || "",
         overlay: d.bgOverlay,
-        motion: d.bgMotion
+        motion: d.bgMotion,
+        zone: d.bgZone || "full",
+        color: d.bgColor || ""
       };
     });
     localStorage.setItem("gr_bgs", JSON.stringify(all));
