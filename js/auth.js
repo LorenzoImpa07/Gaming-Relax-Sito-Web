@@ -3,10 +3,15 @@
   if (typeof document === "undefined" || document.querySelector("link[data-gr-enhance]")) return;
   var l = document.createElement("link");
   l.rel = "stylesheet";
-  l.href = "css/gaming-enhance.css?v=20261025a";
+  l.href = "css/gaming-enhance.css?v=20261025b";
   l.setAttribute("data-gr-enhance", "1");
   (document.head || document.documentElement).appendChild(l);
 })();
+
+// Sfondi admin (zone + colore) — solo in Dashboard
+if (typeof document !== "undefined" && document.getElementById("bg-form")) {
+  import("./bg-admin-enhance.js?v=20261025a").catch(function () {});
+}
 
 // ==========================================================================
 // Autenticazione: login, registrazione, logout, reset password, anagrafica utenti
@@ -58,7 +63,6 @@ function getAvatar(user) {
   return user.photoURL || localStorage.getItem("gr_avatar_" + user.uid) || "";
 }
 
-/** Calcola l'età a partire da una data YYYY-MM-DD. Restituisce null se non valida. */
 function calcAge(birthdateStr) {
   if (!birthdateStr) return null;
   const d = new Date(birthdateStr + "T00:00:00");
@@ -83,9 +87,7 @@ async function saveUserRecord(user, extra) {
   };
   try {
     await setDoc(doc(db, "users", user.uid), payload, { merge: true });
-  } catch (_) {
-    // non bloccare login/registrazione
-  }
+  } catch (_) {}
 }
 
 async function isBanned(user) {
@@ -345,7 +347,6 @@ function bindAuthForms() {
     });
   }
 
-  // Gestione pulsante Google (Login / Registrazione)
   const googleLoginBtn = document.getElementById("google-login-btn");
   if (googleLoginBtn && googleLoginBtn.dataset.bound !== "1") {
     googleLoginBtn.dataset.bound = "1";
