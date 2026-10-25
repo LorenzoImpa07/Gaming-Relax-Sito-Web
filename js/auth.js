@@ -19,6 +19,8 @@ import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/fi
 import "./partners-dynamic.js";
 import { validateRealEmailAsync } from "./email-check.js";
 
+const MIN_AGE = 14;
+
 const ERROR_MESSAGES = {
   "auth/email-already-in-use": "Questa email è già registrata. Prova ad accedere.",
   "auth/invalid-email": "L'indirizzo email non è valido.",
@@ -44,6 +46,18 @@ function getDisplayName(user) {
 function getAvatar(user) {
   if (!user) return "";
   return user.photoURL || localStorage.getItem("gr_avatar_" + user.uid) || "";
+}
+
+/** Calcola l'età a partire da una data YYYY-MM-DD. Restituisce null se non valida. */
+function calcAge(birthdateStr) {
+  if (!birthdateStr) return null;
+  const d = new Date(birthdateStr + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - d.getFullYear();
+  const m = today.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+  return age;
 }
 
 async function saveUserRecord(user, extra) {
@@ -225,9 +239,14 @@ function bindAuthForms() {
   if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const nickname = registerForm.querySelector("#register-nickname").value.trim();
-      const email = registerForm.querySelector("#register-email").value.trim();
-      const password = registerForm.querySelector("#register-password").value;
+      const nickname = (registerForm.querySelector("#register-nickname")?.value || "").trim();
+      const firstName = (registerForm.querySelector("#register-firstname")?.value || "").trim();
+      const lastName = (registerForm.querySelector("#register-lastname")?.value || "").trim();
+      const birthdate = (registerForm.querySelector("#register-birthdate")?.value || "").trim();
+      const email = (registerForm.querySelector("#register-email")?.value || "").trim();
+      const password = registerForm.querySelector("#register-password")?.value || "";
+      const password2 = registerForm.querySelector("#register-password2")?.value || "";
+      const terms = registerForm.querySelector("#register-terms");
       const errorEl = document.getElementById("register-error");
       errorEl.classList.remove("visible");
 
@@ -236,6 +255,43 @@ function bindAuthForms() {
         errorEl.classList.add("visible");
         return;
       }
+      if (!firstName) {
+        errorEl.textContent = "Inserisci il tuo nome.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      if (!birthdate) {
+        errorEl.textContent = "Inserisci la data di nascita.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      const age = calcAge(birthdate);
+      if (age === null) {
+        errorEl.textContent = "Data di nascita non valida.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      if (age < MIN_AGE) {
+        errorEl.textContent = "Devi avere almeno " + MIN_AGE + " anni per registrarti.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      if (password.length < 6) {
+        errorEl.textContent = "La password deve avere almeno 6 caratteri.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      if (password !== password2) {
+        errorEl.textContent = "Le due password non coincidono.";
+        errorEl.classList.add("visible");
+        return;
+      }
+      if (terms && !terms.checked) {
+        errorEl.textContent = "Devi accettare i Termini e Condizioni e la Privacy Policy.";
+        errorEl.classList.add("visible");
+        return;
+      }
+
       const emailErr = await validateRealEmailAsync(email);
       if (emailErr) {
         errorEl.textContent = emailErr;
@@ -247,7 +303,19 @@ function bindAuthForms() {
         await authReady;
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName: nickname });
-        await saveUserRecord(cred.user, { nickname, email, createdAt: serverTimestamp(), roleIds: [], needsEmailVerify: true, emailVerified: false });
+        await saveUserRecord(cred.user, {
+          nickname,
+          firstName,
+          lastName,
+          birthdate,
+          age,
+          email,
+          createdAt: serverTimestamp(),
+          roleIds: [],
+          needsEmailVerify: true,
+          emailVerified: false,
+          acceptedTermsAt: serverTimestamp()
+        });
         try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
         await signOut(auth);
         const okEl = document.getElementById("register-ok");
