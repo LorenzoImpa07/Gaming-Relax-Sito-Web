@@ -18,6 +18,17 @@
   (document.head || document.documentElement).appendChild(l);
 })();
 
+// Cart / Checkout visual PRO
+(function () {
+  if (typeof document === "undefined") return;
+  var p = (location.pathname.split("/").pop() || "").toLowerCase();
+  if (p !== "carrello.html" && p !== "carrello" && p !== "checkout.html" && p !== "checkout") return;
+  var s = document.createElement("script");
+  s.src = "js/checkout-ui-pro.js?v=20261026a";
+  s.defer = true;
+  (document.body || document.documentElement).appendChild(s);
+})();
+
 // Dashboard PRO — command center visual
 (function () {
   if (typeof document === "undefined") return;
