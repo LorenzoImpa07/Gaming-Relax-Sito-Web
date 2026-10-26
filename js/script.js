@@ -54,8 +54,16 @@ function bindPageChrome() {
     }
   }
 
-  const yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  document.querySelectorAll('.faq-item__q').forEach((btn) => {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const was = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach((el) => el.classList.remove('open'));
+      if (!was) item.classList.add('open');
+    });
+  });
 
   document.querySelectorAll('[data-footer="copy"]').forEach((el) => {
     if (!el.dataset.grYear) {
@@ -64,6 +72,9 @@ function bindPageChrome() {
       el.textContent = el.textContent.replace(/20\d{2}/, String(y));
     }
   });
+
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 }
 
 if (document.readyState === 'loading') {
@@ -74,8 +85,50 @@ if (document.readyState === 'loading') {
 
 window.addEventListener('gr:navigated', bindPageChrome);
 
-// Glow / spotlight leggero sulle card (desktop)
-(function glowCards() {
+function bindHeaderScroll() {
+  const h = document.querySelector('.site-header');
+  if (!h) return;
+  const onHome = document.body && document.body.dataset.page === 'home';
+  function sync() {
+    if (!onHome || window.scrollY > 20) h.classList.add('is-scrolled');
+    else h.classList.remove('is-scrolled');
+  }
+  sync();
+  if (!window.__grHeaderScroll) {
+    window.__grHeaderScroll = true;
+    window.addEventListener('scroll', () => {
+      const head = document.querySelector('.site-header');
+      if (!head) return;
+      if (document.body.dataset.page !== 'home' || window.scrollY > 20) head.classList.add('is-scrolled');
+      else head.classList.remove('is-scrolled');
+    }, { passive: true });
+  }
+}
+bindHeaderScroll();
+window.addEventListener('gr:navigated', bindHeaderScroll);
+
+function bindReveal() {
+  const nodes = document.querySelectorAll('.reveal');
+  if (!nodes.length) return;
+  if (!('IntersectionObserver' in window)) {
+    nodes.forEach((n) => n.classList.add('is-in'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        en.target.classList.add('is-in');
+        io.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  nodes.forEach((n) => io.observe(n));
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindReveal);
+else bindReveal();
+window.addEventListener('gr:navigated', bindReveal);
+
+(function galaxyHover() {
   const SEL = '.team-card, .product-card, .card, .feature-card, .service-card, .news-card, .review-card, .auth-card';
   const SKIP = 'a,button,input,textarea,select,label,.gx-layer';
   let current = null;
