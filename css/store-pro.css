@@ -1,0 +1,364 @@
+/* ==========================================================================
+   STORE PRO — Gaming Relax
+   ========================================================================== */
+
+body.page-store {
+  background:
+    radial-gradient(1100px 520px at 12% -12%, rgba(139, 61, 255, 0.2), transparent 55%),
+    radial-gradient(900px 480px at 95% 8%, rgba(255, 77, 173, 0.12), transparent 50%),
+    radial-gradient(700px 400px at 50% 100%, rgba(139, 61, 255, 0.08), transparent 45%),
+    #05070e !important;
+}
+
+/* —— Hero cinematic —— */
+.store-hero {
+  position: relative;
+  padding: 56px 0 42px !important;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 77, 173, 0.12);
+}
+.store-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 60%, #05070e 100%),
+    radial-gradient(600px 280px at 70% 20%, rgba(255, 77, 173, 0.14), transparent 70%);
+  pointer-events: none;
+}
+.store-hero .container {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.store-hero__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 8px 16px 8px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 77, 173, 0.28);
+  background: rgba(12, 14, 24, 0.7);
+  box-shadow: 0 0 28px rgba(255, 77, 173, 0.12);
+}
+.store-hero__brand img {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 77, 173, 0.35);
+}
+.store-hero__brand span {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ff4dad;
+}
+.store-hero__brand i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff4dad;
+  box-shadow: 0 0 10px #ff4dad;
+  animation: store-led 1.6s ease-in-out infinite;
+}
+@keyframes store-led {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.store-hero .eyebrow,
+.store-hero .eyebrow--purple {
+  display: none !important;
+}
+.store-hero h1 {
+  font-size: clamp(36px, 7vw, 64px) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.035em !important;
+  margin: 0 auto !important;
+  max-width: 16ch;
+  background: linear-gradient(110deg, #ffffff 10%, #ff4dad 48%, #8b3dff 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+  filter: drop-shadow(0 0 28px rgba(255, 77, 173, 0.25));
+}
+.store-hero .lede {
+  max-width: 52ch !important;
+  margin: 16px auto 0 !important;
+  color: rgba(230, 234, 244, 0.62) !important;
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* Trust bar as glass pills */
+.store-hero .trust-bar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  margin-top: 28px !important;
+  max-width: 920px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.store-hero .trust-item {
+  flex: 1 1 160px;
+  max-width: 210px;
+  padding: 14px 16px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(139, 61, 255, 0.28) !important;
+  background:
+    linear-gradient(145deg, rgba(139, 61, 255, 0.12), transparent 55%),
+    rgba(12, 14, 24, 0.8) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  text-align: left !important;
+  transition: border-color 0.2s ease, transform 0.2s ease !important;
+}
+.store-hero .trust-item:hover {
+  border-color: rgba(255, 77, 173, 0.4) !important;
+  transform: translateY(-2px);
+}
+.store-hero .trust-item strong {
+  display: block;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  margin-bottom: 2px;
+}
+.store-hero .trust-item span {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* —— Layout —— */
+.store-layout {
+  gap: 28px !important;
+  padding-top: 8px;
+}
+.store-aside {
+  border-radius: 20px !important;
+  border: 1px solid rgba(139, 61, 255, 0.3) !important;
+  background:
+    linear-gradient(165deg, rgba(139, 61, 255, 0.12) 0%, transparent 45%),
+    rgba(12, 14, 24, 0.92) !important;
+  box-shadow: 0 0 40px rgba(139, 61, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  padding: 20px 18px !important;
+}
+.store-facet h4 {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: #ff4dad !important;
+  margin: 0 0 12px !important;
+}
+.store-facet label {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+.store-facet input[type="checkbox"] {
+  accent-color: #ff4dad !important;
+}
+.store-facet input[type="range"] {
+  accent-color: #ff4dad !important;
+}
+.store-price-labs {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 700 !important;
+}
+
+/* Filter pills */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.filter-pill {
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(12, 14, 24, 0.75) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  padding: 9px 16px !important;
+  transition: all 0.18s ease !important;
+  cursor: pointer;
+}
+.filter-pill:hover {
+  border-color: rgba(255, 77, 173, 0.4) !important;
+  color: #fff !important;
+}
+.filter-pill.active {
+  border-color: rgba(255, 77, 173, 0.55) !important;
+  background: linear-gradient(135deg, rgba(255, 77, 173, 0.22), rgba(139, 61, 255, 0.18)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(255, 77, 173, 0.2) !important;
+}
+.filter-dd__item {
+  background: #0c0e18 !important;
+  color: #e8ecf2 !important;
+}
+.filter-dd__item.active {
+  color: #ff4dad !important;
+}
+
+/* —— Product grid —— */
+.product-grid {
+  gap: 20px !important;
+}
+.product-card {
+  border-radius: 20px !important;
+  border: 1px solid rgba(139, 61, 255, 0.28) !important;
+  background:
+    linear-gradient(160deg, rgba(139, 61, 255, 0.08) 0%, transparent 40%),
+    rgba(12, 14, 24, 0.92) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  overflow: hidden !important;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease !important;
+  position: relative;
+}
+.product-card:hover {
+  transform: translateY(-6px) !important;
+  border-color: rgba(255, 77, 173, 0.45) !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 0 36px rgba(255, 77, 173, 0.15) !important;
+}
+.product-card__media,
+.product-card__brand {
+  position: relative;
+}
+.product-card__media {
+  aspect-ratio: 1.15 / 1;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, rgba(139, 61, 255, 0.15), #080a12 70%);
+}
+.product-card__media img,
+.product-card__brand img {
+  transition: transform 0.45s ease !important;
+}
+.product-card:hover .product-card__media img,
+.product-card:hover .product-card__brand > img {
+  transform: scale(1.06);
+}
+.product-card__body {
+  padding: 14px 18px 8px !important;
+}
+.product-card__cat {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: #ff4dad !important;
+}
+.product-card h3 {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  letter-spacing: -0.02em !important;
+  margin: 6px 0 8px !important;
+}
+.product-card__desc {
+  color: rgba(255, 255, 255, 0.48) !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+.product-card__footer {
+  padding: 12px 18px 18px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 4px;
+}
+.product-card__price {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #ff4dad !important;
+  text-shadow: 0 0 18px rgba(255, 77, 173, 0.35);
+}
+.product-card__price.is-sale s {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-size: 13px;
+  text-shadow: none;
+}
+.product-card__cta,
+.product-card .btn--lime {
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 0 1px rgba(255, 77, 173, 0.35), 0 10px 24px -6px rgba(255, 77, 173, 0.45) !important;
+}
+.product-card .btn--outline {
+  border-radius: 999px !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #fff !important;
+}
+.product-card .btn--outline:hover {
+  border-color: #ff4dad !important;
+  color: #ff4dad !important;
+}
+
+/* Badges */
+.badge-sale,
+.product-flags .badge-sale {
+  background: linear-gradient(135deg, #ff4dad, #8b3dff) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(255, 77, 173, 0.4) !important;
+}
+.badge-new {
+  background: rgba(139, 61, 255, 0.9) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+/* Wishlist heart */
+.product-card [data-wish],
+.product-card .wish-btn {
+  color: rgba(255, 255, 255, 0.55) !important;
+  transition: color 0.15s ease, transform 0.15s ease !important;
+}
+.product-card [data-wish]:hover,
+.product-card .wish-btn:hover {
+  color: #ff4dad !important;
+  transform: scale(1.12);
+}
+.product-card [data-wish].is-on,
+.product-card .wish-btn.is-on {
+  color: #ff4dad !important;
+  text-shadow: 0 0 12px rgba(255, 77, 173, 0.6);
+}
+
+/* Empty / loading */
+#product-grid > p {
+  padding: 48px 20px !important;
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(12, 14, 24, 0.5);
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-edit="footNote"] {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.page-store .nl-bar {
+  border-top: 1px solid rgba(255, 77, 173, 0.12);
+  background: linear-gradient(180deg, transparent, rgba(139, 61, 255, 0.06));
+}
+
+@media (max-width: 900px) {
+  .store-hero {
+    padding: 40px 0 32px !important;
+  }
+  .store-hero .trust-item {
+    max-width: none;
+    flex: 1 1 140px;
+  }
+  .store-aside {
+    position: static !important;
+  }
+}
