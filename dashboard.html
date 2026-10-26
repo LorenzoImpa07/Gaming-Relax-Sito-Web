@@ -5,13 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <title>Dashboard — Gaming Relax</title>
-<style>html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,sans-serif}#boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}</style>
+<style>
+  html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:Inter,system-ui,sans-serif;min-height:100%;}
+  #boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;line-height:1.5;}
+  #boot a{color:#ff4dad;}
+  #boot .err{color:#ff8fab;max-width:420px;}
+</style>
 </head>
 <body data-page="dashboard">
 <div id="boot"><p>Caricamento Dashboard…</p></div>
-<script src="js/dash-html-part0.js?v=20261026d"></script>
-<script src="js/dash-html-part1.js?v=20261026d"></script>
-<script src="js/dash-html-part2.js?v=20261026d"></script>
-<script src="js/dash-html-loader.js?v=20261026d"></script>
+<script>
+(async function () {
+  var boot = document.getElementById('boot');
+  function fail(msg) {
+    boot.innerHTML = '<p class="err">' + msg + '</p><p style="margin-top:16px"><a href="login.html">Vai al login</a> · <a href="dashboard.html">Riprova</a></p>';
+  }
+  try {
+    var urls = [
+      'https://cdn.jsdelivr.net/gh/LorenzoImpa07/Gaming-Relax-Sito-Web@df2fc28d/dashboard.html',
+      'https://raw.githack.com/LorenzoImpa07/Gaming-Relax-Sito-Web/df2fc28d/dashboard.html',
+      'https://raw.githubusercontent.com/LorenzoImpa07/Gaming-Relax-Sito-Web/df2fc28d/dashboard.html'
+    ];
+    var html = null, lastErr = null;
+    for (var i = 0; i < urls.length; i++) {
+      try {
+        var ctrl = new AbortController();
+        var t = setTimeout(function(){ ctrl.abort(); }, 12000);
+        var r = await fetch(urls[i], { cache: 'no-store', signal: ctrl.signal, mode: 'cors' });
+        clearTimeout(t);
+        if (!r.ok) { lastErr = 'HTTP ' + r.status; continue; }
+        var text = await r.text();
+        if (text && text.indexOf('dashboard-root') !== -1 && text.indexOf('product-form') !== -1) {
+          html = text;
+          break;
+        }
+        lastErr = 'contenuto incompleto';
+      } catch (e) {
+        lastErr = (e && e.message) ? e.message : String(e);
+      }
+    }
+    if (!html) {
+      fail('Impossibile scaricare la Dashboard (' + (lastErr || 'errore') + '). Controlla la connessione.');
+      return;
+    }
+    html = html.replace(/js\/auth\.js\?v=[^"]+/g, 'js/auth.js?v=20261026d');
+    html = html.replace(/js\/dashboard\.js\?v=[^"]+/g, 'js/dashboard.js?v=20261026d');
+    html = html.replace(/js\/firebase-init\.js\?v=[^"]+/g, 'js/firebase-init.js?v=20261026d');
+    html = html.replace(/js\/banner\.js\?v=[^"]+/g, 'js/banner.js?v=20261026d');
+    html = html.replace(/js\/cart\.js\?v=[^"]+/g, 'js/cart.js?v=20261026d');
+    if (html.indexOf('dash-fix.js') === -1) {
+      html = html.replace(
+        /(<script type="module" src="js\/dashboard\.js\?v=20261026d"><\/script>)/,
+        '$1\n<script type="module" src="js/dash-fix.js?v=20261026d"></script>'
+      );
+    }
+    if (html.indexOf('dash-inline-timeout') === -1) {
+      html = html.replace('</body>',
+        '<script id="dash-inline-timeout">setTimeout(function(){var g=document.getElementById("dashboard-guard");if(!g)return;if((g.textContent||"").toLowerCase().indexOf("verifica accesso")===-1)return;g.innerHTML="<p>Timeout verifica.<br><a href=\'login.html\' class=\'btn btn--lime\' style=\'margin-top:16px\'>Login</a> <a href=\'dashboard.html\' class=\'btn btn--outline\' style=\'margin-top:16px;margin-left:8px\'>Ricarica</a></p>";},9000);</script>\n</body>'
+      );
+    }
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (err) {
+    fail('Errore: ' + (err && err.message ? err.message : err));
+  }
+})();
+</script>
 </body>
 </html>
