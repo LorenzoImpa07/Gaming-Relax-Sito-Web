@@ -51,29 +51,52 @@
   (document.body || document.documentElement).appendChild(s);
 })();
 
+// Dashboard auth fix (sblocca "Verifica accesso in corso…")
+(function () {
+  if (typeof document === "undefined") return;
+  var page = document.body && document.body.getAttribute("data-page");
+  var p = (location.pathname.split("/").pop() || "").toLowerCase();
+  if (page !== "dashboard" && p !== "dashboard.html" && p !== "dashboard") return;
+  if (document.querySelector('script[src*="dash-fix.js"]')) return;
+  var s = document.createElement("script");
+  s.type = "module";
+  s.src = "js/dash-fix.js?v=20261026c";
+  (document.body || document.documentElement).appendChild(s);
+})();
+
 // Sfondi admin (zone + colore) — solo in Dashboard
 if (typeof document !== "undefined" && document.getElementById("bg-form")) {
   import("./bg-admin-enhance.js?v=20261025a").catch(function () {});
 }
 
 // ==========================================================================
-// Autenticazione: login, registrazione, logout, reset password, anagrafica utenti
+// Autenticazione: login, registrazione, menu account
 // ==========================================================================
-import { auth, db, ADMIN_EMAIL, authReady, isAdminEmail, isVerifiedUser } from "./firebase-init.js?v=20260920n";
+import {
+  auth,
+  db,
+  ADMIN_EMAIL,
+  authReady,
+  isAdminEmail,
+  isVerifiedUser
+} from "./firebase-init.js?v=20260920n";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   updateProfile,
-  sendPasswordResetEmail,
   sendEmailVerification,
-  confirmPasswordReset,
-  verifyPasswordResetCode,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import "./partners-dynamic.js";
 import { validateRealEmailAsync } from "./email-check.js";
 
@@ -98,27 +121,17 @@ function messageFromError(err) {
 
 function getDisplayName(user) {
   const cached = user?.uid ? localStorage.getItem("gr_nick_" + user.uid) : "";
-  return (cached || user.displayName || user.email?.split("@")[0] || "Utente").trim();
+  if (cached) return cached;
+  return user?.displayName || (user?.email ? user.email.split("@")[0] : "Utente");
 }
 
 function getAvatar(user) {
-  if (!user) return "";
-  return user.photoURL || localStorage.getItem("gr_avatar_" + user.uid) || "";
+  if (!user?.uid) return "";
+  return localStorage.getItem("gr_avatar_" + user.uid) || user.photoURL || "";
 }
 
-function calcAge(birthdateStr) {
-  if (!birthdateStr) return null;
-  const d = new Date(birthdateStr + "T00:00:00");
-  if (Number.isNaN(d.getTime())) return null;
-  const today = new Date();
-  let age = today.getFullYear() - d.getFullYear();
-  const m = today.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
-  return age;
-}
-
-async function saveUserRecord(user, extra) {
-  if (!user) return;
+async function upsertUserDoc(user, extra) {
+  if (!user?.uid) return;
   const banned = await isBanned(user);
   if (banned) return;
   const payload = {
@@ -136,7 +149,10 @@ async function saveUserRecord(user, extra) {
 async function isBanned(user) {
   if (!user?.email) return false;
   try {
-    const snap = await getDoc(doc(db, "bannedUsers", String(user.email).trim().toLowerCase()));
+    const snap = await Promise.race([
+      getDoc(doc(db, "bannedUsers", String(user.email).trim().toLowerCase())),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("ban-check-timeout")), 4000))
+    ]);
     return snap.exists();
   } catch (_) {
     return false;
@@ -154,68 +170,31 @@ function renderAuthArea(user, extra = {}) {
     area.innerHTML = `
       <div class="auth-menu">
         <button type="button" class="icon-btn auth-menu__trigger" aria-label="Account" aria-haspopup="true">${avatar ? `<img src="${avatar}" alt="">` : initial}</button>
-        <div class="auth-menu__dropdown">
-          <span class="auth-menu__email">${nickname}</span>
-          <span class="auth-menu__sub">${user.email}</span>
+        <div class="auth-menu__panel" hidden>
+          <div class="auth-menu__head">
+            <strong>${nickname}</strong>
+            <span>${user.email || ""}</span>
+          </div>
           <a href="profilo.html">Il mio profilo</a>
-          ${extra.creator ? '<a class="auth-menu__dash" href="creator.html">Area Creator</a>' : ""}
           ${isAdmin ? '<a class="auth-menu__dash" href="dashboard.html">Vai alla Dashboard</a>' : ""}
-          <button type="button" data-action="logout">Esci</button>
+          <button type="button" id="auth-logout">Esci</button>
         </div>
       </div>`;
     const trigger = area.querySelector(".auth-menu__trigger");
-    const menu = area.querySelector(".auth-menu");
-    const dropdown = area.querySelector(".auth-menu__dropdown");
-    trigger.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      menu.classList.toggle("open");
+    const panel = area.querySelector(".auth-menu__panel");
+    trigger?.addEventListener("click", () => {
+      panel.hidden = !panel.hidden;
     });
-    dropdown.addEventListener("click", (e) => e.stopPropagation());
-    document.addEventListener("click", () => menu.classList.remove("open"));
-    area.querySelector('[data-action="logout"]').addEventListener("click", () => {
+    document.getElementById("auth-logout")?.addEventListener("click", () => {
       signOut(auth).then(() => { window.location.href = "index.html"; });
     });
   } else {
-    area.innerHTML = `<a href="login.html" class="btn btn--ghost-lime" style="padding:10px 18px;font-size:13px;">Accedi</a>`;
-  }
-}
-
-async function loadCreatorPortal(user) {
-  if (!user?.email) return null;
-  const key = String(user.email).trim().toLowerCase();
-  try {
-    const cached = JSON.parse(sessionStorage.getItem("gr_creator") || "null");
-    if (cached && cached.email === key && cached.active !== false) return cached;
-  } catch (_) {}
-  try {
-    const snap = await getDoc(doc(db, "creatorPortals", key));
-    if (!snap.exists()) {
-      try { sessionStorage.removeItem("gr_creator"); } catch (_) {}
-      return null;
-    }
-    const d = { ...snap.data(), email: key };
-    if (d.active === false) {
-      try { sessionStorage.removeItem("gr_creator"); } catch (_) {}
-      return null;
-    }
-    try { sessionStorage.setItem("gr_creator", JSON.stringify(d)); } catch (_) {}
-    return d;
-  } catch (_) {
-    return null;
+    area.innerHTML = `<a class="btn btn--outline" href="login.html">Accedi</a>`;
   }
 }
 
 async function refreshAuthMenu(user) {
-  if (!user) { renderAuthArea(null); return; }
-  let creator = null;
-  try {
-    const cached = JSON.parse(sessionStorage.getItem("gr_creator") || "null");
-    if (cached && cached.email === String(user.email || "").toLowerCase()) creator = cached;
-  } catch (_) {}
-  renderAuthArea(user, { creator: !!creator });
-  const live = await loadCreatorPortal(user);
-  if (!!live !== !!creator) renderAuthArea(user, { creator: !!live });
+  renderAuthArea(user);
 }
 
 const VERIFY_URL = { url: "https://gamingrelaxofficials.it/login.html", handleCodeInApp: false };
@@ -233,9 +212,12 @@ onAuthStateChanged(auth, async (user) => {
   }
   try { await user.reload(); } catch (_) {}
   if (!isVerifiedUser(user)) {
-    await signOut(auth);
-    renderAuthArea(null);
-    return;
+    const onDash = (location.pathname || "").toLowerCase().includes("dashboard");
+    if (!(onDash && isAdminEmail(user.email))) {
+      await signOut(auth);
+      renderAuthArea(null);
+      return;
+    }
   }
   await refreshAuthMenu(user);
   getDoc(doc(db, "users", user.uid)).then((snap) => {
@@ -249,194 +231,146 @@ onAuthStateChanged(auth, async (user) => {
 
 function bindAuthForms() {
   const loginForm = document.getElementById("login-form");
+  const registerForm = document.getElementById("register-form");
+  const resetForm = document.getElementById("reset-form");
+  const googleBtn = document.getElementById("google-login");
+
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = loginForm.querySelector("#login-email").value.trim();
-      const password = loginForm.querySelector("#login-password").value;
-      const errorEl = document.getElementById("login-error");
-      errorEl.classList.remove("visible");
+      const email = loginForm.querySelector('[name="email"], #login-email')?.value?.trim();
+      const password = loginForm.querySelector('[name="password"], #login-password')?.value;
+      const errEl = document.getElementById("login-error") || loginForm.querySelector(".form-error");
       try {
-        await authReady;
         const cred = await signInWithEmailAndPassword(auth, email, password);
         if (await isBanned(cred.user)) {
           await signOut(auth);
-          errorEl.textContent = "Questo account e stato rimosso. Non e piu possibile accedere.";
-          errorEl.classList.add("visible");
+          if (errEl) errEl.textContent = "Questo account e stato sospeso.";
           return;
         }
-        await cred.user.reload();
+        try { await cred.user.reload(); } catch (_) {}
         if (!isVerifiedUser(cred.user)) {
-          try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
+          if (errEl) errEl.textContent = "Verifica la email prima di accedere.";
           await signOut(auth);
-          errorEl.textContent = "Conferma prima l'email. Ti abbiamo inviato un link: apri la casella (anche lo spam) e clicca Conferma, poi torna ad accedere.";
-          errorEl.classList.add("visible");
           return;
         }
-        try { await setDoc(doc(db, "users", cred.user.uid), { needsEmailVerify: false, emailVerified: true }, { merge: true }); } catch (_) {}
-        await saveUserRecord(cred.user);
+        await upsertUserDoc(cred.user);
         window.location.href = isAdminEmail(cred.user.email) ? "dashboard.html" : "index.html";
       } catch (err) {
-        errorEl.textContent = messageFromError(err);
-        errorEl.classList.add("visible");
+        if (errEl) errEl.textContent = messageFromError(err);
       }
     });
   }
 
-  const registerForm = document.getElementById("register-form");
   if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const nickname = (registerForm.querySelector("#register-nickname")?.value || "").trim();
-      const firstName = (registerForm.querySelector("#register-firstname")?.value || "").trim();
-      const lastName = (registerForm.querySelector("#register-lastname")?.value || "").trim();
-      const birthdate = (registerForm.querySelector("#register-birthdate")?.value || "").trim();
-      const email = (registerForm.querySelector("#register-email")?.value || "").trim();
-      const password = registerForm.querySelector("#register-password")?.value || "";
-      const password2 = registerForm.querySelector("#register-password2")?.value || "";
-      const terms = registerForm.querySelector("#register-terms");
-      const errorEl = document.getElementById("register-error");
-      errorEl.classList.remove("visible");
-      if (nickname.length < 2) { errorEl.textContent = "Il nickname deve avere almeno 2 caratteri."; errorEl.classList.add("visible"); return; }
-      if (!firstName) { errorEl.textContent = "Inserisci il tuo nome."; errorEl.classList.add("visible"); return; }
-      if (!birthdate) { errorEl.textContent = "Inserisci la data di nascita."; errorEl.classList.add("visible"); return; }
-      const age = calcAge(birthdate);
-      if (age === null) { errorEl.textContent = "Data di nascita non valida."; errorEl.classList.add("visible"); return; }
-      if (age < MIN_AGE) { errorEl.textContent = "Devi avere almeno " + MIN_AGE + " anni per registrarti."; errorEl.classList.add("visible"); return; }
-      if (password.length < 6) { errorEl.textContent = "La password deve avere almeno 6 caratteri."; errorEl.classList.add("visible"); return; }
-      if (password !== password2) { errorEl.textContent = "Le due password non coincidono."; errorEl.classList.add("visible"); return; }
-      if (terms && !terms.checked) { errorEl.textContent = "Devi accettare i Termini e Condizioni e la Privacy Policy."; errorEl.classList.add("visible"); return; }
-      const emailErr = await validateRealEmailAsync(email);
-      if (emailErr) { errorEl.textContent = emailErr; errorEl.classList.add("visible"); return; }
+      const errEl = document.getElementById("register-error") || registerForm.querySelector(".form-error");
+      const email = registerForm.querySelector('[name="email"], #reg-email')?.value?.trim();
+      const password = registerForm.querySelector('[name="password"], #reg-password')?.value;
+      const password2 = registerForm.querySelector('[name="password2"], #reg-password2')?.value;
+      const firstName = registerForm.querySelector('[name="firstName"], #reg-firstname')?.value?.trim() || "";
+      const lastName = registerForm.querySelector('[name="lastName"], #reg-lastname')?.value?.trim() || "";
+      const birth = registerForm.querySelector('[name="birth"], #reg-birth')?.value;
+      const terms = registerForm.querySelector('[name="terms"], #reg-terms');
+      if (password !== password2) {
+        if (errEl) errEl.textContent = "Le password non coincidono.";
+        return;
+      }
+      if (terms && !terms.checked) {
+        if (errEl) errEl.textContent = "Devi accettare i termini.";
+        return;
+      }
+      if (birth) {
+        const b = new Date(birth);
+        const now = new Date();
+        let age = now.getFullYear() - b.getFullYear();
+        const m = now.getMonth() - b.getMonth();
+        if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+        if (age < MIN_AGE) {
+          if (errEl) errEl.textContent = "Devi avere almeno " + MIN_AGE + " anni.";
+          return;
+        }
+      }
       try {
-        await authReady;
+        const check = await validateRealEmailAsync(email);
+        if (check && check.ok === false) {
+          if (errEl) errEl.textContent = check.message || "Email non valida.";
+          return;
+        }
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(cred.user, { displayName: nickname });
-        await saveUserRecord(cred.user, {
-          nickname, firstName, lastName, birthdate, age, email,
-          createdAt: serverTimestamp(), roleIds: [], needsEmailVerify: true, emailVerified: false,
-          acceptedTermsAt: serverTimestamp()
-        });
+        const displayName = [firstName, lastName].filter(Boolean).join(" ") || email.split("@")[0];
+        try { await updateProfile(cred.user, { displayName }); } catch (_) {}
         try { await sendEmailVerification(cred.user, VERIFY_URL); } catch (_) {}
+        await upsertUserDoc(cred.user, {
+          firstName,
+          lastName,
+          birthDate: birth || "",
+          displayName,
+          createdAt: serverTimestamp()
+        });
         await signOut(auth);
-        const okEl = document.getElementById("register-ok");
-        registerForm.style.display = "none";
-        errorEl.classList.remove("visible");
-        if (okEl) {
-          okEl.innerHTML = "Account creato. Ti abbiamo inviato un'email di conferma. Apri il link per attivare l'account, poi <a href=\"login.html\">accedi</a>. Controlla anche lo spam.";
-          okEl.classList.add("visible");
-        } else {
-          window.location.href = "login.html";
+        if (errEl) {
+          errEl.style.color = "var(--lime)";
+          errEl.textContent = "Account creato. Controlla la email per verificare l'account, poi accedi.";
         }
       } catch (err) {
-        errorEl.textContent = messageFromError(err);
-        errorEl.classList.add("visible");
+        if (errEl) errEl.textContent = messageFromError(err);
       }
     });
   }
 
-  const googleLoginBtn = document.getElementById("google-login-btn");
-  if (googleLoginBtn && googleLoginBtn.dataset.bound !== "1") {
-    googleLoginBtn.dataset.bound = "1";
-    googleLoginBtn.addEventListener("click", async () => {
-      const errorEl = document.getElementById("login-error") || document.getElementById("register-error");
-      if (errorEl) errorEl.classList.remove("visible");
+  if (resetForm) {
+    resetForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = resetForm.querySelector('[name="email"], #reset-email')?.value?.trim();
+      const errEl = document.getElementById("reset-error") || resetForm.querySelector(".form-error");
       try {
-        await authReady;
+        await sendPasswordResetEmail(auth, email, VERIFY_URL);
+        if (errEl) {
+          errEl.style.color = "var(--lime)";
+          errEl.textContent = "Email di reset inviata. Controlla la casella di posta.";
+        }
+      } catch (err) {
+        if (errEl) errEl.textContent = messageFromError(err);
+      }
+    });
+  }
+
+  if (googleBtn) {
+    googleBtn.addEventListener("click", async () => {
+      const errEl = document.getElementById("login-error");
+      try {
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
         if (await isBanned(cred.user)) {
           await signOut(auth);
-          if (errorEl) { errorEl.textContent = "Questo account e stato rimosso."; errorEl.classList.add("visible"); }
+          if (errEl) errEl.textContent = "Questo account e stato sospeso.";
           return;
         }
-        await saveUserRecord(cred.user, {
-          nickname: cred.user.displayName || cred.user.email.split("@")[0],
-          emailVerified: true, needsEmailVerify: false
-        });
+        await upsertUserDoc(cred.user);
         window.location.href = isAdminEmail(cred.user.email) ? "dashboard.html" : "index.html";
       } catch (err) {
-        if (errorEl) { errorEl.textContent = messageFromError(err); errorEl.classList.add("visible"); }
+        if (errEl) errEl.textContent = messageFromError(err);
       }
     });
   }
-
-  const forgotToggle = document.getElementById("forgot-toggle");
-  const forgotWrap = document.getElementById("forgot-wrap");
-  const forgotForm = document.getElementById("forgot-form");
-  if (forgotToggle && forgotWrap) {
-    forgotToggle.addEventListener("click", () => {
-      const open = forgotWrap.style.display === "block";
-      forgotWrap.style.display = open ? "none" : "block";
-    });
-  }
-  if (forgotForm) {
-    forgotForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = (document.getElementById("forgot-email").value || "").trim();
-      const msgEl = document.getElementById("forgot-msg");
-      const btn = forgotForm.querySelector('button[type="submit"]');
-      msgEl.className = "auth-ok"; msgEl.textContent = "";
-      if (!email) { msgEl.className = "auth-error visible"; msgEl.textContent = "Inserisci l'email del tuo account."; return; }
-      const emailErr = await validateRealEmailAsync(email);
-      if (emailErr) { msgEl.className = "auth-error visible"; msgEl.textContent = emailErr; return; }
-      btn.disabled = true;
-      try {
-        await sendPasswordResetEmail(auth, email, { url: "https://gamingrelaxofficials.it/login.html", handleCodeInApp: false });
-        msgEl.className = "auth-ok visible";
-        msgEl.textContent = "Ti abbiamo inviato l'email. Controlla anche Spam.";
-        forgotForm.reset();
-      } catch (err) {
-        if (err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
-          msgEl.className = "auth-ok visible";
-          msgEl.textContent = "Ti abbiamo inviato l'email. Controlla anche Spam.";
-        } else {
-          msgEl.className = "auth-error visible";
-          msgEl.textContent = messageFromError(err);
-        }
-      } finally { btn.disabled = false; }
-    });
-  }
-
-  const resetForm = document.getElementById("reset-form");
-  if (resetForm && resetForm.dataset.bound !== "1") {
-    resetForm.dataset.bound = "1";
-    const params = new URLSearchParams(location.search);
-    const oobCode = params.get("oobCode") || "";
-    const msgEl = document.getElementById("reset-msg");
-    const emailEl = document.getElementById("reset-email-hint");
-    if (!oobCode) {
-      if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link non valido."; }
-      resetForm.querySelectorAll("input,button").forEach((el) => { el.disabled = true; });
-    } else {
-      verifyPasswordResetCode(auth, oobCode).then((mail) => {
-        if (emailEl) emailEl.textContent = "Account: " + mail;
-      }).catch(() => {
-        if (msgEl) { msgEl.className = "auth-error visible"; msgEl.textContent = "Link scaduto o gia usato."; }
-      });
-      resetForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const p1 = document.getElementById("reset-pass")?.value || "";
-        const p2 = document.getElementById("reset-pass2")?.value || "";
-        if (p1.length < 6) { msgEl.className = "auth-error visible"; msgEl.textContent = "La password deve avere almeno 6 caratteri."; return; }
-        if (p1 !== p2) { msgEl.className = "auth-error visible"; msgEl.textContent = "Le due password non coincidono."; return; }
-        try {
-          await confirmPasswordReset(auth, oobCode, p1);
-          msgEl.className = "auth-ok visible";
-          msgEl.textContent = "Password aggiornata. Ora puoi accedere.";
-          setTimeout(() => { location.href = "login.html"; }, 1200);
-        } catch (err) {
-          msgEl.className = "auth-error visible";
-          msgEl.textContent = messageFromError(err);
-        }
-      });
-    }
-  }
 }
 
-bindAuthForms();
-window.addEventListener("gr:navigated", () => {
-  const u = auth.currentUser;
-  refreshAuthMenu(u && isVerifiedUser(u) ? u : null);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bindAuthForms);
+} else {
   bindAuthForms();
-});
+}
+
+export async function requireAuth() {
+  await authReady.catch(() => {});
+  return new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      unsub();
+      resolve(u && isVerifiedUser(u) ? u : null);
+    });
+  });
+}
+
+export { auth, isAdminEmail, isVerifiedUser, getDisplayName, refreshAuthMenu };
