@@ -1,0 +1,277 @@
+/* ==========================================================================
+   SITE PAGES PRO — tutte le pagine tranne Home
+   ========================================================================== */
+
+body.page-site:not(.page-home):not([data-page="home"]) {
+  background:
+    radial-gradient(1000px 480px at 10% -10%, rgba(139, 61, 255, 0.14), transparent 55%),
+    radial-gradient(800px 400px at 100% 0%, rgba(255, 77, 173, 0.08), transparent 50%),
+    #05070e !important;
+}
+
+/* —— Heroes generici —— */
+body.page-site .page-hero,
+body.page-site .art-hero,
+body.page-site .process-hero,
+body.page-site .contact-hero,
+body.page-site .faq-hero,
+body.page-site .thanks-hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 77, 173, 0.1);
+}
+body.page-site .page-hero::before,
+body.page-site .art-hero::before,
+body.page-site .process-hero::before,
+body.page-site .contact-hero::before,
+body.page-site .faq-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(500px 240px at 70% 10%, rgba(255, 77, 173, 0.1), transparent 70%);
+  pointer-events: none;
+}
+body.page-site .page-hero .container,
+body.page-site .art-hero .container,
+body.page-site .process-hero .container,
+body.page-site .contact-hero .container,
+body.page-site .faq-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+body.page-site .page-hero h1,
+body.page-site .art-hero h1,
+body.page-site .process-hero h1,
+body.page-site .contact-hero h1,
+body.page-site .faq-hero h1,
+body.page-site .thanks-hero h1 {
+  background: linear-gradient(110deg, #fff 12%, #ff4dad 50%, #8b3dff 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  filter: drop-shadow(0 0 24px rgba(255, 77, 173, 0.2));
+}
+body.page-site .page-hero h1 span[style*="lime"],
+body.page-site .page-hero h1 span[style*="var(--lime)"] {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  color: #ff4dad !important;
+  filter: none;
+}
+
+body.page-site .eyebrow,
+body.page-site .eyebrow--lime,
+body.page-site .eyebrow--purple {
+  color: #ff4dad !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
+}
+
+body.page-site .page-hero .lede,
+body.page-site .art-hero .lede,
+body.page-site .process-hero .lede,
+body.page-site .contact-hero .lede,
+body.page-site .faq-hero .lede {
+  color: rgba(230, 234, 244, 0.6) !important;
+}
+
+/* Brand chip (injected) */
+.gr-page-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 7px 14px 7px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 77, 173, 0.28);
+  background: rgba(12, 14, 24, 0.75);
+  box-shadow: 0 0 24px rgba(255, 77, 173, 0.1);
+}
+.gr-page-chip img {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 77, 173, 0.35);
+}
+.gr-page-chip span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ff4dad;
+}
+.gr-page-chip i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff4dad;
+  box-shadow: 0 0 8px #ff4dad;
+  animation: gr-chip-led 1.7s ease-in-out infinite;
+}
+@keyframes gr-chip-led {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* —— Cards generiche —— */
+body.page-site .team-card,
+body.page-site .card,
+body.page-site .feature-card,
+body.page-site .service-card,
+body.page-site .news-card,
+body.page-site .review-card,
+body.page-site .faq-item,
+body.page-site .forum-board-card,
+body.page-site .forum-topic-row {
+  border-radius: 18px !important;
+  border: 1px solid rgba(139, 61, 255, 0.22) !important;
+  background:
+    linear-gradient(160deg, rgba(139, 61, 255, 0.07) 0%, transparent 45%),
+    rgba(12, 14, 24, 0.9) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+body.page-site .team-card:hover,
+body.page-site .card:hover,
+body.page-site .feature-card:hover,
+body.page-site .service-card:hover,
+body.page-site .news-card:hover,
+body.page-site .review-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 77, 173, 0.4) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 28px rgba(255, 77, 173, 0.12) !important;
+}
+
+body.page-site .team-card__body span,
+body.page-site .team-card span {
+  color: #ff4dad !important;
+}
+
+body.page-site .faq-item summary,
+body.page-site .faq-q,
+body.page-site .faq-item__q {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+body.page-site .faq-item[open],
+body.page-site .faq-item.is-open {
+  border-color: rgba(255, 77, 173, 0.35) !important;
+}
+
+/* —— Auth / profilo / creator —— */
+body.page-site .auth-card,
+body.page-site .profile-card,
+body.page-site .creator-panel {
+  border-radius: 22px !important;
+  border: 1px solid rgba(139, 61, 255, 0.3) !important;
+  background:
+    linear-gradient(165deg, rgba(139, 61, 255, 0.1) 0%, transparent 40%),
+    rgba(12, 14, 24, 0.94) !important;
+  box-shadow: 0 0 48px rgba(139, 61, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  padding: 28px !important;
+}
+body.page-site .auth-card h1,
+body.page-site .profile-card h1 {
+  background: linear-gradient(110deg, #fff 20%, #ff4dad 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+body.page-site .auth-card input,
+body.page-site .auth-card select,
+body.page-site .profile-card input,
+body.page-site .profile-card select,
+body.page-site .contact-form input,
+body.page-site .contact-form textarea,
+body.page-site .contact-form select {
+  border-radius: 12px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(5, 7, 14, 0.75) !important;
+  color: #f5f7fb !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+body.page-site .auth-card input:focus,
+body.page-site .profile-card input:focus,
+body.page-site .contact-form input:focus,
+body.page-site .contact-form textarea:focus {
+  border-color: #ff4dad !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 77, 173, 0.2) !important;
+}
+
+body.page-site .contact-form,
+body.page-site .contact-panel,
+body.page-site form.contact-form {
+  border-radius: 20px !important;
+  border: 1px solid rgba(139, 61, 255, 0.25) !important;
+  background: rgba(12, 14, 24, 0.9) !important;
+  padding: 24px !important;
+}
+
+body.page-site .btn--lime,
+body.page-site .btn.btn--lime {
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 0 1px rgba(255, 77, 173, 0.3), 0 10px 28px -6px rgba(255, 77, 173, 0.45) !important;
+}
+body.page-site .btn--outline {
+  border-radius: 999px !important;
+}
+
+body.page-site .section-head h2 {
+  color: #fff !important;
+  letter-spacing: -0.02em;
+}
+body.page-site .section-head .eyebrow {
+  color: #ff4dad !important;
+}
+
+body.page-site .product-detail__price,
+body.page-site .pd-price {
+  color: #ff4dad !important;
+  text-shadow: 0 0 16px rgba(255, 77, 173, 0.3);
+}
+
+body.page-site .forum-board-card:hover,
+body.page-site .forum-topic-row:hover {
+  border-color: rgba(255, 77, 173, 0.35) !important;
+}
+body.page-site .forum-topic-row a {
+  color: #fff !important;
+  font-weight: 700;
+}
+body.page-site .forum-topic-row a:hover {
+  color: #ff4dad !important;
+}
+
+body.page-site .nl-bar {
+  border-top: 1px solid rgba(255, 77, 173, 0.1);
+  background: linear-gradient(180deg, transparent, rgba(139, 61, 255, 0.05));
+}
+
+body.page-site .team-note {
+  border-radius: 16px !important;
+  border: 1px solid rgba(139, 61, 255, 0.22) !important;
+  background: rgba(12, 14, 24, 0.85) !important;
+}
+
+body.page-site .legal-content h2,
+body.page-site .policy-content h2 {
+  color: #fff;
+}
+
+body.page-site .process-step,
+body.page-site .studio-step {
+  border-radius: 16px !important;
+  border: 1px solid rgba(139, 61, 255, 0.22) !important;
+  background: rgba(12, 14, 24, 0.88) !important;
+}
+
+@media (max-width: 768px) {
+  .gr-page-chip {
+    margin-bottom: 12px;
+  }
+}
