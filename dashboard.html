@@ -5,33 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <title>Dashboard — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="stylesheet" href="css/style.css?v=20261026f">
+<link rel="stylesheet" href="css/dashboard-pro.css?v=20261026f">
 <style>
-html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,sans-serif;min-height:100%}
-#boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px}
-#boot a{color:#ff4dad}
+html,body{background:#05070e!important;margin:0;min-height:100%;color:#e8ecf2;font-family:Inter,system-ui,sans-serif;}
+.dashboard-guard{min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;}
+.dashboard-guard a,.dash-recovery a{color:#ff4dad;}
+#dashboard-root{display:none;}
+.dash-recovery{max-width:560px;margin:32px auto;padding:24px;border-radius:18px;border:1px solid rgba(255,77,173,.35);background:rgba(18,16,36,.92);line-height:1.55;}
+.dash-recovery h2{margin:0 0 12px;color:#fff;font-size:20px;}
+.dash-recovery ol{margin:12px 0 0 20px;}
+.dash-recovery code{background:#0a0d16;padding:2px 6px;border-radius:6px;color:#ff4dad;}
 </style>
 </head>
 <body data-page="dashboard">
-<div id="boot"><p>Caricamento Dashboard…</p></div>
-<script>
-(async function () {
-  var boot = document.getElementById('boot');
-  try {
-    var parts = [];
-    for (var i = 0; i < 4; i++) {
-      var r = await fetch('dashboard-chunk-' + i + '.txt?v=20261026f', { cache: 'no-store' });
-      if (!r.ok) throw new Error('chunk ' + i + ' HTTP ' + r.status);
-      parts.push(await r.text());
+<header class="site-header">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
+    <a href="index.html" class="brand" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;">
+      <img src="images/logo.png" alt="Gaming Relax" width="40" height="40" style="border-radius:10px;">
+      <span>Gaming Relax</span>
+    </a>
+    <span id="auth-area"></span>
+  </div>
+</header>
+<div class="dashboard-guard" id="dashboard-guard"><p>Verifica accesso in corso…</p></div>
+<div id="dashboard-root">
+  <div class="container" style="padding:24px 16px 60px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
+      <div>
+        <h1 style="margin:0;color:#fff;">Dashboard</h1>
+        <span style="color:#9aa3b5;">Connesso come <strong id="admin-email" style="color:#ff4dad;"></strong></span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="index.html" id="dash-open-site" class="btn btn--outline" target="_blank" rel="noopener">Apri il sito</a>
+        <button type="button" id="logout-dash" class="btn btn--outline">Esci</button>
+      </div>
+    </div>
+    <div id="dash-stats" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+      <div style="padding:16px;border-radius:14px;border:1px solid rgba(139,61,255,.3);background:rgba(12,14,24,.9);min-width:110px;"><strong id="stat-products" style="display:block;font-size:22px;color:#fff;">–</strong><span style="color:#9aa3b5;font-size:13px;">Prodotti</span></div>
+      <div style="padding:16px;border-radius:14px;border:1px solid rgba(139,61,255,.3);background:rgba(12,14,24,.9);min-width:110px;"><strong id="stat-team" style="display:block;font-size:22px;color:#fff;">–</strong><span style="color:#9aa3b5;font-size:13px;">Team</span></div>
+      <div style="padding:16px;border-radius:14px;border:1px solid rgba(139,61,255,.3);background:rgba(12,14,24,.9);min-width:110px;"><strong id="stat-orders" style="display:block;font-size:22px;color:#fff;">–</strong><span style="color:#9aa3b5;font-size:13px;">Ordini</span></div>
+      <div style="padding:16px;border-radius:14px;border:1px solid rgba(139,61,255,.3);background:rgba(12,14,24,.9);min-width:110px;"><strong id="stat-users" style="display:block;font-size:22px;color:#fff;">–</strong><span style="color:#9aa3b5;font-size:13px;">Utenti</span></div>
+    </div>
+    <div class="dash-recovery">
+      <h2>Accesso admin OK — ripristina i pannelli</h2>
+      <p>Per avere di nuovo prodotti, ordini, banner, sfondi e tutti i form:</p>
+      <ol>
+        <li>Apri GitHub → file <code>dashboard.html</code></li>
+        <li>Clicca <strong>History</strong></li>
+        <li>Apri il commit <code>df2fc28d</code></li>
+        <li>Menu ⋯ → <strong>Restore this file</strong> su <code>main</code></li>
+      </ol>
+      <p style="margin-top:14px;"><a href="https://github.com/LorenzoImpa07/Gaming-Relax-Sito-Web/commits/main/dashboard.html">Apri la History su GitHub</a></p>
+    </div>
+  </div>
+</div>
+<script type="module" src="js/firebase-init.js?v=20261026f"></script>
+<script type="module" src="js/auth.js?v=20261026f"></script>
+<script type="module" src="js/dash-fix.js?v=20261026f"></script>
+<script src="js/dash-guard-boot.js?v=20261026f"></script>
+<script type="module">
+import { auth, ADMIN_EMAIL, authReady } from './js/firebase-init.js?v=20261026f';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+try { await authReady; } catch (e) {}
+onAuthStateChanged(auth, (user) => {
+  const guard = document.getElementById('dashboard-guard');
+  const root = document.getElementById('dashboard-root');
+  const email = user && user.email ? String(user.email).trim().toLowerCase() : '';
+  const admin = String(ADMIN_EMAIL || '').trim().toLowerCase();
+  if (!user || email !== admin) {
+    if (guard) {
+      guard.style.display = 'flex';
+      guard.innerHTML = user
+        ? '<p>Questo account non ha accesso.<br><a href="index.html">Torna al sito</a></p>'
+        : '<p>Accedi con l\'account amministratore.<br><a href="login.html">Vai al login</a></p>';
     }
-    var html = parts.join('');
-    if (html.indexOf('dashboard-root') === -1) throw new Error('HTML incompleto');
-    document.open();
-    document.write(html);
-    document.close();
-  } catch (err) {
-    boot.innerHTML = '<p>Errore: ' + (err && err.message ? err.message : err) + '</p><p><a href="dashboard.html">Riprova</a> · <a href="login.html">Login</a></p>';
+    if (root) root.style.display = 'none';
+    return;
   }
-})();
+  if (guard) guard.style.display = 'none';
+  if (root) root.style.display = 'block';
+  const el = document.getElementById('admin-email');
+  if (el) el.textContent = user.email || '';
+});
+document.getElementById('logout-dash')?.addEventListener('click', () => {
+  signOut(auth).then(() => { location.href = 'index.html'; });
+});
 </script>
 </body>
 </html>
