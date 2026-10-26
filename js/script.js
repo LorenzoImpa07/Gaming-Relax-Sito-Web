@@ -73,3 +73,43 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener('gr:navigated', bindPageChrome);
+
+// Glow / spotlight leggero sulle card (desktop)
+(function glowCards() {
+  const SEL = '.team-card, .product-card, .card, .feature-card, .service-card, .news-card, .review-card, .auth-card';
+  const SKIP = 'a,button,input,textarea,select,label,.gx-layer';
+  let current = null;
+  const layer = document.createElement('div');
+  layer.className = 'gx-layer';
+  layer.setAttribute('aria-hidden', 'true');
+  function clear() {
+    if (!current) return;
+    current.classList.remove('gx-hot');
+    current = null;
+    layer.remove();
+  }
+  function attach(el) {
+    if (current === el) return;
+    if (current) current.classList.remove('gx-hot');
+    current = el;
+    const pos = getComputedStyle(el).position;
+    if (pos === 'static') el.style.position = 'relative';
+    el.classList.add('gx-hot');
+    el.appendChild(layer);
+  }
+  document.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    const skip = e.target.closest && e.target.closest(SKIP);
+    if (skip && skip.classList && skip.classList.contains('gx-layer')) return;
+    const el = e.target.closest && e.target.closest(SEL);
+    if (!el || (e.target.closest && e.target.closest(SKIP) && !el.contains(layer))) {
+      clear();
+      return;
+    }
+    attach(el);
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--gx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--gy', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+  document.addEventListener('pointerleave', clear);
+})();
