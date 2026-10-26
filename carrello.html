@@ -12,11 +12,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260920al">
+<link rel="stylesheet" href="css/cart-checkout-pro.css?v=20261026a">
 <script>(function(){try{var h=document.documentElement,s=h.style;s.colorScheme="dark";s.backgroundColor="#05070e";if(!document.querySelector('meta[name="color-scheme"]')){var m=document.createElement("meta");m.name="color-scheme";m.content="dark";(document.head||h).appendChild(m);}var st=document.createElement("style");st.textContent="html,body{background-color:#05070e!important;color-scheme:dark}";(document.head||h).appendChild(st);var d=JSON.parse(localStorage.getItem("gr_design")||"{}");if(d.limeColor){var L=d.limeColor,H=String(L).replace("#","");var r=parseInt(H.slice(0,2),16),g=parseInt(H.slice(2,4),16),b=parseInt(H.slice(4,6),16);if(!H|| (g>170&&b<90&&r>120))L="#ff4dad";s.setProperty("--lime",L);s.setProperty("--lime-dim",L+"33");}if(d.purpleColor){s.setProperty("--purple",d.purpleColor);s.setProperty("--purple-dim",d.purpleColor+"33");}if(d.bgColor)s.setProperty("--bg",d.bgColor);if(d.bgAltColor)s.setProperty("--bg-alt",d.bgAltColor);if(d.cardColor)s.setProperty("--card-solid",d.cardColor);var file=(location.pathname.split("/").pop()||"index.html").replace(/\.html$/i,"");if(!file||file==="index")file="home";var alias={prodotto:"store",carrello:"store",checkout:"store",profilo:"login","forum-topic":"forum","forum-board":"forum",grazie:"store"};if(alias[file])file=alias[file];var bg=(JSON.parse(localStorage.getItem("gr_bgs")||"{}")[file]||{});if(bg.image){s.backgroundImage='url("'+String(bg.image).replace(/"/g,"%22")+'")';s.backgroundSize="cover";s.backgroundPosition="center";s.backgroundRepeat="no-repeat";s.backgroundAttachment="fixed";var pre=new Image();pre.src=bg.image;}}catch(e){}})();</script>
 <script src="js/smooth-nav.js?v=20260920at" defer></script>
 </head>
-<body data-page="store">
-
+<body class="page-cart">
 <header class="site-header">
   <div class="container">
     <a href="index.html" class="brand">
@@ -26,17 +26,16 @@
     <nav class="main-nav">
       <a href="index.html">Home</a>
       <a href="store.html">Store</a>
-      <a href="custom.html">Custom</a>
+      <a href="custom.html">Custom Studio</a>
+      <a href="chi-siamo.html">Chi siamo</a>
       <a href="art.html">Art</a>
-      <a href="novita.html">Novità</a>
       <a href="forum.html">Forum</a>
-      <a href="team.html">Team</a>
-      <a href="recensioni.html">Recensioni</a>
+      <a href="faq.html">FAQ</a>
       <a href="contatti.html">Contatti</a>
     </nav>
     <div class="header-actions">
       <a href="carrello.html" id="cart-open" class="icon-btn cart-btn" aria-label="Carrello"><span class="cart-btn__ico" aria-hidden="true">&#128722;</span><span class="cart-btn__count" hidden>0</span></a>
-      <span id="auth-area"></span>
+      <div id="auth-area"></div>
       <button class="nav-toggle" aria-label="Apri il menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -46,22 +45,28 @@
 
 <section style="padding:40px 0 80px;">
   <div class="container">
-    <p class="eyebrow">Store</p>
-    <h1 style="margin-bottom:28px;">Carrello</h1>
+    <div class="gr-shop-hero">
+      <div class="gr-shop-hero__logo"><img src="images/logo.png" alt="Gaming Relax"></div>
+      <div class="gr-shop-hero__text">
+        <p class="gr-shop-hero__eyebrow"><i></i> Store</p>
+        <h1>Il tuo carrello</h1>
+        <p class="gr-shop-hero__sub">Rivedi i prodotti e procedi al checkout sicuro</p>
+      </div>
+    </div>
     <div id="cart-page" class="cart-page">
       <div id="cart-body"></div>
       <aside id="cart-foot" class="cart-summary"></aside>
     </div>
 
-    <div class="cart-payment-methods-info" style="margin-top: 30px; background: var(--card-solid, #121624); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); text-align: center;">
-      <p style="margin-bottom: 12px; font-weight: 600; font-size: 0.95rem; color: #fff;">Metodi di pagamento disponibili [✔] e non disponibili [❌] al checkout:</p>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-        <span style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">Carte di Credito / Debito ✔</span>
-        <span style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">PayPal ✔</span>
-        <span style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); color: #ffb3c6; font-weight: 500;">Klarna ❌</span>
-        <span style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">Apple Pay ❌</span>
-        <span style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">Google Pay ❌</span>
-        <span style="background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); color: #ff6b6b; font-weight: 500;">Satispay ❌</span>
+    <div class="cart-payment-methods-info">
+      <p>Metodi di pagamento al checkout</p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+        <span class="cart-pay-badge is-ok">Carte ✔</span>
+        <span class="cart-pay-badge is-ok">PayPal ✔</span>
+        <span class="cart-pay-badge is-no">Klarna ✕</span>
+        <span class="cart-pay-badge is-no">Apple Pay ✕</span>
+        <span class="cart-pay-badge is-no">Google Pay ✕</span>
+        <span class="cart-pay-badge is-no">Satispay ✕</span>
       </div>
     </div>
   </div>
@@ -78,9 +83,7 @@
 <script src="js/script.js?v=20260920h"></script>
 <script type="module" src="js/firebase-init.js?v=20260920n"></script>
 <script type="module" src="js/cart.js?v=20261025f"></script>
-<script type="module" src="js/bg-scene.js?v=20260920s"></script>
-<script type="module" src="js/auth.js?v=20261025c"></script>
-<script type="module" src="js/banner.js?v=20260919aj"></script>
-<script type="module" src="js/content-dynamic.js?v=20260920ao"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/bg-scene.js"></script>
 </body>
 </html>
