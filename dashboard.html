@@ -5,47 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <title>Dashboard — Gaming Relax</title>
-<style>html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:Inter,system-ui,sans-serif;min-height:100%;}#boot{min-height:60vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;}</style>
+<style>html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,sans-serif}#boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}</style>
 </head>
 <body data-page="dashboard">
 <div id="boot"><p>Caricamento Dashboard…</p></div>
-<script>
-(async function () {
-  var boot = document.getElementById('boot');
-  try {
-    var urls = [
-      'https://raw.githubusercontent.com/LorenzoImpa07/Gaming-Relax-Sito-Web/df2fc28d/dashboard.html',
-      'https://cdn.jsdelivr.net/gh/LorenzoImpa07/Gaming-Relax-Sito-Web@df2fc28d/dashboard.html'
-    ];
-    var html = null;
-    for (var i = 0; i < urls.length; i++) {
-      try {
-        var r = await fetch(urls[i], { cache: 'no-store' });
-        if (r.ok) { html = await r.text(); if (html && html.indexOf('dashboard-root') !== -1) break; }
-      } catch (e) {}
-    }
-    if (!html || html.indexOf('dashboard-root') === -1) {
-      boot.innerHTML = '<p>Impossibile caricare la Dashboard completa.<br>Ripristina <code>dashboard.html</code> dal commit <b>df2fc28d</b> su GitHub.</p>';
-      return;
-    }
-    // Cache-bust script versions + inject dash-fix
-    html = html.replace(/js\/auth\.js\?v=[^"]+/g, 'js/auth.js?v=20261026c');
-    html = html.replace(/js\/dashboard\.js\?v=[^"]+/g, 'js/dashboard.js?v=20261026c');
-    html = html.replace(/js\/firebase-init\.js\?v=[^"]+/g, 'js/firebase-init.js?v=20261026c');
-    html = html.replace(/js\/banner\.js\?v=[^"]+/g, 'js/banner.js?v=20261026c');
-    if (html.indexOf('dash-fix.js') === -1) {
-      html = html.replace(
-        /js\/dashboard\.js\?v=20261026c"><\/script>/,
-        'js/dashboard.js?v=20261026c"></script>\n<script type="module" src="js/dash-fix.js?v=20261026c"></script>'
-      );
-    }
-    document.open();
-    document.write(html);
-    document.close();
-  } catch (err) {
-    boot.innerHTML = '<p>Errore caricamento: ' + String(err && err.message ? err.message : err) + '<br><a href="login.html" style="color:#ff4dad">Login</a></p>';
-  }
-})();
-</script>
+<script src="js/dash-html-part0.js?v=20261026d"></script>
+<script src="js/dash-html-part1.js?v=20261026d"></script>
+<script src="js/dash-html-part2.js?v=20261026d"></script>
+<script src="js/dash-html-loader.js?v=20261026d"></script>
 </body>
 </html>
