@@ -60,7 +60,7 @@
   if (document.querySelector('script[src*="dash-fix.js"]')) return;
   var s = document.createElement("script");
   s.type = "module";
-  s.src = "js/dash-fix.js?v=20261026c";
+  s.src = "js/dash-fix.js?v=20261026e";
   (document.body || document.documentElement).appendChild(s);
 })();
 
@@ -169,22 +169,34 @@ function renderAuthArea(user, extra = {}) {
     const avatar = getAvatar(user);
     area.innerHTML = `
       <div class="auth-menu">
-        <button type="button" class="icon-btn auth-menu__trigger" aria-label="Account" aria-haspopup="true">${avatar ? `<img src="${avatar}" alt="">` : initial}</button>
-        <div class="auth-menu__panel" hidden>
-          <div class="auth-menu__head">
-            <strong>${nickname}</strong>
-            <span>${user.email || ""}</span>
-          </div>
+        <button type="button" class="icon-btn auth-menu__trigger" aria-label="Account" aria-haspopup="true" aria-expanded="false">${avatar ? `<img src="${avatar}" alt="">` : initial}</button>
+        <div class="auth-menu__dropdown">
+          <div class="auth-menu__email">${nickname}</div>
+          <span class="auth-menu__sub">${user.email || ""}</span>
           <a href="profilo.html">Il mio profilo</a>
           ${isAdmin ? '<a class="auth-menu__dash" href="dashboard.html">Vai alla Dashboard</a>' : ""}
           <button type="button" id="auth-logout">Esci</button>
         </div>
       </div>`;
+    const menu = area.querySelector(".auth-menu");
     const trigger = area.querySelector(".auth-menu__trigger");
-    const panel = area.querySelector(".auth-menu__panel");
-    trigger?.addEventListener("click", () => {
-      panel.hidden = !panel.hidden;
+    trigger?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
     });
+    if (!window.__grAuthMenuDocClose) {
+      window.__grAuthMenuDocClose = true;
+      document.addEventListener("click", (e) => {
+        document.querySelectorAll(".auth-menu.open").forEach((m) => {
+          if (!m.contains(e.target)) {
+            m.classList.remove("open");
+            const t = m.querySelector(".auth-menu__trigger");
+            if (t) t.setAttribute("aria-expanded", "false");
+          }
+        });
+      });
+    }
     document.getElementById("auth-logout")?.addEventListener("click", () => {
       signOut(auth).then(() => { window.location.href = "index.html"; });
     });
