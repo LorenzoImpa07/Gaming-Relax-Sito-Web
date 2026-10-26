@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Gaming Relax</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="stylesheet" href="css/style.css?v=20261026f">
+<link rel="stylesheet" href="css/dashboard-pro.css?v=20261026f">
+</head>
+<body data-page="dashboard">
+<div class="dashboard-guard" id="dashboard-guard">
+  <p>Verifica accesso in corso…</p>
+</div>
+<div id="dashboard-root" style="display:none">
+  <div class="container">
+    <div class="dash-header">
+      <div>
+        <h1>Dashboard</h1>
+        <span>Connesso come <strong id="admin-email"></strong></span>
+      </div>
+      <button type="button" id="logout-dash" class="btn btn--outline">Esci</button>
+    </div>
+    <div class="dash-stats" id="dash-stats">
+      <div class="dash-stat"><strong id="stat-products">–</strong><span>Prodotti</span></div>
+      <div class="dash-stat"><strong id="stat-team">–</strong><span>Team</span></div>
+      <div class="dash-stat"><strong id="stat-orders">–</strong><span>Ordini</span></div>
+      <div class="dash-stat"><strong id="stat-reviews">–</strong><span>Recensioni</span></div>
+      <div class="dash-stat"><strong id="stat-users">–</strong><span>Utenti</span></div>
+      <a href="index.html" target="_blank" rel="noopener" id="dash-open-site" class="dash-stat dash-stat--link">Apri il sito</a>
+    </div>
+    <p style="padding:40px;text-align:center;color:#aaa">Pannelli in caricamento… Se restano vuoti, ripristina dashboard.html dal commit <b>df2fc28d</b> su GitHub (History → Restore).</p>
+  </div>
+</div>
+<script type="module" src="js/firebase-init.js?v=20261026f"></script>
+<script type="module" src="js/auth.js?v=20261026f"></script>
+<script type="module" src="js/dashboard.js?v=20261026f"></script>
+<script type="module" src="js/dash-fix.js?v=20261026f"></script>
+<script src="js/dash-guard-boot.js?v=20261026f"></script>
+<script src="js/dashboard-ui-pro.js?v=20261025d" defer></script>
+</body>
+</html>
