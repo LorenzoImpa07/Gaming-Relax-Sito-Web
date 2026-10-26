@@ -1,1 +1,22 @@
-SEE_FILE
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>RECOVERY</title>
+</head>
+<body data-page="dashboard">
+<p style="color:#fff;background:#05070e;padding:40px;font-family:sans-serif">Dashboard in ripristino. Apri questo link su GitHub e ripristina il file dal commit <code>efc5b68</code>: History → dashboard.html → Restore.<br><br>Oppure accedi da <a href="login.html" style="color:#ff4dad">login</a>.</p>
+<script src="js/dash-guard-boot.js?v=20261026b"></script>
+<script type="module">
+import { auth, ADMIN_EMAIL, authReady } from './js/firebase-init.js?v=20261026b';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+await authReady.catch(()=>{});
+onAuthStateChanged(auth, (u) => {
+  const ok = u && String(u.email||'').toLowerCase() === String(ADMIN_EMAIL||'').toLowerCase();
+  document.body.innerHTML = ok
+    ? '<p style="color:#fff;padding:40px;font-family:sans-serif">Accesso OK come '+u.email+'. Il file dashboard.html va ripristinato dal commit efc5b68 su GitHub (History del file).</p>'
+    : '<p style="color:#fff;padding:40px;font-family:sans-serif">Non autorizzato o non loggato. <a href="login.html" style="color:#ff4dad">Login</a></p>';
+});
+</script>
+</body>
+</html>
