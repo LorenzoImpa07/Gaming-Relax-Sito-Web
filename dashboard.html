@@ -7,9 +7,8 @@
 <title>Dashboard — Gaming Relax</title>
 <style>
 html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,sans-serif;min-height:100%}
-#boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;line-height:1.5}
+#boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px}
 #boot a{color:#ff4dad}
-#boot .err{color:#ff8fab;max-width:440px}
 </style>
 </head>
 <body data-page="dashboard">
@@ -17,62 +16,20 @@ html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,sans-s
 <script>
 (async function () {
   var boot = document.getElementById('boot');
-  function fail(msg) {
-    boot.innerHTML = '<p class="err">' + msg + '</p><p style="margin-top:16px"><a href="login.html">Login</a> · <a href="dashboard.html">Riprova</a></p>';
-  }
-  function patch(html) {
-    html = html.replace(/js\/auth\.js\?v=[^"]+/g, 'js/auth.js?v=20261026e');
-    html = html.replace(/js\/dashboard\.js\?v=[^"]+/g, 'js/dashboard.js?v=20261026e');
-    html = html.replace(/js\/firebase-init\.js\?v=[^"]+/g, 'js/firebase-init.js?v=20261026e');
-    html = html.replace(/js\/banner\.js\?v=[^"]+/g, 'js/banner.js?v=20261026e');
-    html = html.replace(/js\/cart\.js\?v=[^"]+/g, 'js/cart.js?v=20261026e');
-    if (html.indexOf('dash-fix.js') === -1) {
-      html = html.replace(
-        /(<script type="module" src="js\/dashboard\.js\?v=20261026e"><\/script>)/,
-        '$1\n<script type="module" src="js/dash-fix.js?v=20261026e"></script>'
-      );
-    }
-    if (html.indexOf('dash-inline-timeout') === -1) {
-      html = html.replace('</body>',
-        '<script id="dash-inline-timeout">setTimeout(function(){var g=document.getElementById("dashboard-guard");if(!g)return;if((g.textContent||"").toLowerCase().indexOf("verifica accesso")===-1)return;g.innerHTML="<p>Timeout verifica.<br><a href=\'login.html\' style=\'color:#ff4dad\'>Login</a> · <a href=\'dashboard.html\' style=\'color:#ff4dad\'>Ricarica</a></p>";},9000);</script></body>'
-      );
-    }
-    return html;
-  }
   try {
-    var urls = [
-      'https://cdn.jsdelivr.net/gh/LorenzoImpa07/Gaming-Relax-Sito-Web@df2fc28d/dashboard.html',
-      'https://raw.githack.com/LorenzoImpa07/Gaming-Relax-Sito-Web/df2fc28d/dashboard.html'
-    ];
-    var html = null, lastErr = null;
-    for (var i = 0; i < urls.length; i++) {
-      try {
-        var ctrl = new AbortController();
-        var timer = setTimeout(function () { ctrl.abort(); }, 15000);
-        var r = await fetch(urls[i], { cache: 'no-store', mode: 'cors', signal: ctrl.signal });
-        clearTimeout(timer);
-        if (!r.ok) { lastErr = 'HTTP ' + r.status; continue; }
-        var text = await r.text();
-        if (text && text.indexOf('dashboard-root') !== -1 && text.indexOf('product-form') !== -1) {
-          html = text;
-          break;
-        }
-        lastErr = 'HTML incompleto';
-      } catch (e) {
-        lastErr = (e && e.message) ? e.message : String(e);
-      }
+    var parts = [];
+    for (var i = 0; i < 4; i++) {
+      var r = await fetch('dashboard-chunk-' + i + '.txt?v=20261026f', { cache: 'no-store' });
+      if (!r.ok) throw new Error('chunk ' + i + ' HTTP ' + r.status);
+      parts.push(await r.text());
     }
-    if (!html) {
-      fail('Download Dashboard fallito (' + (lastErr || 'errore') + '). Usa Wi‑Fi e riprova.');
-      return;
-    }
-    html = patch(html);
-    // document.write è il modo più affidabile per rieseguire gli script
+    var html = parts.join('');
+    if (html.indexOf('dashboard-root') === -1) throw new Error('HTML incompleto');
     document.open();
     document.write(html);
     document.close();
   } catch (err) {
-    fail('Errore: ' + (err && err.message ? err.message : err));
+    boot.innerHTML = '<p>Errore: ' + (err && err.message ? err.message : err) + '</p><p><a href="dashboard.html">Riprova</a> · <a href="login.html">Login</a></p>';
   }
 })();
 </script>
