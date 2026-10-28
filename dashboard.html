@@ -7,12 +7,16 @@
 <title>Dashboard — Gaming Relax</title>
 <style>
 html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,sans-serif;min-height:100%}
-#boot{min-height:70vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+#boot{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:12px}
 #boot a{color:#ff4dad}
+#boot .btn{display:inline-block;margin-top:8px;padding:12px 20px;border-radius:999px;background:#ff4dad;color:#0a0d16;text-decoration:none;font-weight:700}
 </style>
 </head>
 <body data-page="dashboard">
-<div id="boot"><p>Caricamento Dashboard…</p></div>
-<script src="js/dashboard-boot.js?v=20261027b"></script>
+<div id="boot">
+  <p id="boot-msg">Caricamento Dashboard…</p>
+  <p id="boot-sub" style="opacity:.7;font-size:14px;display:none"></p>
+</div>
+<script src="js/dash-assemble.js?v=20261028a"></script>
 </body>
 </html>
