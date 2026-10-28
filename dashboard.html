@@ -4,159 +4,104 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<title>Dashboard — Gaming Relax</title>
-<link rel="icon" href="images/favicon.ico">
-<link rel="stylesheet" href="css/style.css?v=20261028b">
-<link rel="stylesheet" href="css/dashboard-pro.css?v=20261028b">
-<link rel="stylesheet" href="css/gaming-polish.css?v=20261025a">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Dashboard Admin — Gaming Relax</title>
 <style>
-html,body{margin:0;background:#05070e!important;color:#e8ecf2;font-family:Inter,system-ui,sans-serif;min-height:100%}
-.dashboard-guard{min-height:55vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px}
-.dashboard-guard a{color:#ff4dad;font-weight:700}
-#dashboard-root{display:none;padding:20px 16px 60px}
-.dash-card{max-width:720px;margin:0 auto 20px;padding:22px;border-radius:18px;border:1px solid rgba(139,61,255,.28);background:rgba(12,14,24,.92)}
-.dash-card h1,.dash-card h2{margin:0 0 10px;color:#fff}
-.dash-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
-.dash-actions a,.dash-actions button{display:inline-block;padding:12px 18px;border-radius:999px;border:none;font-weight:700;cursor:pointer;text-decoration:none}
-.btn-main{background:#ff4dad;color:#0a0d16}
-.btn-ghost{background:transparent;color:#ff4dad;border:1px solid rgba(255,77,173,.45)!important}
-.stat-row{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}
-.stat{min-width:110px;padding:14px;border-radius:14px;border:1px solid rgba(139,61,255,.25);background:rgba(5,7,14,.8)}
-.stat strong{display:block;font-size:22px;color:#fff}
-.stat span{font-size:12px;color:#9aa3b5}
+  html,body{margin:0;background:#05070e;color:#e8ecf2;font-family:system-ui,-apple-system,sans-serif;min-height:100%;}
+  .wrap{max-width:560px;margin:0 auto;padding:40px 20px;text-align:center;}
+  .logo{width:56px;height:56px;border-radius:14px;object-fit:cover;margin-bottom:16px;}
+  h1{font-size:24px;margin:0 0 8px;color:#fff;}
+  p{color:#a0a8b8;line-height:1.5;margin:0 0 16px;}
+  .box{margin-top:28px;padding:24px;border-radius:18px;border:1px solid rgba(255,77,173,.35);background:rgba(18,16,36,.95);}
+  .btn{display:inline-block;margin:8px 6px;padding:14px 22px;border-radius:999px;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-size:15px;}
+  .btn-pink{background:#ff4dad;color:#0a0d16;}
+  .btn-out{background:transparent;color:#ff4dad;border:1px solid rgba(255,77,173,.5);}
+  #status{min-height:24px;margin-top:12px;font-size:14px;color:#c8cdd8;}
+  .ok{color:#86efac;}
+  .err{color:#ff8fab;}
 </style>
 </head>
-<body data-page="dashboard">
-<header class="site-header">
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px">
-    <a href="index.html" class="brand" style="display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none">
-      <img src="images/logo.png" alt="Gaming Relax" width="40" height="40" style="border-radius:10px;object-fit:cover">
-      <span>Gaming Relax</span>
-    </a>
-    <span id="auth-area"></span>
-  </div>
-</header>
-
-<div class="dashboard-guard" id="dashboard-guard">
-  <div>
-    <p id="guard-text">Verifica accesso in corso…</p>
-    <p id="guard-actions" style="display:none;margin-top:16px"></p>
-  </div>
-</div>
-
-<div id="dashboard-root">
-  <div class="dash-card">
+<body>
+  <div class="wrap">
+    <img class="logo" src="images/logo.png" alt="Gaming Relax" onerror="this.style.display='none'">
     <h1>Dashboard Admin</h1>
-    <p>Connesso come <strong id="admin-email" style="color:#ff4dad"></strong></p>
-    <div class="stat-row" id="dash-stats">
-      <div class="stat"><strong id="stat-products">–</strong><span>Prodotti</span></div>
-      <div class="stat"><strong id="stat-team">–</strong><span>Team</span></div>
-      <div class="stat"><strong id="stat-orders">–</strong><span>Ordini</span></div>
-      <div class="stat"><strong id="stat-users">–</strong><span>Utenti</span></div>
-    </div>
-    <div class="dash-actions">
-      <a class="btn-main" id="dash-open-site" href="index.html" target="_blank" rel="noopener">Apri il sito</a>
-      <button type="button" class="btn-ghost" id="logout-dash">Esci</button>
-    </div>
-  </div>
+    <p>Gaming Relax — pannello di controllo</p>
 
-  <div class="dash-card">
-    <h2>Stato sistema</h2>
-    <p id="dash-status" style="color:#9aa3b5;line-height:1.5">
-      Accesso admin attivo. I pannelli completi (form prodotti, banner, sfondi, forum…)
-      sono nel file storico su GitHub. Per ripristinarli:
+    <div class="box">
+      <p id="status">Controllo accesso…</p>
+      <div id="actions" style="display:none"></div>
+    </div>
+
+    <p style="margin-top:28px;font-size:13px">
+      <a href="index.html" style="color:#ff4dad">← Torna al sito</a>
     </p>
-    <ol style="color:#c8cdd8;line-height:1.6">
-      <li>Apri la History di <code style="color:#ff4dad">dashboard.html</code></li>
-      <li>Commit <code style="color:#ff4dad">df2fc28d</code></li>
-      <li>⋯ → Restore this file su <code style="color:#ff4dad">main</code></li>
-    </ol>
-    <div class="dash-actions">
-      <a class="btn-main" href="https://github.com/LorenzoImpa07/Gaming-Relax-Sito-Web/commits/main/dashboard.html" target="_blank" rel="noopener">Apri History GitHub</a>
-    </div>
   </div>
 
-  <!-- Minimal hooks so dashboard.js does not crash if loaded later -->
-  <div style="display:none">
-    <form id="product-form"></form>
-    <div id="admin-products-list"></div>
-    <div id="admin-team-list"></div>
-    <div id="admin-orders-list"></div>
-  </div>
-</div>
+  <!-- NESSUN modulo esterno qui: questo script non può bloccare la pagina -->
+  <script>
+  (function () {
+    var status = document.getElementById("status");
+    var actions = document.getElementById("actions");
 
-<script type="module">
-import { auth, ADMIN_EMAIL, authReady, db } from "./js/firebase-init.js?v=20261028b";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { collection, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    function show(msg, html, ok) {
+      status.innerHTML = msg;
+      status.className = ok ? "ok" : "err";
+      if (html) {
+        actions.style.display = "block";
+        actions.innerHTML = html;
+      }
+    }
 
-const guard = document.getElementById("dashboard-guard");
-const root = document.getElementById("dashboard-root");
-const guardText = document.getElementById("guard-text");
-const guardActions = document.getElementById("guard-actions");
+    // Dopo 2 secondi, SEMPRE un'azione (login o ricarica) — mai più blocco infinito
+    setTimeout(function () {
+      if (actions.style.display === "block") return;
+      show(
+        "Accesso non confermato. Accedi come amministratore.",
+        '<a class="btn btn-pink" href="login.html">Vai al login</a>' +
+          '<a class="btn btn-out" href="dashboard.html?t=' + Date.now() + '">Ricarica</a>'
+      );
+    }, 2000);
 
-function showLogin() {
-  guard.style.display = "flex";
-  root.style.display = "none";
-  guardText.textContent = "Devi accedere con l'account amministratore.";
-  guardActions.style.display = "block";
-  guardActions.innerHTML = '<a class="btn-main" href="login.html" style="display:inline-block;padding:12px 18px;border-radius:999px;background:#ff4dad;color:#0a0d16;text-decoration:none;font-weight:700">Vai al login</a>';
-}
-
-function showDenied() {
-  guard.style.display = "flex";
-  root.style.display = "none";
-  guardText.textContent = "Questo account non ha accesso alla Dashboard.";
-  guardActions.style.display = "block";
-  guardActions.innerHTML = '<a href="index.html" style="color:#ff4dad;font-weight:700">Torna al sito</a>';
-}
-
-function showDash(user) {
-  guard.style.display = "none";
-  root.style.display = "block";
-  const el = document.getElementById("admin-email");
-  if (el) el.textContent = user.email || "";
-}
-
-function isAdmin(user) {
-  if (!user || !user.email) return false;
-  return String(user.email).trim().toLowerCase() === String(ADMIN_EMAIL || "").trim().toLowerCase();
-}
-
-// Mai più di 4 secondi su "Verifica…"
-const safety = setTimeout(() => {
-  if (guard.style.display === "none") return;
-  if (!/verifica accesso/i.test(guardText.textContent || "")) return;
-  if (isAdmin(auth.currentUser)) showDash(auth.currentUser);
-  else showLogin();
-}, 4000);
-
-try { await authReady; } catch (e) {}
-
-onAuthStateChanged(auth, async (user) => {
-  clearTimeout(safety);
-  if (!user) { showLogin(); return; }
-  if (!isAdmin(user)) { showDenied(); return; }
-  showDash(user);
-
-  // Contatori best-effort
-  async function count(name, elId) {
-    try {
-      const snap = await getCountFromServer(collection(db, name));
-      const el = document.getElementById(elId);
-      if (el) el.textContent = String(snap.data().count);
-    } catch (_) {}
-  }
-  count("products", "stat-products");
-  count("team", "stat-team");
-  count("orders", "stat-orders");
-  count("users", "stat-users");
-});
-
-document.getElementById("logout-dash")?.addEventListener("click", () => {
-  signOut(auth).then(() => { location.href = "index.html"; });
-});
-</script>
-<script type="module" src="js/auth.js?v=20261028b"></script>
+    // Prova auth Firebase in modo non bloccante
+    var s1 = document.createElement("script");
+    s1.type = "module";
+    s1.textContent =
+      'import { auth, ADMIN_EMAIL, authReady } from "./js/firebase-init.js?v=20261028c\x3b\x22;\n' +
+      'import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js\x3b\x22;\n' +
+      'try { await authReady; } catch (e) {}\n' +
+      'onAuthStateChanged(auth, (user) => {\n' +
+      '  const status = document.getElementById("status\x3b\x22);\n' +
+      '  const actions = document.getElementById("actions\x3b\x22);\n' +
+      '  const admin = String(ADMIN_EMAIL || "").trim().toLowerCase();\n' +
+      '  const email = user && user.email ? String(user.email).trim().toLowerCase() : "";\n' +
+      '  if (!user) {\n' +
+      '    status.textContent = "Devi accedere con l\x27account amministratore.";\n' +
+      '    status.className = "err";\n' +
+      '    actions.style.display = "block";\n' +
+      '    actions.innerHTML = \x27<a class="btn btn-pink" href="login.html">Vai al login</a>\x27;\n' +
+      '    return;\n' +
+      '  }\n' +
+      '  if (email !== admin) {\n' +
+      '    status.textContent = "Questo account non è amministratore: " + (user.email || "");\n' +
+      '    status.className = "err";\n' +
+      '    actions.style.display = "block";\n' +
+      '    actions.innerHTML = \x27<a class="btn btn-out" href="index.html">Torna al sito</a>\x27;\n' +
+      '    return;\n' +
+      '  }\n' +
+      '  status.innerHTML = "Accesso admin OK: <strong style=\\"color:#ff4dad\\">" + user.email + "</strong>";\n' +
+      '  status.className = "ok";\n' +
+      '  actions.style.display = "block";\n' +
+      '  actions.innerHTML = \x27<a class="btn btn-pink" href="index.html">Apri il sito</a>\x27 +
+      '    \x27<button class="btn btn-out" id="dash-out" type="button">Esci</button>\x27 +
+      '    \x27<p style="margin-top:18px;font-size:13px;color:#a0a8b8">Pannelli completi: ripristina dashboard.html dal commit df2fc28d su GitHub (History → Restore).</p>\x27 +
+      '    \x27<p><a href="https://github.com/LorenzoImpa07/Gaming-Relax-Sito-Web/commits/main/dashboard.html" style="color:#ff4dad">Apri History GitHub</a></p>\x27;\n' +
+      '  document.getElementById("dash-out")?.addEventListener("click", () => signOut(auth).then(() => location.href = "index.html"));\n' +
+      '});\n';
+    // The above escaped module is error-prone. Use external small file instead.
+  })();
+  </script>
+  <script type="module" src="js/dash-access.js?v=20261028c"></script>
 </body>
 </html>
